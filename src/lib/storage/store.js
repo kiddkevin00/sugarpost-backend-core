@@ -3,43 +3,25 @@ const MongoStore = require('./mongo-store');
 const Stores = {
   [MongoStore.STORE_TYPE]: MongoStore,
 };
-const store = new Symbol('store');
 
 class Store {
 
-  constructor(storeType) {
+  static init(storeType) {
     if (Stores[storeType]) {
-      this[store] = new Stores[storeType];
+      Object.assign(Store, Stores[storeType]);
     }
     throw new Error('Encounter an invalid storage type.');
   }
 
-  select(collectionName, query) {
-    // [TODO] Should return a Promise
-    return this[store].select(collectionName, query);
-  }
-
-  insert() {
+  static upsert(connection) {
 
   }
 
-  update() {
+  static resetCollection(connection, collectionName) {
 
   }
 
-  delete() {
-
-  }
-
-  upsert() {
-
-  }
-
-  resetCollection(collectionName) {
-
-  }
-
-  resetDb(dbName) {
+  static resetDb(connection, dbName) {
 
   }
 
