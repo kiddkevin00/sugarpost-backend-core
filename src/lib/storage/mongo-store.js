@@ -1,26 +1,24 @@
+const constants = require('../constants/');
+
+/*
+ * This class should only contains static members
+ */
 class MongoStore {
 
   static insert(connection, newDoc) {
-    return connection.save(newDoc);
+    return connection.saveAsync(newDoc);
   }
 
   static select(connection, collectionName, query) {
-    connection.find(query, (err, docs) => {
-      console.log(docs);
-    });
+    connection.findAsync(query);
   }
 
   static update(connection, collectionName, query, newFieldValue) {
-    connection.update(
-      query, { $set: newFieldValue }, { multi: true },
-      (err, result) => {
-        console.log(result);
-      }
-    );
+    connection.updateAsync(query, { $set: newFieldValue }, { multi: true });
   }
 
   static delete(connection, collectionName, query) {
-    connection.remove(query);
+    connection.removeAsync(query);
   }
 
   static configIndex(connection) {
@@ -28,7 +26,6 @@ class MongoStore {
   }
 
 }
-
-MongoStore.STORE_TYPE = 'mongo-store';
+MongoStore.STORE_TYPE = constants.STORE_TYPE.MONGO_DB;
 
 module.exports = exports = MongoStore;
