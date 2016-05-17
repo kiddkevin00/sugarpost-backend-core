@@ -28,7 +28,15 @@
     }
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "",
+    "jshint": "",
+    "test": "npm run unit-test",
+    "integration-test": "",
+    "unit-test": "node ./src/spec/support/test-runner.js -- -t unit",
+    "local-unit-test": "",
+    "local-integration-test": "",
+    "debug": "",
+    "dev:watch": ""
   },
   "engines": {
     "node": "6.1.0"
@@ -38,7 +46,9 @@
     "eslint-config-airbnb": "^9.0.1",
     "eslint-plugin-import": "^1.7.0",
     "eslint-plugin-jsx-a11y": "^1.2.0",
-    "eslint-plugin-react": "^5.1.1"
+    "eslint-plugin-react": "^5.1.1",
+    "jasmine": "^2.4.1",
+    "jasmine-reporters": "^2.1.1"
   },
   "dependencies": {
     "mongojs": "^2.4.0"

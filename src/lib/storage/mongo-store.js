@@ -4,13 +4,13 @@ const constants = require('../constants/');
  * This class should only contains static members
  */
 class MongoStore {
-
+  
   static insert(connection, newDoc) {
     return connection.saveAsync(newDoc);
   }
 
   static select(connection, collectionName, query) {
-    connection.findAsync(query);
+    return connection.collection(collectionName).findAsync(query || {})
   }
 
   static update(connection, collectionName, query, newFieldValue) {
@@ -26,6 +26,6 @@ class MongoStore {
   }
 
 }
-MongoStore.STORE_TYPE = constants.STORE_TYPE.MONGO_DB;
+MongoStore.STORE_TYPE = constants.STORE.STORE_TYPES.MONGO_DB;
 
 module.exports = exports = MongoStore;

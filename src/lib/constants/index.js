@@ -1,5 +1,5 @@
 const storeConstants = require('./store');
 
-module.export = {
+module.exports = exports = {
   STORE: storeConstants,
 };

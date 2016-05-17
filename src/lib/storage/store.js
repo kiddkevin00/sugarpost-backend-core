@@ -11,8 +11,16 @@ const Stores = {
 class Store {
 
   static init(storeType) {
+    Store.assignLowLevelFunctions(storeType);
+    return Store;
+  }
+
+  static assignLowLevelFunctions(storeType) {
     if (Stores[storeType]) {
-      Object.assign(Store, Stores[storeType]);
+      //Object.assign(Store, Stores[storeType]);
+      Store.select = Stores[storeType].select;
+      
+      return;
     }
     throw new Error(constants.STORE.ERROR_MSG.INVALID_STORAGE_TYPE);
   }
