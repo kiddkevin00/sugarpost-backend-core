@@ -3,5 +3,6 @@ exports.STORE_TYPES = {
 };
 
 exports.ERROR_MSG = {
-  INVALID_STORAGE_TYPE: 'Encounter an invalid storage type.'
+  INVALID_STORAGE_TYPE: 'Encounter an invalid storage type.',
+  INTERFACE_NOT_IMPLEMENTED: 'The Implementation of required interface is invalid.'
 };

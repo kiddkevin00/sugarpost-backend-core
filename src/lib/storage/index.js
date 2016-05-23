@@ -1,3 +1,3 @@
-const StoreFactory = require('./store-factory');
+const StoreFactory = require('./repo-factory');
 
 module.exports = exports = StoreFactory;

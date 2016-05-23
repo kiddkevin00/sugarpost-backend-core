@@ -1,7 +1,7 @@
 const constants = require('../constants/');
 const packageJson = require('../../../package.json');
-const mongojs = require('mongojs');
 const Promise = require('bluebird');
+const mongojs = require('mongojs');
 
 Promise.promisifyAll([
   require("mongojs/lib/collection"),
@@ -11,26 +11,28 @@ Promise.promisifyAll([
 
 const mongoStorePropName = 'mongo-store';
 const packageJsonMongoDbConfig = packageJson.config.databases[mongoStorePropName];
-const mongoConnectionString = `${packageJsonMongoDbConfig.host}:` +
-  `${packageJsonMongoDbConfig.port}/${packageJsonMongoDbConfig.dbName}`;
 const cachedConnectedDBs = Symbol('cached-connected-db');
 
 class ConnectionPool {
 
-  constructor(storeType) {
+  constructor(storeType, host = packageJsonMongoDbConfig.host, port = packageJsonMongoDbConfig.port, dbName = packageJsonMongoDbConfig.dbName) {
     let connection;
 
     switch (storeType) {
       case constants.STORE.STORE_TYPES.MONGO_DB:
-        connection = mongojs(mongoConnectionString);
+        connection = mongojs(`${host}:${port}/${dbName}`);
         break;
       default:
         throw(new Error(constants.STORE.ERROR_MSG.INVALID_STORAGE_TYPE));
     }
 
-    ConnectionPool[cachedConnectedDBs][storeType] = connection;
+    ConnectionPool._cacheConnection(connection, storeType);
 
     return connection;
+  }
+
+  static _cacheConnection(connection, storeType) {
+    ConnectionPool[cachedConnectedDBs][storeType] = connection;
   }
 
   static getCachedConnection(storeType) {
