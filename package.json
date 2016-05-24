@@ -1,17 +1,16 @@
 {
-  "name": "wait-no-more",
+  "name": "bulletin-board-system",
   "version": "0.0.0",
-  "description": "",
+  "description": "This is a generic BBS.",
   "main": "index.js",
   "config": {
-    "serviceName": "wait-no-more",
     "port": 8080,
     "databases": {
       "mongo-store": {
         "storeType": "mongo-store",
         "host": "127.0.0.1",
         "port": 27017,
-        "dbName": "wait-no-more",
+        "dbName": "bulletin-board-system",
         "options": {
           "server": {
             "autoReconnect": true,
@@ -29,10 +28,11 @@
   },
   "scripts": {
     "start": "",
-    "jshint": "",
-    "test": "npm run unit-test",
+    "eshint": "",
+    "test": "multi='tap=- xunit=./spec/reports/xunit.xml' npm run mocha-unit-test",
     "integration-test": "",
-    "unit-test": "node ./src/spec/support/test-runner.js -- -t unit",
+    "jasmine-unit-test": "node ./src/spec/support/jasmine-test-runner.js -- -t unit",
+    "mocha-unit-test": "mocha --opts ./mocha.opts | faucet",
     "local-unit-test": "",
     "local-integration-test": "",
     "debug": "",
@@ -47,12 +47,26 @@
     "eslint-plugin-import": "^1.7.0",
     "eslint-plugin-jsx-a11y": "^1.2.0",
     "eslint-plugin-react": "^5.1.1",
+    "faucet": "0.0.1",
     "jasmine": "^2.4.1",
-    "jasmine-reporters": "^2.1.1"
+    "jasmine-reporters": "^2.1.1",
+    "mocha": "^2.5.1",
+    "mocha-multi": "^0.9.0",
+    "proxyquire": "^1.7.9",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
+    "chai-shallow-deep-equal": "^1.4.0",
+    "sinon": "^1.17.4",
+    "sinon-as-promised": "^4.0.0",
+    "sinon-chai": "^2.8.0"
   },
   "dependencies": {
     "mongojs": "^2.4.0"
   },
   "author": "Marcus Hsu",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:kiddkevin00/bulletin-board-system.git"
+  }
 }

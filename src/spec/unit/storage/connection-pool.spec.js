@@ -12,15 +12,15 @@ s.select(c, 'bars', {})
     c.close();
   });
 
-//describe('test', function() {
-//  it('has a dummy spec', function() {
-//    expect(true).toBe(true);
-//
-//  });
-//
-//  it('has another dummy spec', function() {
-//    expect(true).toBe(true);
-//
-//  });
-//})
+describe('test', function() {
+  it('has a dummy spec', function() {
+    expect(true).to.equal(true);
+
+  });
+
+  it('has another dummy spec', function() {
+    expect(true).to.equal(true);
+
+  });
+})
 
