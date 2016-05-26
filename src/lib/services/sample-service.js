@@ -1,7 +1,7 @@
 class SampleService {
 
-  static execute(context) {
-
+  static execute(context, strategy) {
+    return Promise();
   }
 
 }

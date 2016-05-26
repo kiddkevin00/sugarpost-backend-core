@@ -3,15 +3,15 @@
  */
 class Store {
 
-  static upsert(Repo, connection) {
+  static upsert(repository, connection) {
 
   }
 
-  static resetCollection(Repo, connection, collectionName) {
+  static resetCollection(repository, connection, collectionName) {
 
   }
 
-  static resetDb(Repo, connection, dbName) {
+  static resetDb(repository, connection, dbName) {
 
   }
 

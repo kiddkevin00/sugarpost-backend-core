@@ -18,15 +18,15 @@ class RepoFactory {
   }
 
   static _assignLowLevelOperations(storeType, repository) {
-    const Repo = LowLevelStores[storeType];
+    const LowLevelStore = LowLevelStores[storeType];
 
-    if (Repo) {
+    if (LowLevelStore) {
       try {
-        repository.insert = Repo.insert;
-        repository.select = Repo.select;
-        repository.update = Repo.update;
-        repository.delete = Repo.delete;
-        repository.configIndex = Repo.configIndex;
+        repository.insert = LowLevelStore.insert;
+        repository.select = LowLevelStore.select;
+        repository.update = LowLevelStore.update;
+        repository.delete = LowLevelStore.delete;
+        repository.configIndex = LowLevelStore.configIndex;
       } catch (e) {
         throw(new Error(constants.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED));
       }

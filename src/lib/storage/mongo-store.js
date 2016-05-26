@@ -14,11 +14,11 @@ class MongoStore {
   }
 
   static update(connection, collectionName, query, newFieldValue) {
-    connection.updateAsync(query, { $set: newFieldValue }, { multi: true });
+    connection.collection(collectionName).updateAsync(query, { $set: newFieldValue }, { multi: true });
   }
 
   static delete(connection, collectionName, query) {
-    connection.removeAsync(query);
+    connection.collection(collectionName).removeAsync(query);
   }
 
   static configIndex(connection) {
