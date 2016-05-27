@@ -4,6 +4,7 @@
   "description": "This is a generic BBS.",
   "main": "index.js",
   "config": {
+    "ip": "127.0.0.1",
     "port": 8080,
     "databases": {
       "mongo-store": {

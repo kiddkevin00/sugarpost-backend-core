@@ -1,6 +1,8 @@
 const constants = require('../../../lib/constants/index');
-const ConnectionPool = require('../../../lib/storage/connection-pool');
-const RepoFactory = require('../../../lib/storage/repo-factory');
+
+const storageModule = require('../../../lib/storage/');
+
+const { ConnectionPool, RepoFactory } = storageModule;
 
 var c = new ConnectionPool(constants.STORE.STORE_TYPES.MONGO_DB);
 var s = RepoFactory.manufacture(constants.STORE.STORE_TYPES.MONGO_DB);

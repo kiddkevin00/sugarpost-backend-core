@@ -1,3 +1,5 @@
+const sampleSvc = {};
+
 class SampleController {
 
   static _handleRequest(req, res, svc, strategy) {
@@ -14,8 +16,16 @@ class SampleController {
       });
   }
 
-  static sampleReq(req, res, svc, strategy) {
-    SampleController._handleRequest(req, res, svc)
+  static sampleReq(req, res) {
+    const sampleStrategy = {};
+    
+    SampleController._handleRequest(req, res, SampleController.getSampleService(), sampleStrategy)
+  }
+  
+  static getSampleService() {
+    return sampleSvc;
   }
 
 }
+
+module.exports = exports = SampleController;

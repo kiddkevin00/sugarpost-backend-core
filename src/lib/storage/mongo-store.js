@@ -1,7 +1,7 @@
 const constants = require('../constants/');
 
 /*
- * This class should only contains static members
+ * This class should only contains static members.
  */
 class MongoStore {
   

@@ -13,6 +13,10 @@ const mongoStorePropName = 'mongo-store';
 const packageJsonMongoDbConfig = packageJson.config.databases[mongoStorePropName];
 const cachedConnectedDBs = Symbol('cached-connected-db');
 
+
+/*
+ * This is the only class that is stateful.
+ */
 class ConnectionPool {
 
   constructor(storeType, host = packageJsonMongoDbConfig.host, port = packageJsonMongoDbConfig.port, dbName = packageJsonMongoDbConfig.dbName) {
