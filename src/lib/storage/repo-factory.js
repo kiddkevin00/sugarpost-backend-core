@@ -1,6 +1,6 @@
 const MongoStore = require('./mongo-store');
 const Store = require('./store');
-const constants = require('../constants/')
+const constants = require('../constants/');
 
 const LowLevelStores = {
   [MongoStore.STORE_TYPE]: MongoStore,
@@ -27,11 +27,26 @@ class RepoFactory {
         repository.update = LowLevelStore.update;
         repository.delete = LowLevelStore.delete;
         repository.configIndex = LowLevelStore.configIndex;
-      } catch (e) {
-        throw(new Error(constants.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED));
+      } catch (err) {
+        throw(new Error({
+          errors: [
+            {
+              code: constants.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED,
+              message: constants.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
+              details: err
+            }
+          ]
+        }));
       }
     } else {
-      throw new Error(constants.STORE.ERROR_MSG.INVALID_STORAGE_TYPE);  
+      throw new Error({
+        errors: [
+          {
+            code: constants.store.ERROR_CODES.INVALID_STORAGE_TYPE,
+            message: constants.store.ERROR_MSG.INVALID_STORAGE_TYPE
+          }
+        ]
+      });
     }
   }
 

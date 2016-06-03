@@ -4,8 +4,8 @@ const storageModule = require('../../../lib/storage/');
 
 const { ConnectionPool, RepoFactory } = storageModule;
 
-var c = new ConnectionPool(constants.STORE.STORE_TYPES.MONGO_DB);
-var s = RepoFactory.manufacture(constants.STORE.STORE_TYPES.MONGO_DB);
+var c = new ConnectionPool(constants.store.STORE_TYPES.MONGO_DB);
+var s = RepoFactory.manufacture(constants.store.STORE_TYPES.MONGO_DB);
 
 //s.select(c, 'bars', {})
 //  .then((d) => {

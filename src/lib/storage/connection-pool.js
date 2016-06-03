@@ -20,18 +20,25 @@ const packageJsonMongoDbConfig = packageJson.config.databases[mongoStorePropName
  */
 class ConnectionPool {
 
-  constructor(storeType, host = packageJsonMongoDbConfig.host, port = packageJsonMongoDbConfig.port, 
+  constructor(storeType, host = packageJsonMongoDbConfig.host, port = packageJsonMongoDbConfig.port,
               dbName = packageJsonMongoDbConfig.dbName) {
     let connection;
 
     switch (storeType) {
-      case constants.STORE.STORE_TYPES.MONGO_DB:
+      case constants.store.STORE_TYPES.MONGO_DB:
         connection = mongojs(`${host}:${port}/${dbName}`);
         break;
       default:
-        throw(new Error(constants.STORE.ERROR_MSG.INVALID_STORAGE_TYPE));
+        throw(new Error({
+          errors: [
+            {
+              code: constants.store.ERROR_CODES.INVALID_STORAGE_TYPE,
+              message: 'constants.store.ERROR_MSG.INVALID_STORAGE_TYPE'
+            }
+          ]
+        }));
     }
-    
+
     return connection;
   }
 
