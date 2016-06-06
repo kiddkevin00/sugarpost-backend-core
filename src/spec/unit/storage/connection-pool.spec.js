@@ -1,28 +1,19 @@
+const ConnectionPool = require('../../../lib/storage/connection-pool');
 const constants = require('../../../lib/constants/index');
 
-const storageModule = require('../../../lib/storage/');
-
-const { ConnectionPool, RepoFactory } = storageModule;
-
-var c = new ConnectionPool(constants.store.STORE_TYPES.MONGO_DB);
-var s = RepoFactory.manufacture(constants.store.STORE_TYPES.MONGO_DB);
-
-//s.select(c, 'bars', {})
-//  .then((d) => {
-//    console.log(d);
-//
-//    c.close();
-//  });
-
-describe('test', function() {
-  it('has a dummy spec', function() {
-    expect({}).to.deep.equal({a:13});
-
+describe('Connection pool', () => {
+  let connection;
+  
+  it('can initiate a new connection with supported store type', () => {
+    connection = new ConnectionPool(constants.store.STORE_TYPES.MONGO_DB);
+    
+    expect(connection).to.exist;
+  });
+  
+  it('throws an error when initiating a new connection with an unsupported store type', () => {
+    expect(() => {
+      connection = new ConnectionPool('unsupported-store');  
+    }).to.throw();
   });
 
-  it('has another dummy spec', function() {
-    expect(true).to.equal(true);
-
-  });
-})
-
+});

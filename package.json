@@ -34,7 +34,7 @@
     "integration-test": "",
     "jasmine-unit-test": "node ./src/spec/support/jasmine-test-runner.js -- -t unit",
     "mocha-unit-test": "mocha --opts ./mocha.opts | faucet",
-    "local-unit-test": "",
+    "local-unit-test": "mocha --require src/spec/support/mocha-test-runner.js src/spec/unit/ --recursive",
     "local-integration-test": "",
     "debug": "",
     "dev:watch": ""
