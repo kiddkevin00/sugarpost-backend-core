@@ -31,8 +31,9 @@ class RepoFactory {
         throw(new Error({
           errors: [
             {
-              code: constants.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED,
-              message: constants.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
+              code: constants.store.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED,
+              source: constants.common.COMMON.ERROR_SOURCE,
+              message: constants.store.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
               details: err
             }
           ]
@@ -43,6 +44,7 @@ class RepoFactory {
         errors: [
           {
             code: constants.store.ERROR_CODES.INVALID_STORAGE_TYPE,
+            source: constants.common.COMMON.ERROR_SOURCE,
             message: constants.store.ERROR_MSG.INVALID_STORAGE_TYPE
           }
         ]

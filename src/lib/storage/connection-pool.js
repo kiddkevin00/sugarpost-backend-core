@@ -33,7 +33,8 @@ class ConnectionPool {
           errors: [
             {
               code: constants.store.ERROR_CODES.INVALID_STORAGE_TYPE,
-              message: 'constants.store.ERROR_MSG.INVALID_STORAGE_TYPE'
+              source: constants.common.COMMON.ERROR_SOURCE,
+              message: constants.store.ERROR_MSG.INVALID_STORAGE_TYPE
             }
           ]
         }));
