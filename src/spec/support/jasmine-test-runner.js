@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 var Jasmine = require('jasmine'),
   JasmineReporters = require('jasmine-reporters'),
   path = require('path');

@@ -1,5 +1,5 @@
 /*
- * This is the place for exposing module(s) for storage.   
+ * This is the place for exposing module(s) for storage.
  */
 
 const RepoFactory = require('./repo-factory');

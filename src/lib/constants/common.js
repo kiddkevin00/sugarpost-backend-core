@@ -1,3 +1,3 @@
 exports.COMMON = {
-  ERROR_SOURCE: 'bulletin-board-system'
+  CURRENT_SOURCE: 'bulletin-board-system',
 };

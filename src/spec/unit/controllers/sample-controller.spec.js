@@ -8,15 +8,14 @@ describe('Sample controller', () => {
   beforeEach(() => {
     req = stub();
     res = {
-      status: spy()
+      status: spy(),
     };
-    noop = function () {
-    };
+    noop = () => {};
   });
 
   it('can handle general request', () => {
     const svc = {
-      execute: noop
+      execute: noop,
     };
 
     let promise;
@@ -30,4 +29,5 @@ describe('Sample controller', () => {
 
     return expect(promise).to.be.fulfilled;
   });
+  
 });

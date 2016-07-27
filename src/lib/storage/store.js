@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 /*
  * This class should only contains static members.
  */

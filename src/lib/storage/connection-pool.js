@@ -4,9 +4,9 @@ const Promise = require('bluebird');
 const mongojs = require('mongojs');
 
 Promise.promisifyAll([
-  require("mongojs/lib/collection"),
-  require("mongojs/lib/database"),
-  require("mongojs/lib/cursor")
+  require('mongojs/lib/collection'), // eslint-disable-line global-require
+  require('mongojs/lib/database'), // eslint-disable-line global-require
+  require('mongojs/lib/cursor'), // eslint-disable-line global-require
 ]);
 
 const mongoStorePropName = 'mongo-store';
@@ -15,7 +15,7 @@ const packageJsonMongoDbConfig = packageJson.config.databases[mongoStorePropName
 /*
  * This is the only class that is stateful.
  *
- * [Note] Don't cache the connection for the reason of separate concern: DB Connectivity (Driver)
+ * [Note] Don't cache the connection for the reason of separate concern: DB Connector (Driver)
  * should handle that itself if there is lots of connections created at the same time.
  */
 class ConnectionPool {
@@ -28,22 +28,22 @@ class ConnectionPool {
       case constants.store.STORE_TYPES.MONGO_DB:
         connection = mongojs(`${host}:${port}/${dbName}`);
         break;
+
       default:
         throw(new Error({
           errors: [
             {
               code: constants.store.ERROR_CODES.INVALID_STORAGE_TYPE,
-              source: constants.common.COMMON.ERROR_SOURCE,
-              message: constants.store.ERROR_MSG.INVALID_STORAGE_TYPE
-            }
-          ]
+              source: constants.common.COMMON.CURRENT_SOURCE,
+              message: constants.store.ERROR_MSG.INVALID_STORAGE_TYPE,
+            },
+          ],
         }));
     }
 
     return connection;
   }
-
-
+  
 }
 
 module.exports = exports = ConnectionPool;

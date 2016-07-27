@@ -1,0 +1,14 @@
+{
+  "env": {
+    "jasmine": false,
+    "mocha": true
+  },
+  "globals": {
+    "expect": true,
+    "spy": true,
+    "stub": true
+  },
+  "rules": {
+    "no-unused-expressions": 1
+  }
+}

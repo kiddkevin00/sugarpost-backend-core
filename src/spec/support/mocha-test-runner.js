@@ -1,4 +1,3 @@
-const proxyquire = require('proxyquire');
 const chai = require('chai');
 const sinon = require('sinon');
 require('sinon-as-promised');
@@ -11,9 +10,6 @@ chai.use(chaiAsPromised);
 chai.use(chaiShallowDeepEqual);
 
 chai.config.includeStack = true;
-
-/// Should never use `proxyquire` or its similar library.
-//global.proxyquire = proxyquire;
 
 global.expect = chai.expect;
 

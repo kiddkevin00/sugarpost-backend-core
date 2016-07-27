@@ -9,7 +9,8 @@ const LowLevelStores = {
 class RepoFactory {
 
   static manufacture(storeType) {
-    let repository = {};
+    const repository = Object.assign({}, RepoFactory._assignLowLevelOperations(storeType),
+      RepoFactory._assignHighLevelOperations());
 
     RepoFactory._assignLowLevelOperations(storeType, repository);
     RepoFactory._assignHighLevelOperations(repository);
@@ -17,26 +18,28 @@ class RepoFactory {
     return repository;
   }
 
-  static _assignLowLevelOperations(storeType, repository) {
+  static _assignLowLevelOperations(storeType) {
     const LowLevelStore = LowLevelStores[storeType];
 
     if (LowLevelStore) {
       try {
-        repository.insert = LowLevelStore.insert;
-        repository.select = LowLevelStore.select;
-        repository.update = LowLevelStore.update;
-        repository.delete = LowLevelStore.delete;
-        repository.configIndex = LowLevelStore.configIndex;
+        return {
+          insert: LowLevelStore.insert,
+          select: LowLevelStore.select,
+          update: LowLevelStore.update,
+          delete: LowLevelStore.delete,
+          configIndex: LowLevelStore.configIndex,
+        };
       } catch (err) {
         throw(new Error({
           errors: [
             {
               code: constants.store.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED,
-              source: constants.common.COMMON.ERROR_SOURCE,
+              source: constants.common.COMMON.CURRENT_SOURCE,
               message: constants.store.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
-              details: err
-            }
-          ]
+              details: err,
+            },
+          ],
         }));
       }
     } else {
@@ -44,18 +47,20 @@ class RepoFactory {
         errors: [
           {
             code: constants.store.ERROR_CODES.INVALID_STORAGE_TYPE,
-            source: constants.common.COMMON.ERROR_SOURCE,
-            message: constants.store.ERROR_MSG.INVALID_STORAGE_TYPE
-          }
-        ]
+            source: constants.common.COMMON.CURRENT_SOURCE,
+            message: constants.store.ERROR_MSG.INVALID_STORAGE_TYPE,
+          },
+        ],
       });
     }
   }
 
-  static _assignHighLevelOperations(repository) {
-    repository.upsert = Store.upsert.bind(repository);
-    repository.resetCollection = Store.resetCollection.bind(repository);
-    repository.resetDb = Store.resetDb.bind(repository);
+  static _assignHighLevelOperations() {
+    return {
+      upsert: Store.upsert,
+      resetCollection: Store.resetCollection,
+      resetDb: Store.resetDb,
+    };
   }
 
 }

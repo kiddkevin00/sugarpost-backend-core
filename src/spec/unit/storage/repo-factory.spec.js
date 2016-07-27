@@ -1,3 +1,5 @@
+// [TODO] Not finish yet
+
 const RepoFactory = require('../../../lib/storage/repo-factory');
 const MongoStore = require('../../../lib/storage/mongo-store');
 const constants = require('../../../lib/constants/');
@@ -14,7 +16,7 @@ describe('Repo factory', () => {
     stub(MongoStore, 'delete');
     stub(MongoStore, 'configIndex');
   });
-  
+
   afterEach(() => {
     MongoStore.insert.restore();
     MongoStore.select.restore();

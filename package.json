@@ -2,7 +2,7 @@
   "name": "bulletin-board-system",
   "version": "0.0.0",
   "description": "This is a generic BBS.",
-  "main": "index.js",
+  "main": "src/lib/app.js",
   "config": {
     "ip": "127.0.0.1",
     "port": 8080,
@@ -29,7 +29,7 @@
   },
   "scripts": {
     "start": "",
-    "eshint": "",
+    "eslint": "eslint src/",
     "test": "multi='tap=- xunit=./spec/reports/xunit.xml' npm run mocha-unit-test",
     "integration-test": "",
     "jasmine-unit-test": "node ./src/spec/support/jasmine-test-runner.js -- -t unit",
@@ -43,6 +43,9 @@
     "node": "6.1.0"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
+    "chai-shallow-deep-equal": "^1.4.0",
     "eslint": "^2.9.0",
     "eslint-config-airbnb": "^9.0.1",
     "eslint-plugin-import": "^1.7.0",
@@ -53,15 +56,12 @@
     "jasmine-reporters": "^2.1.1",
     "mocha": "^2.5.1",
     "mocha-multi": "^0.9.0",
-    "proxyquire": "^1.7.9",
-    "chai": "^3.5.0",
-    "chai-as-promised": "^5.3.0",
-    "chai-shallow-deep-equal": "^1.4.0",
     "sinon": "^1.17.4",
     "sinon-as-promised": "^4.0.0",
     "sinon-chai": "^2.8.0"
   },
   "dependencies": {
+    "express": "^4.14.0",
     "mongojs": "^2.4.0"
   },
   "author": "Marcus Hsu",
