@@ -25,7 +25,7 @@ class ConnectionPool {
     let connection;
 
     switch (storeType) {
-      case constants.store.STORE_TYPES.MONGO_DB:
+      case constants.STORE.STORE_TYPES.MONGO_DB:
         connection = mongojs(`${host}:${port}/${dbName}`);
         break;
 
@@ -33,9 +33,9 @@ class ConnectionPool {
         throw(new Error({
           errors: [
             {
-              code: constants.store.ERROR_CODES.INVALID_STORAGE_TYPE,
-              source: constants.common.COMMON.CURRENT_SOURCE,
-              message: constants.store.ERROR_MSG.INVALID_STORAGE_TYPE,
+              code: constants.STORE.ERROR_CODES.INVALID_STORAGE_TYPE,
+              source: constants.COMMON.COMMON.CURRENT_SOURCE,
+              message: constants.STORE.ERROR_MSG.INVALID_STORAGE_TYPE,
             },
           ],
         }));
@@ -43,7 +43,7 @@ class ConnectionPool {
 
     return connection;
   }
-  
+
 }
 
 module.exports = exports = ConnectionPool;

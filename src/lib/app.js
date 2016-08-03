@@ -16,5 +16,5 @@ routes(app);
 
 server.listen(packageJson.config.port, packageJson.config.ip, () => {
   console.log('Express server listening on port: %d at IP: %s, in %s mode', packageJson.config.port,
-    packageJson.config.ip, app.get('env')); // same as `process.env.NODE_ENV`
+    packageJson.config.ip, app.get('env')); // [Note] `app.get('env') === process.env.NODE_ENV`
 });

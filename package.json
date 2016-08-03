@@ -28,16 +28,18 @@
     }
   },
   "scripts": {
-    "start": "",
-    "eslint": "eslint src/",
+    "start": "node src/lib/app.js",
+    "lint": "npm run eslint",
+    "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/",
     "test": "multi='tap=- xunit=./spec/reports/xunit.xml' npm run mocha-unit-test",
     "integration-test": "",
+    "coverage": "nyc --all --check-coverage  --reporter html mocha --opts ./mocha.opts",
     "jasmine-unit-test": "node ./src/spec/support/jasmine-test-runner.js -- -t unit",
     "mocha-unit-test": "mocha --opts ./mocha.opts | faucet",
-    "local-unit-test": "mocha --require src/spec/support/mocha-test-runner.js src/spec/unit/ --recursive",
+    "local-unit-test": "mocha --require src/spec/support/mocha-test-runner.js --recursive src/spec/unit/ ",
     "local-integration-test": "",
-    "debug": "",
-    "dev:watch": ""
+    "debug": "node --debug src/lib/app.js",
+    "dev:watch": "watch 'npm run lint' ./src/"
   },
   "engines": {
     "node": "6.1.0"
@@ -46,8 +48,9 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "chai-shallow-deep-equal": "^1.4.0",
-    "eslint": "^2.9.0",
+    "eslint": "^2.13.1",
     "eslint-config-airbnb": "^9.0.1",
+    "eslint-friendly-formatter": "^2.0.6",
     "eslint-plugin-import": "^1.7.0",
     "eslint-plugin-jsx-a11y": "^1.2.0",
     "eslint-plugin-react": "^5.1.1",
@@ -58,11 +61,19 @@
     "mocha-multi": "^0.9.0",
     "sinon": "^1.17.4",
     "sinon-as-promised": "^4.0.0",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "watch": "^0.19.1"
   },
   "dependencies": {
+    "body-parser": "^1.15.2",
+    "compression": "^1.6.2",
+    "cookie-parser": "^1.4.3",
+    "errorhandler": "^1.4.3",
     "express": "^4.14.0",
-    "mongojs": "^2.4.0"
+    "express-session": "^1.14.0",
+    "method-override": "^2.3.6",
+    "mongojs": "^2.4.0",
+    "morgan": "^1.7.0"
   },
   "author": "Marcus Hsu",
   "license": "ISC",

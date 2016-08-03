@@ -1,7 +1,7 @@
-const commonConstants = require('./common');
-const storeConstants = require('./store');
+const COMMON_CONSTANTS = require('./system');
+const STORE_CONSTANTS = require('./store');
 
 module.exports = exports = {
-  common: commonConstants,
-  store: storeConstants,
+  COMMON: COMMON_CONSTANTS,
+  STORE: STORE_CONSTANTS,
 };

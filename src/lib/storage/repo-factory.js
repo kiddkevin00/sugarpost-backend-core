@@ -6,15 +6,16 @@ const LowLevelStores = {
   [MongoStore.STORE_TYPE]: MongoStore,
 };
 
+/*
+ * A factory to manufacture a repository which implement basic and advanced STORE interface
+ * for supported STORE type
+ */
 class RepoFactory {
 
   static manufacture(storeType) {
     const repository = Object.assign({}, RepoFactory._assignLowLevelOperations(storeType),
       RepoFactory._assignHighLevelOperations());
-
-    RepoFactory._assignLowLevelOperations(storeType, repository);
-    RepoFactory._assignHighLevelOperations(repository);
-
+    
     return repository;
   }
 
@@ -34,9 +35,9 @@ class RepoFactory {
         throw(new Error({
           errors: [
             {
-              code: constants.store.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED,
-              source: constants.common.COMMON.CURRENT_SOURCE,
-              message: constants.store.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
+              code: constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED,
+              source: constants.COMMON.COMMON.CURRENT_SOURCE,
+              message: constants.STORE.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
               details: err,
             },
           ],
@@ -46,9 +47,9 @@ class RepoFactory {
       throw new Error({
         errors: [
           {
-            code: constants.store.ERROR_CODES.INVALID_STORAGE_TYPE,
-            source: constants.common.COMMON.CURRENT_SOURCE,
-            message: constants.store.ERROR_MSG.INVALID_STORAGE_TYPE,
+            code: constants.STORE.ERROR_CODES.INVALID_STORAGE_TYPE,
+            source: constants.COMMON.COMMON.CURRENT_SOURCE,
+            message: constants.STORE.ERROR_MSG.INVALID_STORAGE_TYPE,
           },
         ],
       });

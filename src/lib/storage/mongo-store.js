@@ -25,6 +25,6 @@ class MongoStore {
   static configIndex(connection) {} // eslint-disable-line no-unused-vars
 
 }
-MongoStore.STORE_TYPE = constants.store.STORE_TYPES.MONGO_DB;
+MongoStore.STORE_TYPE = constants.STORE.STORE_TYPES.MONGO_DB;
 
 module.exports = exports = MongoStore;
