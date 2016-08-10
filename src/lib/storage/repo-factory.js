@@ -15,7 +15,7 @@ class RepoFactory {
   static manufacture(storeType) {
     const repository = Object.assign({}, RepoFactory._assignLowLevelOperations(storeType),
       RepoFactory._assignHighLevelOperations());
-    
+
     return repository;
   }
 
@@ -36,7 +36,7 @@ class RepoFactory {
           errors: [
             {
               code: constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED,
-              source: constants.COMMON.COMMON.CURRENT_SOURCE,
+              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
               message: constants.STORE.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
               details: err,
             },
@@ -48,7 +48,7 @@ class RepoFactory {
         errors: [
           {
             code: constants.STORE.ERROR_CODES.INVALID_STORAGE_TYPE,
-            source: constants.COMMON.COMMON.CURRENT_SOURCE,
+            source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
             message: constants.STORE.ERROR_MSG.INVALID_STORAGE_TYPE,
           },
         ],

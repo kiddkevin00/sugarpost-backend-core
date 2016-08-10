@@ -34,7 +34,7 @@ class ConnectionPool {
           errors: [
             {
               code: constants.STORE.ERROR_CODES.INVALID_STORAGE_TYPE,
-              source: constants.COMMON.COMMON.CURRENT_SOURCE,
+              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
               message: constants.STORE.ERROR_MSG.INVALID_STORAGE_TYPE,
             },
           ],
