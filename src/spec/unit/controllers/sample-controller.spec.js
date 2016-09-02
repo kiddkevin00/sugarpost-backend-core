@@ -1,4 +1,4 @@
-const SampleController = require('../../../lib/controllers/sample-controller');
+const SampleController = require('../../../lib/controllers/admin/sample-controller');
 
 describe('Sample controller', () => {
   let req;

@@ -1,3 +1,7 @@
-const SampleController = require('./sample-controller');
+/*
+ * This is the place for exposing module(s) for controllers.
+ */
 
-exports.SampleController = SampleController;
+const SampleController = require('./admin/sample-controller');
+
+exports.sampleController = SampleController;

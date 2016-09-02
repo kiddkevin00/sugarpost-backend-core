@@ -1,7 +1,8 @@
-const express = require('express');
+const { sampleController } = require('../../controllers/');
+const { Router } = require('express');
 
-function routes() {
-    
-}
+const router = Router();
 
-module.exports = exports = routes;
+router.get('/sample', sampleController.sampleReq);
+
+module.exports = exports = router;

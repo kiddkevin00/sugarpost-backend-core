@@ -7,8 +7,8 @@ const LowLevelStores = {
 };
 
 /*
- * A factory to manufacture a repository which implement basic and advanced STORE interface
- * for supported STORE type
+ * A factory to manufacture a repository, which implement basic and advanced store interface
+ * for supported store type.
  */
 class RepoFactory {
 

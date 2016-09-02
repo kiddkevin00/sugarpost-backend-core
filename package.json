@@ -1,7 +1,7 @@
 {
-  "name": "bulletin-board-system",
+  "name": "bulletin-board-system-backend",
   "version": "0.0.0",
-  "description": "This is a generic BBS.",
+  "description": "This is the backend stack of a generic BBS.",
   "main": "src/lib/app.js",
   "config": {
     "ip": "127.0.0.1",
@@ -39,6 +39,7 @@
     "local-unit-test": "mocha --require src/spec/support/mocha-test-runner.js --recursive src/spec/unit/ ",
     "local-integration-test": "",
     "debug": "node --debug src/lib/app.js",
+    "dev:reload": "nodemon",
     "dev:watch": "watch 'npm run lint' ./src/"
   },
   "engines": {
