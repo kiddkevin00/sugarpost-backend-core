@@ -4,4 +4,4 @@
 
 const SampleController = require('./admin/sample-controller');
 
-exports.sampleController = SampleController;
+exports.SampleController = SampleController;

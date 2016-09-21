@@ -16,7 +16,7 @@ describe('Connection pool', () => {
 
   it('throws an error when initiating a new connection with an unsupported STORE type', () => {
     expect(() => {
-      connection = new ConnectionPool('unsupported-STORE');
+      connection = new ConnectionPool('unsupported-store');
     }).to.throw();
   });
 

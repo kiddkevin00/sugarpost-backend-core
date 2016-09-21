@@ -1,15 +1,11 @@
-const sampleSvc = require('../../services/sample-service');
+const SampleSvc = require('../../services/sample-service');
 
 class SampleController {
 
   static sampleReq(req, res) {
     const sampleStrategy = {};
 
-    SampleController._handleRequest(req, res, SampleController.getSampleService(), sampleStrategy)
-  }
-
-  static getSampleService() {
-    return sampleSvc;
+    SampleController._handleRequest(req, res, SampleSvc, sampleStrategy);
   }
 
   static _handleRequest(req, res, svc, strategy) {
