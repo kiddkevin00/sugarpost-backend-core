@@ -31,7 +31,7 @@
     "start": "node src/lib/app.js",
     "lint": "npm run eslint",
     "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/",
-    "test": "multi='tap=- xunit=./spec/reports/xunit.xml' npm run mocha-unit-test",
+    "test": "multi='tap=- xunit=./reports/xunit.xml' npm run mocha-unit-test",
     "integration-test": "",
     "coverage": "nyc --all --check-coverage  --reporter html mocha --opts ./mocha.opts",
     "jasmine-unit-test": "node ./src/spec/support/jasmine-test-runner.js -- -t unit",

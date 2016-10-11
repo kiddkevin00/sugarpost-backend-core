@@ -1,0 +1,35 @@
+<testsuite name="Mocha Tests" tests="16" failures="3" errors="3" skipped="0" timestamp="Wed, 03 Aug 2016 13:05:21 GMT" time="0.044">
+<testcase classname="Controller module" name="exposes a sample controller class" time="0.001"/>
+<testcase classname="Sample controller" name="can handle general request" time="0.005"/>
+<testcase classname="Connection pool" name="can initiate a new connection with supported STORE type" time="0"><failure><![CDATA[Cannot read property 'host' of undefined
+TypeError: Cannot read property 'host' of undefined
+    at new ConnectionPool (src/lib/storage/connection-pool.js:23:57)
+    at Context.it (src/spec/unit/storage/connection-pool.spec.js:8:18)]]></failure></testcase>
+<testcase classname="Connection pool" name="throws an error when initiating a new connection with an unsupported STORE type" time="0.001"/>
+<testcase classname="Store module" name="exposes a repo factory class" time="0"/>
+<testcase classname="Store module" name="exposes a connection pool class" time="0"/>
+<testcase classname="Mongo STORE" name="implement insert functionality" time="0.001"/>
+<testcase classname="Mongo STORE" name="implement select functionality" time="0"/>
+<testcase classname="Mongo STORE" name="implement update functionality" time="0"/>
+<testcase classname="Mongo STORE" name="implement delete functionality" time="0.001"/>
+<testcase classname="Mongo STORE" name="implement configuring index functionality" time="0"/>
+<testcase classname="Repo factory" name="can assign lower level operations to a repo" time="0.002"><failure><![CDATA[expected {} to have a property 'insert'
+AssertionError: expected {} to have a property 'insert'
+    at .&lt;anonymous&gt; (node_modules/chai/lib/chai/core/assertions.js:898:12)
+    at ctx.(anonymous function) (node_modules/chai/lib/chai/utils/addMethod.js:41:25)
+    at doAsserterAsyncAndAddThen (node_modules/chai-as-promised/lib/chai-as-promised.js:296:33)
+    at .&lt;anonymous&gt; (node_modules/chai-as-promised/lib/chai-as-promised.js:255:21)
+    at ctx.(anonymous function) [as property] (node_modules/chai/lib/chai/utils/overwriteMethod.js:49:33)
+    at Context.it (src/spec/unit/storage/repo-factory.spec.js:31:26)]]></failure></testcase>
+<testcase classname="Repo factory" name="can assign high level operations to a repo" time="0"><failure><![CDATA[expected {} to have a property 'upsert'
+AssertionError: expected {} to have a property 'upsert'
+    at .&lt;anonymous&gt; (node_modules/chai/lib/chai/core/assertions.js:898:12)
+    at ctx.(anonymous function) (node_modules/chai/lib/chai/utils/addMethod.js:41:25)
+    at doAsserterAsyncAndAddThen (node_modules/chai-as-promised/lib/chai-as-promised.js:296:33)
+    at .&lt;anonymous&gt; (node_modules/chai-as-promised/lib/chai-as-promised.js:255:21)
+    at ctx.(anonymous function) [as property] (node_modules/chai/lib/chai/utils/overwriteMethod.js:49:33)
+    at Context.it (src/spec/unit/storage/repo-factory.spec.js:40:26)]]></failure></testcase>
+<testcase classname="High level STORE" name="implement upsert functionality" time="0"/>
+<testcase classname="High level STORE" name="implement resetCollection functionality" time="0"/>
+<testcase classname="High level STORE" name="implement resetDb functionality" time="0"/>
+</testsuite>
