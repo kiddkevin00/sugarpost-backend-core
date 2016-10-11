@@ -3,6 +3,7 @@
 const MongoStore = require('../../../lib/storage/mongo-store');
 
 describe('Mongo STORE', () => {
+  
   it('implement insert functionality', () => {
     expect(MongoStore).to.have.property('insert').that.is.an('function');
 

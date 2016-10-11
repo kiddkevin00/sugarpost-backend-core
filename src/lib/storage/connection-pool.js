@@ -13,7 +13,7 @@ const mongoStorePropName = 'mongo-store';
 const packageJsonMongoDbConfig = packageJson.config.databases[mongoStorePropName];
 
 /*
- * This is the only class that is stateful.
+ * This is the only class that is stateful in store components.
  *
  * [Note] Don't cache the connection for the reason of separate concern: DB Connector (Driver)
  * should handle that itself if there is lots of connections created at the same time.

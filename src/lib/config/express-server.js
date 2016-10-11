@@ -1,13 +1,13 @@
-var compression = require('compression');
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var morgan = require('morgan');
-var errorHandler = require('errorhandler');
+const compression = require('compression');
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const morgan = require('morgan');
+const errorHandler = require('errorhandler');
 
 function expressServer(app) {
-  var env = app.get('env'); // Same as `process.env.NODE_ENV`.
+  const env = app.get('env'); // Same as `process.env.NODE_ENV`.
 
   app.use(compression());
 
@@ -31,8 +31,8 @@ function expressServer(app) {
     saveUninitialized: false,
   }));
 
+  // [TODO]
   app.use(morgan('dev'));
-
   if (env === 'production') {
 
   } else {

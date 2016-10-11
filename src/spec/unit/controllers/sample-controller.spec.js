@@ -1,4 +1,5 @@
-const SampleController = require('../../../lib/controllers/sample-controller');
+const SampleController = require('../../../lib/controllers/admin/sample-controller');
+const SampleSvc = require('../../../lib/services/sample-service');
 
 describe('Sample controller', () => {
   let req;
@@ -14,20 +15,18 @@ describe('Sample controller', () => {
   });
 
   it('can handle general request', () => {
-    const svc = {
-      execute: noop,
-    };
-
-    let promise;
-
-    stub(svc, 'execute', () => {
-      promise = Promise.resolve(true);
+    const promise = new Promise((resolve, reject) => {
+      return resolve();
+    });
+    const execute = stub(SampleSvc, 'execute', () => {
       return promise;
     });
 
-    SampleController._handleRequest(req, res, svc);
+    SampleController._handleRequest(req, res, SampleSvc);
+
+    execute.restore();
 
     return expect(promise).to.be.fulfilled;
   });
-  
+
 });

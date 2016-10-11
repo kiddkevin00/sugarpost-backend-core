@@ -1,6 +1,12 @@
-const sampleSvc = {};
+const SampleSvc = require('../../services/sample-service');
 
 class SampleController {
+
+  static sampleReq(req, res) {
+    const sampleStrategy = {};
+
+    SampleController._handleRequest(req, res, SampleSvc, sampleStrategy);
+  }
 
   static _handleRequest(req, res, svc, strategy) {
     let context = {
@@ -15,16 +21,6 @@ class SampleController {
       .catch(() => {
 
       });
-  }
-
-  static sampleReq(req, res) {
-    const sampleStrategy = {};
-    
-    SampleController._handleRequest(req, res, SampleController.getSampleService(), sampleStrategy)
-  }
-  
-  static getSampleService() {
-    return sampleSvc;
   }
 
 }

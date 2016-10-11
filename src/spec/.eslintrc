@@ -7,8 +7,5 @@
     "expect": true,
     "spy": true,
     "stub": true
-  },
-  "rules": {
-    "no-unused-expressions": 1
   }
 }
