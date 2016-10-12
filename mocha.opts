@@ -1,5 +1,5 @@
 --require src/spec/support/mocha-test-runner.js
 --reporter mocha-multi
-
 --recursive
+
 src/spec/unit/
