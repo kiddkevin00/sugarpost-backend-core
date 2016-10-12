@@ -13,9 +13,10 @@ class SampleController {
 
     };
 
-    svc.execute(context, strategy)
+    return svc.execute(context, strategy)
       .then(() => {
-        res.status(200)
+
+        return res.status(200)
           .send('Hello world!');
       })
       .catch(() => {

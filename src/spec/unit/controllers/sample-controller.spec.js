@@ -2,31 +2,27 @@ const SampleController = require('../../../lib/controllers/admin/sample-controll
 const SampleSvc = require('../../../lib/services/sample-service');
 
 describe('Sample controller', () => {
-  let req;
   let res;
   let noop;
+  let stubFunc;
 
   beforeEach(() => {
-    req = stub();
-    res = {
-      status: spy(),
-    };
+    res = {};
+    res.status = stub().returns(res);
+    res.send = stub().returns(res);
+
     noop = () => {};
   });
 
+  afterEach(() => {
+    stubFunc.restore();
+  });
+
   it('can handle general request', () => {
-    const promise = new Promise((resolve, reject) => {
-      return resolve();
-    });
-    const execute = stub(SampleSvc, 'execute', () => {
-      return promise;
-    });
+    stubFunc = stub(SampleSvc, 'execute', () => Promise.resolve());
 
-    SampleController._handleRequest(req, res, SampleSvc);
-
-    execute.restore();
-
-    return expect(promise).to.be.fulfilled;
+    return expect(SampleController._handleRequest(null, res, SampleSvc))
+      .to.eventually.equal(res);
   });
 
 });

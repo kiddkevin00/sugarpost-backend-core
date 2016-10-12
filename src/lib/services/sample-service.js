@@ -1,10 +1,8 @@
 class SampleService {
 
   static execute(context, strategy) {
-
-    return new Promise((resolve, reject) => {
-      return resolve();
-    });
+    
+    return Promise.resolve();
   }
 
 }
