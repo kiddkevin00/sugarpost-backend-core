@@ -27,23 +27,37 @@
       }
     }
   },
+  "nyc": {
+    "statements": 0,
+    "branches": 0,
+    "functions": 0,
+    "lines": 0,
+    "excludes": [],
+    "report-dir": "./spec/coverage"
+  },
   "scripts": {
+    "------------- EXPOSED -------------": "",
     "start": "node --stack-size=65500 src/lib/app.js",
     "lint": "npm run eslint",
-    "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/",
     "test": "npm run mocha-unit-test",
     "integration-test": "",
-    "coverage": "nyc --all --check-coverage --reporter html mocha --require src/spec/support/mocha-test-runner.js --recursive src/spec/unit/",
-    "jasmine-unit-test": "node ./src/spec/support/jasmine-test-runner.js -- -t unit",
-    "mocha-unit-test": "multi='tap=- xunit=./spec/reports/xunit.xml' mocha --opts ./mocha.opts | faucet",
+    "coverage:test": "nyc --all --check-coverage --reporter cobertura --reporter html  mocha --require src/spec/support/mocha-test-runner.js --recursive src/spec/unit/",
+    "coverage:integration-test": "",
+    "------------- INTERNAL -------------": "",
+    "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/",
+    "jasmine-unit-test": "node src/spec/support/jasmine-test-runner.js -- -t unit",
+    "mocha-unit-test": "multi='tap=- xunit=spec/reports/xunit.xml' mocha --opts ./mocha.opts | faucet",
+    "------------- LOCAL DEV ------------": "",
     "local-unit-test": "mocha --require src/spec/support/mocha-test-runner.js --recursive --bail src/spec/unit/",
     "local-integration-test": "",
     "debug": "node --debug src/lib/app.js",
-    "dev:reload": "nodemon",
-    "dev:watch": "watch 'npm run lint' ./src/"
+    "dev:reload": "nodemon --watch src/",
+    "dev:performance": "nodemon -perf_basic_prof --debug --trace_gc",
+    "dev:watch": "watch 'npm run lint' src/"
   },
   "engines": {
-    "node": "6.1.0"
+    "node": "6.1.0",
+    "npm": ">=3.8.6"
   },
   "devDependencies": {
     "chai": "^3.5.0",
