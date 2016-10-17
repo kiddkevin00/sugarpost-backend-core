@@ -3,13 +3,13 @@
 /*
  * This class should only contains static members.
  */
-class Store {
+class BaseStore {
 
   static upsert(repository, connection) {
 
   }
 
-  static resetCollection(repository, connection, collectionName) {
+  static resetTable(repository, connection, tableName) {
 
   }
 
@@ -19,4 +19,4 @@ class Store {
 
 }
 
-module.exports = exports = Store;
+module.exports = exports = BaseStore;

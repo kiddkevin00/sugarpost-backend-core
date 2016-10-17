@@ -5,8 +5,10 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const morgan = require('morgan');
 const errorHandler = require('errorhandler');
+const fs = require('fs');
+const path = require('path');
 
-function expressServer(app) {
+function setupExpressServer(app) {
   const env = app.get('env'); // Same as `process.env.NODE_ENV`.
 
   app.use(compression());
@@ -20,7 +22,7 @@ function expressServer(app) {
   app.use(methodOverride()); // Simulates DELETE and PUT if browser doesn't support.
   app.use(cookieParser());
 
-  // [TODO] Use JWT instead of session
+  // [TODO] Uses JWT instead of session
   app.use(session({
     secret: 'SESSION_SECRET', // [TODO]
     path: '/',
@@ -31,13 +33,15 @@ function expressServer(app) {
     saveUninitialized: false,
   }));
 
-  // [TODO]
-  app.use(morgan('dev'));
   if (env === 'production') {
+    const accessLogStream = fs.createWriteStream(path.resolve(__dirname, '../../../morgan.log'),
+      { flags: 'a' });
 
+    app.use(morgan('combined', { stream: accessLogStream }));
   } else {
-    app.use(errorHandler()); // Error handler - has to be last
+    app.use(morgan('dev'));
+    app.use(errorHandler()); // Error handler - has to be the last
   }
 }
 
-module.exports = exports = expressServer;
+module.exports = exports = setupExpressServer;

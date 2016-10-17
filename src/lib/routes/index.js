@@ -4,7 +4,7 @@
 
 const adminRoute = require('./admin/');
 
-function routes(app) {
+function setupRoutes(app) {
 
   // [TODO]
   app.get('/ping', (req, res) => { res.send('OK'); });
@@ -13,4 +13,4 @@ function routes(app) {
   app.use('/admin', adminRoute);
 }
 
-module.exports = exports = routes;
+module.exports = exports = setupRoutes;

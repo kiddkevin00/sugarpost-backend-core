@@ -1,8 +1,7 @@
-const MongoStore = require('./mongo-store');
-const Store = require('./store');
+const MongoStore = require('./store/mongo-store');
 const constants = require('../constants/');
 
-const LowLevelStores = {
+const stores = {
   [MongoStore.STORE_TYPE]: MongoStore,
 };
 
@@ -13,55 +12,44 @@ const LowLevelStores = {
 class RepoFactory {
 
   static manufacture(storeType) {
-    const repository = Object.assign({}, RepoFactory._assignLowLevelOperations(storeType),
-      RepoFactory._assignHighLevelOperations());
+    const repository = stores[storeType];
+
+    if (repository) {
+      if (!RepoFactory._isStoreInterfaceImplemented(repository)) {
+        const err = new Error({
+          errors: [
+            {
+              status: constants.SYSTEM.STATUS_CODES.NOT_IMPLEMENTED,
+              code: constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED,
+              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+              message: constants.STORE.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
+            },
+          ],
+        });
+
+        throw err;
+      }
+    } else {
+      const err = new Error({
+        errors: [
+          {
+            status: constants.SYSTEM.STATUS_CODES.NOT_IMPLEMENTED,
+            code: constants.STORE.ERROR_CODES.STORAGE_TYPE_NOT_FOUND,
+            source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+            message: constants.STORE.ERROR_MSG.STORAGE_TYPE_NOT_FOUND,
+          },
+        ],
+      });
+
+      throw err;
+    }
 
     return repository;
   }
 
-  static _assignLowLevelOperations(storeType) {
-    const LowLevelStore = LowLevelStores[storeType];
-
-    if (LowLevelStore) {
-      try {
-        return {
-          insert: LowLevelStore.insert,
-          select: LowLevelStore.select,
-          update: LowLevelStore.update,
-          delete: LowLevelStore.delete,
-          configIndex: LowLevelStore.configIndex,
-        };
-      } catch (err) {
-        throw(new Error({
-          errors: [
-            {
-              code: constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED,
-              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.STORE.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
-              details: err,
-            },
-          ],
-        }));
-      }
-    } else {
-      throw new Error({
-        errors: [
-          {
-            code: constants.STORE.ERROR_CODES.INVALID_STORAGE_TYPE,
-            source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-            message: constants.STORE.ERROR_MSG.INVALID_STORAGE_TYPE,
-          },
-        ],
-      });
-    }
-  }
-
-  static _assignHighLevelOperations() {
-    return {
-      upsert: Store.upsert,
-      resetCollection: Store.resetCollection,
-      resetDb: Store.resetDb,
-    };
+  static _isStoreInterfaceImplemented(Store) {
+    return !!(Store.insert && Store.select && Store.update && Store.delete && Store.configIndex &&
+      Store.upsert && Store.resetTable && Store.resetDb);
   }
 
 }

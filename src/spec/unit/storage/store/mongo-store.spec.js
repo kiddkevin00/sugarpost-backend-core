@@ -1,9 +1,9 @@
 // [TODO] Not Update yet
 
-const MongoStore = require('../../../lib/storage/mongo-store');
+const MongoStore = require('../../../../lib/storage/store/mongo-store');
 
-describe('Mongo STORE', () => {
-  
+describe('Mongo (low-level) store', () => {
+
   it('implement insert functionality', () => {
     expect(MongoStore).to.have.property('insert').that.is.an('function');
 

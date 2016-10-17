@@ -4,12 +4,12 @@ const constants = require('../../../lib/constants/index');
 describe('Connection pool', () => {
   let connection;
 
-  afterEach(() => {
+  beforeEach(() => {
     connection = null;
   });
 
   it('can initiate a new connection with supported store type', () => {
-    connection = new ConnectionPool(constants.STORE.STORE_TYPES.MONGO_DB);
+    connection = new ConnectionPool(constants.STORE.TYPES.MONGO_DB);
 
     expect(connection).to.exist;
   });

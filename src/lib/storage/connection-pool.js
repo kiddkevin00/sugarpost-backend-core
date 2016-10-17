@@ -9,23 +9,25 @@ Promise.promisifyAll([
   require('mongojs/lib/cursor'), // eslint-disable-line global-require
 ]);
 
-const mongoStorePropName = 'mongo-store';
+const mongoStorePropName = constants.STORE.TYPES.MONGO_DB;
 const packageJsonMongoDbConfig = packageJson.config.databases[mongoStorePropName];
 
 /*
- * This is the only class that is stateful in store components.
+ * This is the only class that is stateful in storage module.
  *
  * [Note] Don't cache the connection for the reason of separate concern: DB Connector (Driver)
  * should handle that itself if there is lots of connections created at the same time.
  */
 class ConnectionPool {
 
-  constructor(storeType, host = packageJsonMongoDbConfig.host, port = packageJsonMongoDbConfig.port,
+  constructor(storeType = constants.STORE.TYPES.MONGO_DB,
+              host = packageJsonMongoDbConfig.host,
+              port = packageJsonMongoDbConfig.port,
               dbName = packageJsonMongoDbConfig.dbName) {
     let connection;
 
     switch (storeType) {
-      case constants.STORE.STORE_TYPES.MONGO_DB:
+      case constants.STORE.TYPES.MONGO_DB:
         connection = mongojs(`${host}:${port}/${dbName}`);
         break;
 
@@ -33,9 +35,9 @@ class ConnectionPool {
         throw(new Error({
           errors: [
             {
-              code: constants.STORE.ERROR_CODES.INVALID_STORAGE_TYPE,
+              code: constants.STORE.ERROR_CODES.STORAGE_TYPE_NOT_FOUND,
               source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.STORE.ERROR_MSG.INVALID_STORAGE_TYPE,
+              message: constants.STORE.ERROR_MSG.STORAGE_TYPE_NOT_FOUND,
             },
           ],
         }));

@@ -1,13 +1,13 @@
-exports.STORE_TYPES = {
+exports.TYPES = {
   MONGO_DB: 'mongo-store',
 };
 
 exports.ERROR_CODES = {
-  INVALID_STORAGE_TYPE: 'INVALID_STORAGE_TYPE',
+  STORAGE_TYPE_NOT_FOUND: 'STORAGE_TYPE_NOT_FOUND',
   INTERFACE_NOT_IMPLEMENTED: 'INTERFACE_NOT_IMPLEMENTED',
 };
 
 exports.ERROR_MSG = {
-  INVALID_STORAGE_TYPE: 'Encounter an invalid storage type.',
-  INTERFACE_NOT_IMPLEMENTED: 'The Implementation of required interface is invalid.',
+  STORAGE_TYPE_NOT_FOUND: 'The requesting storage type is not found.',
+  INTERFACE_NOT_IMPLEMENTED: 'The implementation for the requested interface is not found.',
 };
