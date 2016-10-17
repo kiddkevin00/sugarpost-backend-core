@@ -11,8 +11,9 @@ chai.use(chaiShallowDeepEqual);
 
 chai.config.includeStack = true;
 
+// Exposes testing utility's methods to global scope.
 global.expect = chai.expect;
-
 global.spy = sinon.spy;
 global.stub = sinon.stub;
 global.mock = sinon.mock;
+global.match = sinon.match;

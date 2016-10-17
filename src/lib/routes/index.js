@@ -1,5 +1,5 @@
 /*
- * This is the place for exposing module(s) for routes.
+ * This is the place for exposing module(s) for route component.
  */
 
 const adminRoute = require('./admin/');
@@ -11,6 +11,8 @@ function setupRoutes(app) {
   app.get('/health', () => {});
 
   app.use('/admin', adminRoute);
+
+  return app;
 }
 
 module.exports = exports = setupRoutes;

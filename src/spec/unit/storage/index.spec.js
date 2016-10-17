@@ -1,6 +1,6 @@
 const storeModule = require('../../../lib/storage/');
 
-describe('Storage module', () => {
+describe('Storage component', () => {
 
   it('exposes a repo factory class', () => {
     expect(storeModule.RepoFactory).to.exist;
