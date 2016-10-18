@@ -50,6 +50,8 @@
     "------------- LOCAL DEV ------------": "",
     "local-unit-test": "mocha --require src/spec/support/mocha-test-runner.js --recursive --bail src/spec/unit/",
     "local-integration-test": "",
+    "coverage:report": "nyc report",
+    "coverage:html-report": "open spec/coverage/index.html",
     "debug": "node --debug src/lib/app.js",
     "dev:reload": "nodemon --watch src/",
     "dev:performance": "nodemon -perf_basic_prof --debug --trace_gc",

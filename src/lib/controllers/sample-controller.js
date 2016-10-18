@@ -1,5 +1,5 @@
-const SampleSvc = require('../../services/sample-service');
-const ProcessSate = require('../../process-state/');
+const SampleSvc = require('../services/sample-service');
+const ProcessSate = require('../process-state/index');
 
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;

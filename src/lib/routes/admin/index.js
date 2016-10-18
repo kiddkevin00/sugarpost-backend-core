@@ -1,4 +1,4 @@
-const { SampleController } = require('../../controllers/');
+const SampleController = require('../../controllers/sample-controller');
 const { Router } = require('express');
 
 const router = Router();

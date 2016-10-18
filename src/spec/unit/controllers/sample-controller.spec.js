@@ -1,5 +1,5 @@
-const SampleController = require('../../../../lib/controllers/admin/sample-controller');
-const SampleSvc = require('../../../../lib/services/sample-service');
+const SampleController = require('../../../lib/controllers/sample-controller');
+const SampleSvc = require('../../../lib/services/sample-service');
 
 describe('Sample controller', () => {
   let res;
