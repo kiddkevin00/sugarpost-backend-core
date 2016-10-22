@@ -9,7 +9,7 @@ describe('Repo factory', () => {
     repo = {};
   });
 
-  it('can manufacture a new fully-functional Mongo repo', () => {
+  it('can manufacture a fully-functional Mongo repo', () => {
     repo = RepoFactory.manufacture(constants.STORE.TYPES.MONGO_DB);
 
     expect(repo).to.have.property('insert').that.is.an('function');
@@ -22,7 +22,7 @@ describe('Repo factory', () => {
     expect(repo).to.have.property('resetDb').that.is.an('function');
   });
 
-  it('check if the store interface fully implemented', () => {
+  it('check if the store interface implemented fully', () => {
     repo = {
       insert: () => {},
       select: () => {},
