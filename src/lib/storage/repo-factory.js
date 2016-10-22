@@ -1,4 +1,5 @@
 const MongoStore = require('./store/mongo-store');
+const Validator = require('../utility/precondition-validator');
 const constants = require('../constants/');
 
 const stores = {
@@ -15,20 +16,7 @@ class RepoFactory {
     const repository = stores[storeType];
 
     if (repository) {
-      if (!RepoFactory._isStoreInterfaceImplemented(repository)) {
-        const err = new Error({
-          errors: [
-            {
-              status: constants.SYSTEM.STATUS_CODES.NOT_IMPLEMENTED,
-              code: constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED,
-              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.STORE.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
-            },
-          ],
-        });
-
-        throw err;
-      }
+      RepoFactory._validateStoreInterface(repository);
     } else {
       const err = new Error({
         errors: [
@@ -47,9 +35,15 @@ class RepoFactory {
     return repository;
   }
 
-  static _isStoreInterfaceImplemented(Store) {
-    return !!(Store.insert && Store.select && Store.update && Store.delete && Store.configIndex &&
-      Store.upsert && Store.resetTable && Store.resetDb);
+  static _validateStoreInterface(Store) {
+    Validator.shouldNotBeEmpty(Store.insert, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(Store.select, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(Store.update, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(Store.delete, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(Store.configIndex, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(Store.upsert, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(Store.resetTable, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(Store.resetDb, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED);
   }
 
 }

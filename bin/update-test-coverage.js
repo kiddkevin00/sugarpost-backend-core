@@ -48,4 +48,4 @@ exec('npm run-script coverage:report', (err, stdOut, stdErr) => {
   } else {
     console.log('[Coverage] No threshold is updated for test coverage')
   }
-})
+});

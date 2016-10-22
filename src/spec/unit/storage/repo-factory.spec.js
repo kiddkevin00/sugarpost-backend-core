@@ -9,7 +9,7 @@ describe('Repo factory', () => {
     repo = {};
   });
 
-  it('can manufacture a new fully-functional repo', () => {
+  it('can manufacture a new fully-functional Mongo repo', () => {
     repo = RepoFactory.manufacture(constants.STORE.TYPES.MONGO_DB);
 
     expect(repo).to.have.property('insert').that.is.an('function');

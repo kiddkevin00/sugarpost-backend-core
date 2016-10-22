@@ -1,12 +1,16 @@
 // [TODO] Not Update yet
 
 const MongoStore = require('../../../../lib/storage/store/mongo-store');
+const ConnectionPool = require('../../../../lib/storage/connection-pool');
 
 describe('Mongo (low-level) store', () => {
 
   it('implement insert functionality', () => {
     expect(MongoStore).to.have.property('insert').that.is.an('function');
 
+    const connection = new ConnectionPool(constants.STORE.TYPES.MONGO_DB);
+
+    MongoStore.insert(connection)
   });
 
   it('implement select functionality', () => {

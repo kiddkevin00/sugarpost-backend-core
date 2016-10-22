@@ -22,9 +22,24 @@ class SampleController {
     return svc.execute(state, strategy)
       .then(() => {
         requestCount++;
-        
+
         return res.status(200)
-          .send('Hello world!');
+          .send({
+            data: {
+              teachers: [
+                {
+                  _id: '001',
+                  name: 'Chris',
+                  bankAccountId: '002'
+                },
+                {
+                  _id: '002',
+                  name: 'Mike',
+                  bankAccountId: '003'
+                }
+              ]
+            }
+          });
       })
       .catch(() => {
 
