@@ -32,7 +32,7 @@ function setupExpressServer(app) {
     saveUninitialized: false,
   }));
 
-  // For 404 error page only.
+  // For an 404 error page only.
   app.set('views', path.resolve(__dirname, '../views'));
   app.set('view engine', 'jade');
 
@@ -44,7 +44,7 @@ function setupExpressServer(app) {
 
     app.use(morgan('combined', { stream: accessLogStream }));
   } else {
-    // The Node environment is either "test" or "development".
+    // Either "test" or "development" for the Node environment.
     app.use(morgan('dev'));
     app.use(errorHandler()); // Error handler - has to be the last
   }
