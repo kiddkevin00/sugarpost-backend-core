@@ -7,22 +7,21 @@ const morgan = require('morgan');
 const errorHandler = require('errorhandler');
 const fs = require('fs');
 const path = require('path');
+const express = require('express');
 
 function setupExpressServer(app) {
-  const env = app.get('env'); // Same as `process.env.NODE_ENV`.
-
-  app.use(compression());
-
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(bodyParser.json({
-    type: 'application/vnd.api+json', // Parses application/vnd.api+json as json.
+    type: 'application/vnd.api+json', // Parses "application/vnd.api+json" content-type as json.
   }));
 
-  app.use(methodOverride()); // Simulates DELETE and PUT if browser doesn't support.
+  app.use(methodOverride()); // Simulates DELETE and PUT methods if browser doesn't support.
   app.use(cookieParser());
 
-  // [TODO] Uses JWT instead of session
+  app.use(compression());
+
+  // [TODO] Uses JWT instead of session.
   app.use(session({
     secret: 'SESSION_SECRET', // [TODO]
     path: '/',
@@ -33,12 +32,19 @@ function setupExpressServer(app) {
     saveUninitialized: false,
   }));
 
+  // For 404 error page only.
+  app.set('views', path.resolve(__dirname, '../views'));
+  app.set('view engine', 'jade');
+
+  const env = app.get('env'); // Same as `process.env.NODE_ENV`.
+
   if (env === 'production') {
     const accessLogStream = fs.createWriteStream(path.resolve(__dirname, '../../../morgan.log'),
       { flags: 'a' });
 
     app.use(morgan('combined', { stream: accessLogStream }));
   } else {
+    // The Node environment is either "test" or "development".
     app.use(morgan('dev'));
     app.use(errorHandler()); // Error handler - has to be the last
   }
