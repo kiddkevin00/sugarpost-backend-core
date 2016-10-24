@@ -10,9 +10,9 @@ function setupRoutes(app) {
   app.get('/ping', (req, res) => { res.send('OK'); });
   app.get('/health', (req, res) => {});
 
-  const authMiddleware = (req, res) => {
+  const authMiddleware = (req, res, next) => {
     if (req.session.userId) {
-      next();
+      return next();
     } else {
       return res.status(401).send('Unauthenticated');
     }
@@ -20,7 +20,7 @@ function setupRoutes(app) {
 
   app.use('/admin', authMiddleware, adminRoute);
 
-  // All not found asset or API routes should return an 404
+  // All not-found API endpoints should return an custom 404 page.
   app.route('/:url(api)/*')
     .get((req, res) => {
       return res.render('404', (err) => {
