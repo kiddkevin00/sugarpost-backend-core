@@ -22,7 +22,7 @@ describe('Repo factory', () => {
     expect(repo).to.have.property('resetDb').that.is.an('function');
   });
 
-  it('check if the store interface implemented fully', () => {
+  it('can check if the store interface implemented fully', () => {
     repo = {
       insert: () => {},
       select: () => {},

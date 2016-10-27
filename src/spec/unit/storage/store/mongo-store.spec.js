@@ -5,7 +5,7 @@ const ConnectionPool = require('../../../../lib/storage/connection-pool');
 
 describe('Mongo (low-level) store', () => {
 
-  it('implement insert functionality', () => {
+  it('implements insert functionality', () => {
     expect(MongoStore).to.have.property('insert').that.is.an('function');
 
     const connection = new ConnectionPool(constants.STORE.TYPES.MONGO_DB);
@@ -13,22 +13,22 @@ describe('Mongo (low-level) store', () => {
     MongoStore.insert(connection)
   });
 
-  it('implement select functionality', () => {
+  it('implements select functionality', () => {
     expect(MongoStore).to.have.property('select').that.is.an('function');
 
   });
 
-  it('implement update functionality', () => {
+  it('implements update functionality', () => {
     expect(MongoStore).to.have.property('update').that.is.an('function');
 
   });
 
-  it('implement delete functionality', () => {
+  it('implements delete functionality', () => {
     expect(MongoStore).to.have.property('delete').that.is.an('function');
 
   });
 
-  it('implement configuring index functionality', () => {
+  it('implements configuring index functionality', () => {
     expect(MongoStore).to.have.property('configIndex').that.is.an('function');
 
   });
