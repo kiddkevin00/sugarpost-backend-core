@@ -1,7 +1,7 @@
 /**
  * The process of the web application begins here - cluster mode.
  *
- * Usage: `$ NODE_DEBUG=cluster node server/cluster-app.js`
+ * Usage: Run `$ NODE_DEBUG=cluster node src/lib/cluster-app.js`
  */
 
 const packageJson = require('../../package.json');
@@ -39,3 +39,5 @@ if (cluster.isMaster) {
       webServer.address().address, app.get('env'));
   });
 }
+
+module.exports = exports = cluster;

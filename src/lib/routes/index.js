@@ -5,7 +5,6 @@
 const adminRoute = require('./admin/');
 
 function setupRoutes(app) {
-
   // [TODO]
   app.get('/ping', (req, res) => { res.send('OK'); });
   app.get('/health', (req, res) => {});
@@ -14,7 +13,8 @@ function setupRoutes(app) {
     if (req.session.userId) {
       return next();
     } else {
-      return res.status(401).send('Unauthenticated');
+      return res.status(401)
+        .send('Unauthenticated');
     }
   };
 
@@ -22,12 +22,14 @@ function setupRoutes(app) {
 
   // All not-found API endpoints should return an custom 404 page.
   app.route('/:url(api)/*')
-    .get((req, res) => {
-      return res.render('404', (err) => {
-        if (err) { return res.status(404).json(err); }
-        return res.render('404');
-      });
-    });
+    .get((req, res) => res.render('404', (err) => {
+      if (err) {
+        return res.status(404)
+          .json(err);
+      }
+      return res.status(404)
+        .render('404');
+    }));
 
   return app;
 }

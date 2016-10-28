@@ -44,7 +44,7 @@ function setupExpressServer(app) {
 
     app.use(morgan('combined', { stream: accessLogStream }));
   } else {
-    // The Node environment should be either "test" or "development"..
+    // The Node environment should be either "test" or "development".
     app.use(morgan('dev'));
     app.use(errorHandler()); // Error handler - has to be the last
   }
