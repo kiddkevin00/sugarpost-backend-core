@@ -6,8 +6,8 @@ const constants = require('../../constants/index');
  */
 class MongoStore extends BaseStore {
 
-  static insert(connection, newDoc) {
-    return connection.collection(connection).saveAsync(newDoc);
+  static insert(connection, collectionName, newDoc) {
+    return connection.collection(collectionName).saveAsync(newDoc);
   }
 
   static select(connection, collectionName, query = {}) {

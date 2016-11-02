@@ -5,15 +5,15 @@
  */
 class BaseStore {
 
-  static upsert(repository, connection) {
+  static upsert(connection, tableName) {
 
   }
 
-  static resetTable(repository, connection, tableName) {
+  static resetTable(connection, tableName) {
 
   }
 
-  static resetDb(repository, connection, dbName) {
+  static resetDb(connection, dbName) {
 
   }
 
