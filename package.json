@@ -41,14 +41,14 @@
     "lint": "npm run eslint",
     "test": "npm run mocha-unit-test",
     "integration-test": "",
-    "coverage:unit-test": "nyc --all --check-coverage --reporter cobertura --reporter html  mocha --require src/spec/support/mocha-test-runner.js --recursive src/spec/unit/",
+    "coverage:unit-test": "nyc --all --check-coverage --reporter cobertura --reporter html  mocha --require src/spec/support/mocha-test-runner.js --recursive --trace src/spec/unit/",
     "coverage:integration-test": "",
     "------------- INTERNAL ------------": "",
     "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/",
     "jasmine-unit-test": "node src/spec/support/jasmine-test-runner.js -- -t unit",
     "mocha-unit-test": "multi='tap=- xunit=spec/reports/xunit.xml' mocha --opts ./mocha.opts | faucet",
     "------------- LOCAL DEV -----------": "",
-    "local-unit-test": "mocha --require src/spec/support/mocha-test-runner.js --recursive --bail src/spec/unit/",
+    "local-unit-test": "mocha --require src/spec/support/mocha-test-runner.js --recursive --trace --bail src/spec/unit/",
     "local-integration-test": "",
     "coverage:report": "nyc report",
     "coverage:html-report": "open spec/coverage/index.html",
@@ -59,7 +59,7 @@
   },
   "engines": {
     "node": "6.1.0",
-    "npm": ">=3.8.6"
+    "npm": ">=3.10.9"
   },
   "devDependencies": {
     "chai": "^3.5.0",

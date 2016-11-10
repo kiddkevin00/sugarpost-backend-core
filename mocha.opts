@@ -1,5 +1,6 @@
 --require src/spec/support/mocha-test-runner.js
 --reporter mocha-multi
 --recursive
+  --trace
 
 src/spec/unit/
