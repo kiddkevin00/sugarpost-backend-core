@@ -15,15 +15,17 @@ class MongoStore extends BaseStore {
   }
 
   static update(connection, collectionName, query, newFieldValues) {
-    connection.collection(collectionName).updateAsync(query, { $set: newFieldValues },
+    return connection.collection(collectionName).updateAsync(query, { $set: newFieldValues },
       { multi: true });
   }
 
   static delete(connection, collectionName, query) {
-    connection.collection(collectionName).removeAsync(query);
+    return connection.collection(collectionName).removeAsync(query);
   }
 
-  static configIndex(connection) {} // eslint-disable-line no-unused-vars
+  static configIndex(connection) {
+
+  }
 
 }
 MongoStore.STORE_TYPE = constants.STORE.TYPES.MONGO_DB;
