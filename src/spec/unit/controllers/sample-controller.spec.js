@@ -19,6 +19,6 @@ describe('Sample controller', () => {
 
   it('can handle general request', () =>
     expect(SampleController._handleRequest({}, res, SampleSvc))
-      .to.eventually.equal(res));
+      .to.eventually.equal(123));
 
 });
