@@ -1,24 +1,21 @@
-const internalState = Symbol('internal-state');
+const stateContext = Symbol('internalStateContext');
 
 class ProcessState {
 
   constructor(options, { containerId, requestCount }) {
-    this[internalState] = { containerId, requestCount };
+    this[stateContext] = {};
 
-    this[internalState] = options.sampleParam;
+    this[stateContext].context = { containerId, requestCount };
+    this[stateContext].sampleParam = options.sampleParam;
 
   }
 
   get context() {
-    return this[internalState].context;
-  }
-
-  get requestCount() {
-    return this[internalState].requestCount;
+    return this[stateContext].context;
   }
 
   get sampleParam() {
-    return this[internalState].sampleParam;
+    return this[stateContext].sampleParam;
   }
 
   static create(options, context) {

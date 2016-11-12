@@ -69,7 +69,7 @@ class PreconditionValidator {
       throw err;
     }
 
-    for (let element of array) {
+    for (const element of array) {
       PreconditionValidator.shouldNotBeEmpty(element);
     }
 
