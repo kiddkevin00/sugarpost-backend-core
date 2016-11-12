@@ -46,7 +46,7 @@
     "integration-test": "",
     "coverage:unit-test": "nyc --check-coverage --reporter cobertura --reporter html mocha --opts mocha.opts",
     "coverage:integration-test": "",
-    "prepush": "npm run lint && npm run coverage:unit-test",
+    "prepush": "npm run lint && npm run coverage:unit-test && ./bin/update-test-coverage.js",
     "------------- INTERNAL ------------": "",
     "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/",
     "jasmine-unit-test": "node src/spec/support/jasmine-test-runner.js -- -t unit",
