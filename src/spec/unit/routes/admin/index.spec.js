@@ -7,7 +7,7 @@ describe('Admin route', () => {
 
     adminRouter.stack.forEach((r) => {
       if (r.route && r.route.path) {
-        routes.push(r.route.path);
+        routes.push(r.route.path)
       }
     });
 
