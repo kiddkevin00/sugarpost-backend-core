@@ -3,7 +3,6 @@ const constants = require('../../../lib/constants/');
 
 describe('Repo factory', () => {
   let repo;
-  let noop;
 
   beforeEach(() => {
     repo = {};
@@ -34,7 +33,7 @@ describe('Repo factory', () => {
       resetDb: () => {},
     };
 
-    expect(RepoFactory._isStoreInterfaceImplemented(repo)).to.be.true;
+    expect(() => { RepoFactory._validateStoreInterface(repo); }).to.not.throw();
   });
 
 });

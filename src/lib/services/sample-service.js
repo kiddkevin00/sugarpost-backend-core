@@ -1,7 +1,7 @@
 class SampleService {
 
   static execute(state, strategy) {
-    
+
     return Promise.resolve();
   }
 

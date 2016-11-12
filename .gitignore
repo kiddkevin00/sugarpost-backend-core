@@ -44,7 +44,7 @@ jspm_packages
 .nodemon-find-ref
 
 
-### node_build  ###
+### node_build ###
 /.node-gyp
 /npm-shrinkwrap.json
 

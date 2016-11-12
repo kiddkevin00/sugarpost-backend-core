@@ -9,15 +9,12 @@ class SampleController {
   static sampleReq(req, res) {
     const sampleStrategy = {};
 
-    SampleController._handleRequest(req, res, SampleSvc, sampleStrategy);
+    SampleController._handleRequest(req.query, res, SampleSvc, sampleStrategy);
   }
 
-  static _handleRequest(req, res, svc, strategy) {
-    let state;
-    const options = req.query || {};
+  static _handleRequest(reqParam = {}, res, svc, strategy) {
     const context = { containerId, requestCount };
-
-    state = ProcessSate.create(options, context);
+    const state = ProcessSate.create(reqParam, context);
 
     return svc.execute(state, strategy)
       .then(() => {
@@ -30,15 +27,15 @@ class SampleController {
                 {
                   _id: '001',
                   name: 'Chris',
-                  bankAccountId: '002'
+                  bankAccountId: '002',
                 },
                 {
                   _id: '002',
                   name: 'Mike',
-                  bankAccountId: '003'
-                }
-              ]
-            }
+                  bankAccountId: '003',
+                },
+              ],
+            },
           });
       })
       .catch(() => {

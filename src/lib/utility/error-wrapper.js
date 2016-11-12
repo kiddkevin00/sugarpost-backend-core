@@ -11,7 +11,7 @@ class ErrorWrapper {
   }
 
   append(newError) {
-    const errElement = (typeof newError !== 'string') ?
+    const errElement = (typeof newError === 'object') ?
       newError : { message: newError.toString() };
 
     this.errorStack.unshift(errElement);
