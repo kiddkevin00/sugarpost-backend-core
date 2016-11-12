@@ -31,10 +31,10 @@
     }
   },
   "nyc": {
-    "statements": 19.91,
-    "branches": 5.56,
-    "functions": 32.58,
-    "lines": 46.99,
+    "statements": 0,
+    "branches": 0,
+    "functions": 0,
+    "lines": 0,
     "excludes": [],
     "report-dir": "./spec/coverage"
   },
@@ -44,9 +44,9 @@
     "lint": "npm run eslint",
     "test": "cat src/spec/support/run_all_the_tests.txt; npm run mocha-unit-test",
     "integration-test": "",
-    "coverage:unit-test": "nyc --all --check-coverage --reporter cobertura --reporter html mocha --opts mocha.opts",
+    "coverage:unit-test": "nyc --check-coverage --reporter cobertura --reporter html mocha --opts mocha.opts",
     "coverage:integration-test": "",
-    "prepush": "npm run lint && npm run test",
+    "prepush": "npm run lint && npm run coverage:unit-test",
     "------------- INTERNAL ------------": "",
     "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/",
     "jasmine-unit-test": "node src/spec/support/jasmine-test-runner.js -- -t unit",
