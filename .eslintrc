@@ -10,6 +10,7 @@
     "spaced-comment": 0,
     "padded-blocks": 0,
     "no-unused-expressions": 1,
-    "new-cap": [2, { "capIsNew": false }]
+    "new-cap": [2, { "capIsNew": false }],
+    "no-unused-vars": 1
   }
 }

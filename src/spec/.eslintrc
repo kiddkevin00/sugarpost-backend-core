@@ -6,6 +6,7 @@
   "globals": {
     "expect": true,
     "spy": true,
-    "stub": true
+    "stub": true,
+    "match": true
   }
 }

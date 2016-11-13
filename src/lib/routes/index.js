@@ -12,13 +12,12 @@ function setupRoutes(app) {
   const authMiddleware = (req, res, next) => {
     if (req.session.userId) {
       return next();
-    } else {
-      return res.status(401)
-        .send('Unauthenticated');
     }
+    return res.status(401)
+      .send('Unauthenticated');
   };
 
-  app.use('/admin', authMiddleware, adminRoute);
+  app.use('/api/admin', authMiddleware, adminRoute);
 
   // All not-found API endpoints should return an custom 404 page.
   app.route('/:url(api)/*')

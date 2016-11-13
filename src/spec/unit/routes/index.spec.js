@@ -5,7 +5,7 @@ describe('Route component', () => {
   let expressApp;
 
   beforeEach(() => {
-    expressApp = { use: stub(), get: stub() };
+    expressApp = { use: stub(), get: stub(), route: stub().returnsThis() };
     routeApp = setupRoutes(expressApp);
   });
 
@@ -19,7 +19,7 @@ describe('Route component', () => {
   });
 
   it('attaches core routes', () => {
-    expect(expressApp.use).to.have.been.calledWith('/admin', match.func);
+    expect(expressApp.use).to.have.been.calledWith('/api/admin', match.func);
   });
 
 });

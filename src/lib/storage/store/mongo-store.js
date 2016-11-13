@@ -27,6 +27,22 @@ class MongoStore extends BaseStore {
 
   }
 
+  static dropTable(connection, tableName) {
+    return connection.collection(tableName).dropAsync();
+  }
+
+  static dropDb(connection) {
+    return connection.dropDatabaseAsync();
+  }
+
+  static close(connection) {
+    return connection.closeAsync();
+  }
+
+  static on(connection, event) {
+    return connection.onAsync(event);
+  }
+
 }
 MongoStore.STORE_TYPE = constants.STORE.TYPES.MONGO_DB;
 

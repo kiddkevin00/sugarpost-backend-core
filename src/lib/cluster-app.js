@@ -22,7 +22,7 @@ if (cluster.isMaster) {
 
   cluster.on('exit', (worker, code, signal) => {
     // [TODO] Replace with logger module.
-    console.log('Worker ' + worker.process.pid + ' died');
+    console.log(`Worker ${worker.process.pid} died`);
   });
 } else {
   // Forked Workers can share a new TCP connection.

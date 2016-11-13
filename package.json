@@ -1,8 +1,11 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This is the backend stack of a generic BBS.",
   "main": "./src/lib/app.js",
+  "bin": {
+    "update-test-coverage": "./bin/update-test-coverage.js"
+  },
   "config": {
     "ip": "0.0.0.0",
     "port": 8088,
@@ -37,10 +40,10 @@
     }
   },
   "nyc": {
-    "statements": 19.91,
-    "branches": 5.56,
-    "functions": 32.58,
-    "lines": 46.99,
+    "statements": 78.79,
+    "branches": 39.39,
+    "functions": 58.44,
+    "lines": 78.95,
     "excludes": [],
     "report-dir": "./spec/coverage"
   },
@@ -48,20 +51,21 @@
     "------------- EXPOSED -------------": "",
     "start": "node --stack-size=65500 src/lib/app.js",
     "lint": "npm run eslint",
-    "test": "npm run mocha-unit-test",
+    "test": "cat src/spec/support/run_all_the_tests.txt; npm run mocha-unit-test",
     "integration-test": "",
-    "coverage:unit-test": "nyc --all --check-coverage --reporter cobertura --reporter html  mocha --require src/spec/support/mocha-test-runner.js --recursive --trace src/spec/unit/",
+    "coverage:unit-test": "nyc --check-coverage --reporter cobertura --reporter html mocha --opts mocha.opts",
     "coverage:integration-test": "",
+    "prepush": "npm run lint && npm run coverage:unit-test && ./bin/update-test-coverage.js",
     "------------- INTERNAL ------------": "",
     "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/",
     "jasmine-unit-test": "node src/spec/support/jasmine-test-runner.js -- -t unit",
-    "mocha-unit-test": "multi='tap=- xunit=spec/reports/xunit.xml' mocha --opts ./mocha.opts | faucet",
+    "mocha-unit-test": "multi='tap=- xunit=spec/reports/xunit.xml' mocha --opts mocha.opts --reporter mocha-multi | faucet",
     "------------- LOCAL DEV -----------": "",
-    "local-unit-test": "mocha --require src/spec/support/mocha-test-runner.js --recursive --trace --bail src/spec/unit/",
+    "local-unit-test": "mocha --opts mocha.opts --bail",
     "local-integration-test": "",
     "coverage:report": "nyc report",
     "coverage:html-report": "open spec/coverage/index.html",
-    "debug": "node --debug src/lib/app.js",
+    "debug": "node --debug --debug-brk src/lib/app.js",
     "dev:reload": "nodemon --watch src/",
     "dev:watch": "watch 'npm run lint' src/",
     "dev:performance": "nodemon -perf_basic_prof --debug --trace_gc"
@@ -71,9 +75,11 @@
     "npm": ">=3.10.9"
   },
   "devDependencies": {
+    "bluebird": "^3.4.6",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "chai-shallow-deep-equal": "^1.4.0",
+    "chance": "^1.0.4",
     "eslint": "^3.8.1",
     "eslint-config-airbnb": "^12.0.0",
     "eslint-friendly-formatter": "^2.0.6",
@@ -81,6 +87,7 @@
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.4.1",
     "faucet": "0.0.1",
+    "husky": "^0.11.9",
     "jasmine": "^2.4.1",
     "jasmine-reporters": "^2.1.1",
     "mocha": "^2.5.1",
@@ -92,7 +99,6 @@
     "watch": "^0.19.1"
   },
   "dependencies": {
-    "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
