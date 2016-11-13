@@ -24,6 +24,15 @@
             }
           }
         }
+      },
+      "postgres-store": {
+        "storeType": "postgres-store",
+        "user": "foo",
+        "database": "bulletin-board-system",
+        "password": "secret",
+        "port": 5432,
+        "max": 10000,
+        "idleTimeoutMillis": 30000,
       }
     }
   },
@@ -93,7 +102,8 @@
     "jade": "^1.11.0",
     "method-override": "^2.3.6",
     "mongojs": "^2.4.0",
-    "morgan": "^1.7.0"
+    "morgan": "^1.7.0",
+    "sequelize": "^3.25.0"
   },
   "author": "Marcus Hsu",
   "license": "ISC",

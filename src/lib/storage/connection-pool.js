@@ -2,6 +2,7 @@ const constants = require('../constants/');
 const packageJson = require('../../../package.json');
 const Promise = require('bluebird');
 const mongojs = require('mongojs');
+const sequelize = require('sequelize');
 
 Promise.promisifyAll([
   require('mongojs/lib/collection'), // eslint-disable-line global-require
@@ -29,6 +30,10 @@ class ConnectionPool {
     switch (storeType) {
       case constants.STORE.TYPES.MONGO_DB:
         connection = mongojs(`${host}:${port}/${dbName}`);
+        break;
+
+      case constants.STORE.TYPES.POSTGRES;
+        connection = sequelize(`postgres://${host}:${port}/${dbName}`);
         break;
 
       default:
