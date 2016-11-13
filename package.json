@@ -31,10 +31,10 @@
     }
   },
   "nyc": {
-    "statements": 0,
-    "branches": 0,
-    "functions": 0,
-    "lines": 0,
+    "statements": 78.79,
+    "branches": 39.39,
+    "functions": 58.44,
+    "lines": 78.95,
     "excludes": [],
     "report-dir": "./spec/coverage"
   },
@@ -87,8 +87,7 @@
     "sinon": "^1.17.4",
     "sinon-as-promised": "^4.0.0",
     "sinon-chai": "^2.8.0",
-    "watch": "^0.19.1",
-    "bluebird": "^3.4.6"
+    "watch": "^0.19.1"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
