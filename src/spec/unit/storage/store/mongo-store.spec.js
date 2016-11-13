@@ -1,17 +1,12 @@
 // [TODO] Not Update yet
 
 const MongoStore = require('../../../../lib/storage/store/mongo-store');
-// const ConnectionPool = require('../../../../lib/storage/connection-pool');
 const constants = require('../../../../lib/constants/');
 
 describe('Mongo (low-level) store', () => {
 
   it('implements insert functionality', () => {
     expect(MongoStore).to.have.property('insert').that.is.an('function');
-
-    //const connection = new ConnectionPool(constants.STORE.TYPES.MONGO_DB);
-    //
-    //MongoStore.insert(connection);
   });
 
   it('implements select functionality', () => {
@@ -31,6 +26,16 @@ describe('Mongo (low-level) store', () => {
 
   it('implements configuring index functionality', () => {
     expect(MongoStore).to.have.property('configIndex').that.is.an('function');
+
+  });
+
+  it('implements resetting table functionality', () => {
+    expect(MongoStore).to.have.property('dropTable').that.is.a('function');
+
+  });
+
+  it('implements resetting DB functionality', () => {
+    expect(MongoStore).to.have.property('dropDb').that.is.a('function');
 
   });
 

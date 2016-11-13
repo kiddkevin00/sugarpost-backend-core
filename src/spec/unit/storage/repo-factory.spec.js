@@ -17,8 +17,8 @@ describe('Repo factory', () => {
     expect(repo).to.have.property('delete').that.is.an('function');
     expect(repo).to.have.property('configIndex').that.is.an('function');
     expect(repo).to.have.property('upsert').that.is.an('function');
-    expect(repo).to.have.property('resetTable').that.is.an('function');
-    expect(repo).to.have.property('resetDb').that.is.an('function');
+    expect(repo).to.have.property('dropTable').that.is.an('function');
+    expect(repo).to.have.property('dropDb').that.is.an('function');
   });
 
   it('can check if the store interface implemented fully', () => {

@@ -35,15 +35,15 @@ class RepoFactory {
     return repository;
   }
 
-  static _validateStoreInterface(Store) {
-    Validator.shouldNotBeEmpty(Store.insert, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(Store.select, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(Store.update, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(Store.delete, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(Store.configIndex, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(Store.upsert, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(Store.resetTable, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(Store.resetDb, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED);
+  static _validateStoreInterface(repo) {
+    Validator.shouldNotBeEmpty(repo.insert, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.select, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.update, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.delete, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.configIndex, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.upsert, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.dropTable, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.dropDb, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED);
   }
 
 }
