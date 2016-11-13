@@ -1,6 +1,6 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This is the backend stack of a generic BBS.",
   "main": "./src/lib/app.js",
   "bin": {
@@ -31,10 +31,10 @@
     }
   },
   "nyc": {
-    "statements": 81.61,
-    "branches": 41.94,
-    "functions": 60.81,
-    "lines": 81.82,
+    "statements": 78.79,
+    "branches": 39.39,
+    "functions": 58.44,
+    "lines": 78.95,
     "excludes": [],
     "report-dir": "./spec/coverage"
   },
@@ -66,9 +66,11 @@
     "npm": ">=3.10.9"
   },
   "devDependencies": {
+    "bluebird": "^3.4.6",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "chai-shallow-deep-equal": "^1.4.0",
+    "chance": "^1.0.4",
     "eslint": "^3.8.1",
     "eslint-config-airbnb": "^12.0.0",
     "eslint-friendly-formatter": "^2.0.6",
@@ -88,7 +90,6 @@
     "watch": "^0.19.1"
   },
   "dependencies": {
-    "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",

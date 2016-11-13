@@ -24,11 +24,11 @@ class ConnectionPool {
               host = packageJsonMongoDbConfig.host,
               port = packageJsonMongoDbConfig.port,
               dbName = packageJsonMongoDbConfig.dbName) {
-    let connection;
+    this.connection = null;
 
     switch (storeType) {
       case constants.STORE.TYPES.MONGO_DB:
-        connection = mongojs(`${host}:${port}/${dbName}`);
+        this.connection = mongojs(`${host}:${port}/${dbName}`);
         break;
 
       default:
@@ -43,7 +43,7 @@ class ConnectionPool {
         }));
     }
 
-    return connection;
+    return this.connection;
   }
 
 }
