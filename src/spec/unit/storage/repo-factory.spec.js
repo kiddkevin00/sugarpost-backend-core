@@ -29,8 +29,8 @@ describe('Repo factory', () => {
       delete: () => {},
       configIndex: () => {},
       upsert: () => {},
-      resetTable: () => {},
-      resetDb: () => {},
+      dropTable: () => {},
+      dropDb: () => {},
     };
 
     expect(() => { RepoFactory._validateStoreInterface(repo); }).to.not.throw();

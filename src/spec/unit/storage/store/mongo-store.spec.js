@@ -1,7 +1,6 @@
 // [TODO] Not Update yet
 
 const MongoStore = require('../../../../lib/storage/store/mongo-store');
-const constants = require('../../../../lib/constants/');
 
 describe('Mongo (low-level) store', () => {
 

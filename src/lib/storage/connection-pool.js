@@ -46,8 +46,6 @@ class ConnectionPool {
     return this.connection;
   }
 
-
-
 }
 
 module.exports = exports = ConnectionPool;
