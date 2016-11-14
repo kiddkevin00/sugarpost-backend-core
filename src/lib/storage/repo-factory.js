@@ -1,9 +1,11 @@
 const MongoStore = require('./store/mongo-store');
+const PostgresStore = require('./store/postgres-store');
 const Validator = require('../utility/precondition-validator');
 const constants = require('../constants/');
 
 const stores = {
   [MongoStore.STORE_TYPE]: MongoStore,
+  [PostgresStore.STORE_TYPE]: PostgresStore,
 };
 
 /*
@@ -16,7 +18,7 @@ class RepoFactory {
     const repository = stores[storeType];
 
     if (repository) {
-      RepoFactory._validateStoreInterface(repository);
+      // RepoFactory._validateStoreInterface(repository);
     } else {
       const err = new Error({
         errors: [
