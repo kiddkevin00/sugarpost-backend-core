@@ -18,7 +18,7 @@ class RepoFactory {
     const repository = stores[storeType];
 
     if (repository) {
-      // RepoFactory._validateStoreInterface(repository);
+      RepoFactory._validateStoreInterface(repository);
     } else {
       const err = new Error({
         errors: [

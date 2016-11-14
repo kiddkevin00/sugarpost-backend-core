@@ -1,6 +1,5 @@
 const constants = require('../../constants/index');
 const BaseStore = require('./base');
-const Sequelize = require('sequelize');
 
 
 /*
@@ -12,15 +11,15 @@ class PostgresStore extends BaseStore {
   }
 
   static select(connection, tableName, query) {
-    return connection.model(tableName).findAll({where:query});
+    return connection.model(tableName).findAll({ where: query });
   }
 
   static update(connection, tableName, query, newFieldValue) {
-    return connection.model(tableName).update(newFieldValue, {where:query});
+    return connection.model(tableName).update(newFieldValue, { where: query });
   }
 
   static delete(connection, tableName, query) {
-    return connection.model(tableName).destroy({where:query});
+    return connection.model(tableName).destroy({ where: query });
   }
 
   static createTable(connection, tableName, schema) {
