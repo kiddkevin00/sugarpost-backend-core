@@ -12,19 +12,19 @@ class PostgresStore extends BaseStore {
   }
 
   static select(connection, tableName, query) {
-    return connection.model(tableName).findAll(query);
+    return connection.model(tableName).findAll({where:query});
   }
 
-  static update(connection, tableName, query, newFieldValues) {
-    return connection.model(tableName).update(newFieldValues, query);
+  static update(connection, tableName, query, newFieldValue) {
+    return connection.model(tableName).update(newFieldValue, {where:query});
   }
 
   static delete(connection, tableName, query) {
-    return connection.model(tableName).destroy(query);
+    return connection.model(tableName).destroy({where:query});
   }
 
   static createTable(connection, tableName, schema) {
-    return connection.define(tableName, schema).sync();
+    return connection.define(tableName, schema);
   }
 
   static configIndex(connection) {
@@ -32,24 +32,13 @@ class PostgresStore extends BaseStore {
   }
 
   static dropTable(connection, tableName) {
-    return connection.drop(tableName);
+    return connection.model(tableName).drop();
   }
 
   static dropDb(connection) {
-    return connection.dropDatabaseAsync();
+    return connection.drop();
   }
 
-
- // {columnName: {type: 'string', allowNull: true} }
-  static _normalizeSchema(schema) {
-    for (const key in schema) {
-      const type = schema[key].type.toUpperCase()
-      // console.log(schema[key].type.toUpperCase(), Sequelize[type])
-      schema[key].type= Sequelize.STRING;
-    }
-    console.log(schema)
-    return schema
-  }
 }
 PostgresStore.STORE_TYPE = constants.STORE.TYPES.POSTGRES;
 
