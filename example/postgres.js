@@ -6,10 +6,12 @@ const Chance = require('chance');
 const Promise = require('bluebird');
 
 
-const conn = new ConnectionPool(constants.STORE.TYPES.POSTGRES, '127.0.0.1', 5432, 'bulletin-board-system');
+
 const repo = RepoFactory.manufacture(constants.STORE.TYPES.POSTGRES);
-const seedDataLength = 3;
+const seedDataLength = 5;
 const chance = new Chance();
+let conn;
+
 
 function validateResult(type, rows) {
   console.log(`Validate ${type} result - ${JSON.stringify(rows, null, 2)}.`);
@@ -18,33 +20,15 @@ function validateResult(type, rows) {
 function printErrorMsg(err) {
   console.log(`Something breaks - ${JSON.stringify(err, null, 2)}.`);
 }
-// repo.on(conn, 'connect')
-//   .then(() => {
-//     console.log('Connection established successfully.');
-//   });
-// repo.on(conn, 'error')
-//   .then(printErrorMsg);
 
-Promise.try(() => {
+repo.createDb('localhost', 5432, 'testing')
+.then(() => {
+  conn = new ConnectionPool(constants.STORE.TYPES.POSTGRES, 'localhost', 5432, 'testing');
+})
+.then(() => {
   const promisesTable = [];
   promisesTable.push(
-    repo.createTable(conn, 'Poppy', {
-      firstName: {
-        type: Sequelize.STRING,
-      },
-      lastName: {
-        type: Sequelize.STRING,
-      },
-      age: {
-        type: Sequelize.INTEGER,
-      },
-      status: {
-        type: Sequelize.STRING,
-      },
-    })
-  );
-  promisesTable.push(
-    repo.createTable(conn, 'Person', {
+    repo.createTable(conn, 'testing', {
       firstName: {
         type: Sequelize.STRING,
       },
@@ -61,12 +45,11 @@ Promise.try(() => {
   );
   return Promise.all(promisesTable);
 })
-.then(() => conn.sync({ force: true }))
 .then(() => {
   const promises = [];
   for (let i = 0; i < seedDataLength; i += 1) {
     promises.push(
-      repo.insert(conn, 'Poppy', {
+      repo.insert(conn, 'testing', {
         firstName: chance.first(),
         lastName: chance.last(),
         age: chance.age(),
@@ -75,10 +58,14 @@ Promise.try(() => {
     );
   }
   return Promise.all(promises);
-}).then(() => repo.select(conn, 'Poppy', { age: { $gte: 50 } }))
+})
+.then(() => repo.select(conn, 'testing', { age: { $gte: 50 } }))
 .then(validateResult.bind(null, 'inserting'))
-.then(() => repo.update(conn, 'Poppy', { age: { $gte: 50 } }, { status: 'pass' }))
-.then(() => repo.delete(conn, 'Poppy', { age: { $lt: 50 } }))
-.then(() => repo.dropTable(conn, 'Poppy'))
+.then(() => repo.update(conn, 'testing', { age: { $gte: 50 } }, { status: 'pass' }))
+.then(validateResult.bind(null, 'updating'))
+.then(() => repo.delete(conn, 'testing', { age: { $lt: 50 } }))
+.then(validateResult.bind(null, 'deleting'))
+.then(() => repo.dropTable(conn, 'testing'))
+.then(() => repo.dropDb(conn, 'localhost', 5432, 'testing'))
 .catch(printErrorMsg);
 

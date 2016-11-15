@@ -12,6 +12,7 @@ Promise.promisifyAll([
 
 const mongoStorePropName = constants.STORE.TYPES.MONGO_DB;
 const packageJsonMongoDbConfig = packageJson.config.databases[mongoStorePropName];
+const packageJsonPostgresOptions = packageJson.config.databases['postgres-store'].options;
 
 /*
  * This is the only class that is stateful for storage component.
@@ -22,18 +23,21 @@ const packageJsonMongoDbConfig = packageJson.config.databases[mongoStorePropName
 class ConnectionPool {
 
   constructor(storeType = constants.STORE.TYPES.MONGO_DB,
-              host = packageJsonMongoDbConfig.host,
-              port = packageJsonMongoDbConfig.port,
-              dbName = packageJsonMongoDbConfig.dbName) {
+              host,
+              port,
+              dbName) {
     this.connection = null;
+    this.host = host;
+    this.port = port;
+    this.dbName;
 
     switch (storeType) {
       case constants.STORE.TYPES.MONGO_DB:
-        this.connection = mongojs(`${host}:${port}/${dbName}`);
+        this.connection = mongojs(`${host || packageJsonMongoDbConfig.host}:${port || packageJsonMongoDbConfig.port}/${dbName || packageJsonMongoDbConfig.dbName}`);
         break;
 
       case constants.STORE.TYPES.POSTGRES:
-        this.connection = new Sequelize(`postgres://${host}:${port}/${dbName}`);
+        this.connection = new Sequelize(`postgres://${host}:${port}/${dbName}`, { packageJsonPostgresOptions });
         break;
 
       default:

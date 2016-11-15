@@ -30,12 +30,13 @@
       },
       "postgres-store": {
         "storeType": "postgres-store",
-        "user": "foo",
         "database": "bulletin-board-system",
-        "password": "secret",
+        "host": "127.0.0.1",
         "port": 5432,
-        "max": 10000,
-        "idleTimeoutMillis": 30000
+        "options": {
+          "max": 10,
+          "idleTimeoutMillis": 10000
+        }
       }
     }
   },
@@ -109,6 +110,8 @@
     "method-override": "^2.3.6",
     "mongojs": "^2.4.0",
     "morgan": "^1.7.0",
+    "pg": "^6.1.0",
+    "pgtools": "^0.2.2",
     "sequelize": "^3.25.0"
   },
   "author": "Marcus Hsu",

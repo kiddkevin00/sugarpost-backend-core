@@ -1,5 +1,6 @@
 const constants = require('../../constants/index');
 const BaseStore = require('./base');
+const pgtools = require('pgtools');
 
 
 /*
@@ -23,7 +24,8 @@ class PostgresStore extends BaseStore {
   }
 
   static createTable(connection, tableName, schema) {
-    return connection.define(tableName, schema);
+    connection.define(tableName, schema);
+    return connection.sync({ force: true });
   }
 
   static configIndex(connection) {
@@ -34,9 +36,30 @@ class PostgresStore extends BaseStore {
     return connection.model(tableName).drop();
   }
 
-  static dropDb(connection) {
-    return connection.drop();
+  static dropDb(connection, host1, port1, dbName) {
+    console.log('in drop');
+    return pgtools.dropdb({
+      port: port1,
+      host: host1,
+    }, dbName, (err, res) => {
+      if (err) {
+        console.error(err);
+        process.exit(-1);
+      }
+    });
   }
+
+  static createDb(host1, port1, dbName) {
+    return pgtools.createdb({
+      port: port1,
+      host: host1,
+    }, dbName, (err, res) => {
+      if (err) {
+        console.error(err);
+      }
+    });
+  }
+
 
 }
 PostgresStore.STORE_TYPE = constants.STORE.TYPES.POSTGRES;
