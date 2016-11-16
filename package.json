@@ -1,6 +1,6 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "This is the backend stack of a generic BBS.",
   "main": "./src/lib/app.js",
   "bin": {
@@ -88,6 +88,7 @@
     "jasmine-reporters": "^2.1.1",
     "mocha": "^2.5.1",
     "mocha-multi": "^0.9.0",
+    "nodemon": "^1.11.0",
     "nyc": "^8.3.1",
     "sinon": "^1.17.4",
     "sinon-as-promised": "^4.0.0",

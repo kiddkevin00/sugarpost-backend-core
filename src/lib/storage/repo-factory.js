@@ -8,7 +8,7 @@ const stores = {
   [PostgresStore.STORE_TYPE]: PostgresStore,
 };
 
-/*
+/**
  * A factory to manufacture a repository, which implement basic and advanced store interface
  * for supported store type.
  */

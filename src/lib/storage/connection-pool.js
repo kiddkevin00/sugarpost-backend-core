@@ -10,7 +10,7 @@ Promise.promisifyAll([
   require('mongojs/lib/cursor'), // eslint-disable-line global-require
 ]);
 
-/*
+/**
  * This is the only class that is stateful for storage component.
  *
  * [Note] Don't cache the connection for the reason of separate concern: DB Connector (Driver)
