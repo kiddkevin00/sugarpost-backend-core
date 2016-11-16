@@ -10,10 +10,6 @@ Promise.promisifyAll([
   require('mongojs/lib/cursor'), // eslint-disable-line global-require
 ]);
 
-const mongoStorePropName = constants.STORE.TYPES.MONGO_DB;
-const packageJsonMongoDbConfig = packageJson.config.databases[mongoStorePropName];
-const packageJsonPostgresOptions = packageJson.config.databases['postgres-store'].options;
-
 /*
  * This is the only class that is stateful for storage component.
  *
@@ -22,26 +18,27 @@ const packageJsonPostgresOptions = packageJson.config.databases['postgres-store'
  */
 class ConnectionPool {
 
-  constructor(storeType = constants.STORE.TYPES.MONGO_DB,
-              host,
-              port,
-              dbName) {
-    this.connection = null;
-    this.host = host;
-    this.port = port;
-    this.dbName;
+  constructor(storeType = constants.STORE.TYPES.MONGO_DB, host, port, dbName) {
+    const packageJsonDbConfig = packageJson.config.databases[storeType];
+
+    this.client = null;
+    this.host = host || packageJsonDbConfig.host;
+    this.port = port || packageJsonDbConfig.port;
+    this.dbName = dbName || packageJsonDbConfig.dbName;
 
     switch (storeType) {
       case constants.STORE.TYPES.MONGO_DB:
-        this.connection = mongojs(`${host || packageJsonMongoDbConfig.host}:${port || packageJsonMongoDbConfig.port}/${dbName || packageJsonMongoDbConfig.dbName}`);
+        // [TODO] Add options `packageJsonMongoDbConfig.options`.
+        console.log(packageJsonDbConfig.options)
+        this.client = mongojs(`${this.host}:${this.port}/${this.dbName}`, [], packageJsonDbConfig.options);
         break;
 
       case constants.STORE.TYPES.POSTGRES:
-        this.connection = new Sequelize(`postgres://${host}:${port}/${dbName}`, { packageJsonPostgresOptions });
+        this.client = new Sequelize(`postgres://${this.host}:${this.port}/${this.dbName}`, packageJsonDbConfig.options);
         break;
 
       default:
-        throw(new Error({
+        const err = new Error({
           errors: [
             {
               code: constants.STORE.ERROR_CODES.STORAGE_TYPE_NOT_FOUND,
@@ -49,10 +46,10 @@ class ConnectionPool {
               message: constants.STORE.ERROR_MSG.STORAGE_TYPE_NOT_FOUND,
             },
           ],
-        }));
-    }
+        });
 
-    return this.connection;
+        throw(err);
+    }
   }
 
 }
