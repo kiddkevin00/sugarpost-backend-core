@@ -7,20 +7,20 @@ const constants = require('../../constants/index');
 class MongoStore extends BaseStore {
 
   static insert(connection, collectionName, newDoc) {
-    return connection.collection(collectionName).saveAsync(newDoc);
+    return connection.client.collection(collectionName).saveAsync(newDoc);
   }
 
   static select(connection, collectionName, query = {}) {
-    return connection.collection(collectionName).findAsync(query);
+    return connection.client.collection(collectionName).findAsync(query);
   }
 
   static update(connection, collectionName, query, newFieldValues) {
-    return connection.collection(collectionName).updateAsync(query, { $set: newFieldValues },
+    return connection.client.collection(collectionName).updateAsync(query, { $set: newFieldValues },
       { multi: true });
   }
 
   static delete(connection, collectionName, query) {
-    return connection.collection(collectionName).removeAsync(query);
+    return connection.client.collection(collectionName).removeAsync(query);
   }
 
   static configIndex(connection) {
@@ -28,19 +28,19 @@ class MongoStore extends BaseStore {
   }
 
   static dropTable(connection, tableName) {
-    return connection.collection(tableName).dropAsync();
+    return connection.client.collection(tableName).dropAsync();
   }
 
   static dropDb(connection) {
-    return connection.dropDatabaseAsync();
+    return connection.client.dropDatabaseAsync();
   }
 
   static close(connection) {
-    return connection.closeAsync();
+    return connection.client.closeAsync();
   }
 
   static on(connection, event) {
-    return connection.onAsync(event);
+    return connection.client.onAsync(event);
   }
 
 }

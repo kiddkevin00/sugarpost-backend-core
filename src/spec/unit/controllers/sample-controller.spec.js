@@ -17,8 +17,9 @@ describe('Sample controller', () => {
     stubFunc.restore();
   });
 
-  it('can handle general request', () =>
+  it('can handle general request', () => {
     expect(SampleController._handleRequest({}, res, SampleSvc))
-      .to.eventually.equal(res));
+      .to.eventually.equal(res);
+  });
 
 });
