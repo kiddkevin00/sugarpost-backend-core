@@ -1,7 +1,6 @@
 {
   "extends": "airbnb",
   "rules": {
-    "no-underscore-dangle": 0,
     "keyword-spacing": [2, {
       "overrides": {
         "throw": { "after": false, "before": true }
@@ -9,8 +8,11 @@
     }],
     "spaced-comment": 0,
     "padded-blocks": 0,
+    "no-underscore-dangle": 0,
     "no-unused-expressions": 1,
+    "no-unused-vars": 1,
+    "no-use-before-define": ["error", { "functions": false, "classes": true }],
     "new-cap": [2, { "capIsNew": false }],
-    "no-unused-vars": 1
+    "import/no-extraneous-dependencies": [2, {"devDependencies": true, "optionalDependencies": false, "peerDependencies": false}]
   }
 }

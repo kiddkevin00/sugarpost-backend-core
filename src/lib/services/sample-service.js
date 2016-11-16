@@ -1,7 +1,7 @@
 class SampleService {
 
   static execute(state, strategy) {
-    
+
     const result = {
       data: {
         teachers: [
