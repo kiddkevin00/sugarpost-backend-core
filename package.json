@@ -41,10 +41,10 @@
     }
   },
   "nyc": {
-    "statements": 78.79,
-    "branches": 39.39,
-    "functions": 58.44,
-    "lines": 78.95,
+    "statements": 74.23,
+    "branches": 39.02,
+    "functions": 51.14,
+    "lines": 74.32,
     "excludes": [],
     "report-dir": "./spec/coverage"
   },
@@ -76,7 +76,6 @@
     "npm": ">=3.10.9"
   },
   "devDependencies": {
-    "bluebird": "^3.4.6",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "chai-shallow-deep-equal": "^1.4.0",
@@ -100,6 +99,7 @@
     "watch": "^0.19.1"
   },
   "dependencies": {
+    "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
