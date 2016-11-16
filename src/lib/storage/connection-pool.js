@@ -26,10 +26,18 @@ class ConnectionPool {
     this.port = port || packageJsonDbConfig.port;
     this.dbName = dbName || packageJsonDbConfig.dbName;
 
+    const err = new Error({
+      errors: [
+        {
+          code: constants.STORE.ERROR_CODES.STORAGE_TYPE_NOT_FOUND,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: constants.STORE.ERROR_MSG.STORAGE_TYPE_NOT_FOUND,
+        },
+      ],
+    });
+
     switch (storeType) {
       case constants.STORE.TYPES.MONGO_DB:
-        // [TODO] Add options `packageJsonMongoDbConfig.options`.
-        console.log(packageJsonDbConfig.options)
         this.client = mongojs(`${this.host}:${this.port}/${this.dbName}`, [], packageJsonDbConfig.options);
         break;
 
@@ -38,16 +46,6 @@ class ConnectionPool {
         break;
 
       default:
-        const err = new Error({
-          errors: [
-            {
-              code: constants.STORE.ERROR_CODES.STORAGE_TYPE_NOT_FOUND,
-              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.STORE.ERROR_MSG.STORAGE_TYPE_NOT_FOUND,
-            },
-          ],
-        });
-
         throw(err);
     }
   }

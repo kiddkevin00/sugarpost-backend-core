@@ -35,7 +35,7 @@ class PostgresStore extends BaseStore {
   static dropTable(connection, tableName) {
     return connection.client.model(tableName).drop();
   }
-  
+
   static dropDb(connection) {
     const host = connection.host;
     const port = connection.port;

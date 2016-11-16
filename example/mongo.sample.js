@@ -5,7 +5,7 @@ const Chance = require('chance');
 const Promise = require('bluebird');
 
 const conn = new ConnectionPool(constants.STORE.TYPES.MONGO_DB);
-const tableName = 'person'
+const tableName = 'person';
 const repo = RepoFactory.manufacture(constants.STORE.TYPES.MONGO_DB);
 const seedDataLength = 3;
 const chance = new Chance();
