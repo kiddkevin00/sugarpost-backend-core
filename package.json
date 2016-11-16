@@ -1,6 +1,6 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "This is the backend stack of a generic BBS.",
   "main": "./src/lib/app.js",
   "bin": {
@@ -11,30 +11,36 @@
     "port": 8088,
     "databases": {
       "mongo-store": {
-        "storeType": "mongo-store",
         "host": "127.0.0.1",
         "port": 27017,
         "dbName": "bulletin-board-system",
         "options": {
-          "server": {
-            "autoReconnect": true,
-            "reconnectTries": 500,
-            "reconnectInterval": 1000,
-            "poolSize": 10,
-            "socketOptions": {
-              "connectTimeoutMS": 10000,
-              "socketTimeoutMS": 10000
-            }
+          "auto_reconnect": true,
+          "poolSize": 10,
+          "socketOptions": {
+            "connectTimeoutMS": 10000,
+            "socketTimeoutMS": 10000
+          }
+        }
+      },
+      "postgres-store": {
+        "host": "127.0.0.1",
+        "port": 5432,
+        "dbName": "bulletin-board-system",
+        "options": {
+          "pool": {
+            "max": 10,
+            "idle": 3000
           }
         }
       }
     }
   },
   "nyc": {
-    "statements": 78.79,
-    "branches": 39.39,
-    "functions": 58.44,
-    "lines": 78.95,
+    "statements": 74.23,
+    "branches": 39.02,
+    "functions": 51.14,
+    "lines": 74.32,
     "excludes": [],
     "report-dir": "./spec/coverage"
   },
@@ -48,7 +54,7 @@
     "coverage:integration-test": "",
     "prepush": "npm run lint && npm run coverage:unit-test && ./bin/update-test-coverage.js",
     "------------- INTERNAL ------------": "",
-    "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/",
+    "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/ example/",
     "jasmine-unit-test": "node src/spec/support/jasmine-test-runner.js -- -t unit",
     "mocha-unit-test": "multi='tap=- xunit=spec/reports/xunit.xml' mocha --opts mocha.opts --reporter mocha-multi | faucet",
     "------------- LOCAL DEV -----------": "",
@@ -66,7 +72,6 @@
     "npm": ">=3.10.9"
   },
   "devDependencies": {
-    "bluebird": "^3.4.6",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "chai-shallow-deep-equal": "^1.4.0",
@@ -90,6 +95,7 @@
     "watch": "^0.19.1"
   },
   "dependencies": {
+    "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
@@ -99,7 +105,10 @@
     "jade": "^1.11.0",
     "method-override": "^2.3.6",
     "mongojs": "^2.4.0",
-    "morgan": "^1.7.0"
+    "morgan": "^1.7.0",
+    "pg": "^6.1.0",
+    "pgtools": "^0.2.2",
+    "sequelize": "^3.25.0"
   },
   "author": "Marcus Hsu",
   "license": "ISC",

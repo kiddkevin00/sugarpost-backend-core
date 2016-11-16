@@ -16,7 +16,7 @@ const numCPUs = os.cpus().length;
 
 if (cluster.isMaster) {
   // Forks the master worker.
-  for (let i = 0; i < numCPUs; i++) {
+  for (let i = 0; i < numCPUs; i += 1) {
     cluster.fork();
   }
 

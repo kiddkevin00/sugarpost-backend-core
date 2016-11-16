@@ -1,5 +1,6 @@
 exports.TYPES = {
   MONGO_DB: 'mongo-store',
+  POSTGRES: 'postgres-store',
 };
 
 exports.ERROR_CODES = {

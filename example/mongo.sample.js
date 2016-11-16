@@ -5,6 +5,7 @@ const Chance = require('chance');
 const Promise = require('bluebird');
 
 const conn = new ConnectionPool(constants.STORE.TYPES.MONGO_DB);
+const tableName = 'person';
 const repo = RepoFactory.manufacture(constants.STORE.TYPES.MONGO_DB);
 const seedDataLength = 3;
 const chance = new Chance();
@@ -16,12 +17,13 @@ repo.on(conn, 'connect')
 repo.on(conn, 'error')
   .then(printErrorMsg);
 
-Promise.try(() => {
+Promise.try(
+  () => {
     const promises = [];
 
-    for (let i = 0; i < seedDataLength; i++) {
+    for (let i = 0; i < seedDataLength; i += 1) {
       promises.push(
-        repo.insert(conn, 'person', {
+        repo.insert(conn, tableName, {
           firstName: chance.first(),
           lastName: chance.last(),
           age: chance.age(),
@@ -30,19 +32,20 @@ Promise.try(() => {
       );
     }
 
-    return Promise.all(promises)
+    return Promise.all(promises);
   })
-  .then(() => repo.select(conn, 'person'))
+  .then(() => repo.select(conn, tableName))
   .then(validateResult.bind(null, 'inserting'))
-  .then(() => repo.update(conn, 'person', { age: { $gte: 21 } }, { underAge: false }))
-  .then(() => repo.update(conn, 'person', { age: { $lt: 21 } }, { underAge: true }))
-  .then(() => repo.select(conn, 'person'))
+  .then(() => repo.update(conn, tableName, { age: { $gte: 21 } }, { underAge: false }))
+  .then(() => repo.update(conn, tableName, { age: { $lt: 21 } }, { underAge: true }))
+  .then(() => repo.select(conn, tableName))
   .then(validateResult.bind(null, 'updating'))
-  .then(() => repo.delete(conn, 'person', { age: { $lt: 21 } }))
-  .then(() => repo.select(conn, 'person'))
+  .then(() => repo.delete(conn, tableName, { age: { $lt: 21 } }))
+  .then(() => repo.select(conn, tableName))
   .then(validateResult.bind(null, 'deleting'))
-  .then(() => repo.dropTable(conn, 'person'))
+  .then(() => repo.dropTable(conn, tableName))
   .then(() => repo.dropDb(conn))
+  .then(() => repo.close(conn))
   .catch(printErrorMsg);
 
 function validateResult(type, rows) {

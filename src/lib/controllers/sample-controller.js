@@ -17,26 +17,11 @@ class SampleController {
     const state = ProcessSate.create(reqParam, context);
 
     return svc.execute(state, strategy)
-      .then(() => {
-        requestCount++;
+      .then((result) => {
+        requestCount += 1;
 
         return res.status(200)
-          .send({
-            data: {
-              teachers: [
-                {
-                  _id: '001',
-                  name: 'Chris',
-                  bankAccountId: '002',
-                },
-                {
-                  _id: '002',
-                  name: 'Mike',
-                  bankAccountId: '003',
-                },
-              ],
-            },
-          });
+          .send(result);
       })
       .catch(() => {
 
