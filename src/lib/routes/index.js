@@ -2,7 +2,7 @@
  * This is the place for exposing module(s) for route component.
  */
 
-const adminRoute = require('./admin/');
+const adminRoute = require('./auth/');
 const { Router } = require('express');
 
 function setupRoutes(app) {
@@ -36,7 +36,7 @@ function setupApiRoutes() {
       .send('Unauthenticated');
   };
 
-  router.use('/admin', [authMiddleware], adminRoute);
+  router.use('/auth', [authMiddleware], adminRoute);
 
   return router;
 }

@@ -1,24 +1,39 @@
-const ConnectionPool = require('../src/lib/storage/connection-pool');
-const RepoFactory = require('../src/lib/storage/repo-factory');
-const constants = require('../src/lib/constants/');
+const ConnectionPool = require('../../src/lib/storage/connection-pool');
+const RepoFactory = require('../../src/lib/storage/repo-factory');
+const constants = require('../../src/lib/constants/index');
+const Sequelize = require('sequelize');
 const Chance = require('chance');
 const Promise = require('bluebird');
 
-const conn = new ConnectionPool(constants.STORE.TYPES.MONGO_DB);
+let conn;
+const repo = RepoFactory.manufacture(constants.STORE.TYPES.POSTGRES);
 const tableName = 'person';
-const repo = RepoFactory.manufacture(constants.STORE.TYPES.MONGO_DB);
-const seedDataLength = 3;
+// [TODO] Shoudn't have to require `Sequelize` npm.
+const schema = {
+  firstName: {
+    type: Sequelize.STRING,
+  },
+  lastName: {
+    type: Sequelize.STRING,
+  },
+  age: {
+    type: Sequelize.INTEGER,
+  },
+  underAge: {
+    type: Sequelize.BOOLEAN,
+  },
+};
+const seedDataLength = 5;
 const chance = new Chance();
 
-repo.on(conn, 'connect')
-  .then(() => {
-    console.log('Connection established successfully.');
-  });
-repo.on(conn, 'error')
-  .then(printErrorMsg);
+conn = new ConnectionPool(constants.STORE.TYPES.POSTGRES);
 
-Promise.try(
-  () => {
+repo.createDb()
+  .then(() => {
+    conn = new ConnectionPool(constants.STORE.TYPES.POSTGRES);
+  })
+  .then(() => repo.createTable(conn, tableName, schema))
+  .then(() => {
     const promises = [];
 
     for (let i = 0; i < seedDataLength; i += 1) {
@@ -45,7 +60,6 @@ Promise.try(
   .then(validateResult.bind(null, 'deleting'))
   .then(() => repo.dropTable(conn, tableName))
   .then(() => repo.dropDb(conn))
-  .then(() => repo.close(conn))
   .catch(printErrorMsg);
 
 function validateResult(type, rows) {

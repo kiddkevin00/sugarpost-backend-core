@@ -1,17 +1,17 @@
-const adminRouter = require('../../../../lib/routes/admin/');
+const authRouter = require('../../../../lib/routes/auth/');
 
-describe('Admin route', () => {
+describe('Auth router', () => {
 
   it('should have all the endpoints registered', () => {
     const routes = [];
 
-    adminRouter.stack.forEach((r) => {
+    authRouter.stack.forEach((r) => {
       if (r.route && r.route.path) {
         routes.push(r.route.path);
       }
     });
 
-    expect(routes).to.include('/sample');
+    expect(routes).to.include('/signup');
   });
 
 });

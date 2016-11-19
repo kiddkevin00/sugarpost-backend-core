@@ -47,6 +47,7 @@
   "scripts": {
     "------------- EXPOSED -------------": "",
     "start": "node --stack-size=65500 src/lib/app.js",
+    "start-prod": "NODE_ENV=production node --stack-size=65500 src/lib/app.js",
     "lint": "npm run eslint",
     "test": "cat src/spec/support/run_all_the_tests.txt; npm run mocha-unit-test",
     "integration-test": "",

@@ -1,7 +1,11 @@
-const constants = require('../../constants/index');
+const constants = require('../../constants/');
 const BaseStore = require('./base');
 const pgtools = require('pgtools');
 const Sequelize = require('sequelize');
+const packageJson = require('../../../../package.json');
+
+const storeType = constants.STORE.TYPES.POSTGRES;
+const packageJsonDbConfig = packageJson.config.databases[storeType];
 
 /*
  * This class should only contains static members.
@@ -23,11 +27,6 @@ class PostgresStore extends BaseStore {
     return connection.client.model(tableName).destroy({ where: query });
   }
 
-  static createTable(connection, tableName, schema) {
-    connection.client.define(tableName, schema);
-    return connection.client.sync({ force: true });
-  }
-
   static configIndex(connection) {
 
   }
@@ -39,10 +38,11 @@ class PostgresStore extends BaseStore {
   static dropDb(connection) {
     const host = connection.host;
     const port = connection.port;
+    const dbName = connection.dbName;
     const adminDbName = 'postgres';
-    const s = new Sequelize(`postgres://${host}:${port}/${adminDbName}`);
+    const sequelize = new Sequelize(`postgres://${host}:${port}/${adminDbName}`);
 
-    return s.query('DROP DATABASE "testingDb"');
+    return sequelize.query(`DROP DATABASE "${dbName}"`);
   }
 
   static close(connection) {
@@ -54,13 +54,20 @@ class PostgresStore extends BaseStore {
 
   }
 
-  static createDb(host, port, dbName) {
-    const s = new Sequelize(`postgres://${host}:${port}`);
+  static createTable(connection, tableName, schema) {
+    connection.client.define(tableName, schema);
+    return connection.client.sync({ force: true });
+  }
 
-    return s.query(`CREATE DATABASE "${dbName}"`);
+  static createDb(host = packageJsonDbConfig.host,
+                  port = packageJsonDbConfig.port,
+                  dbName = packageJsonDbConfig.dbName) {
+    const sequelize = new Sequelize(`postgres://${host}:${port}`);
+
+    return sequelize.query(`CREATE DATABASE "${dbName}"`);
   }
 
 }
-PostgresStore.STORE_TYPE = constants.STORE.TYPES.POSTGRES;
+PostgresStore.STORE_TYPE = storeType;
 
 module.exports = exports = PostgresStore;

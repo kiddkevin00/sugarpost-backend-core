@@ -5,7 +5,7 @@
  */
 
 const packageJson = require('../../package.json');
-const setupExpressServer = require('./server/express-server');
+const setupExpressServer = require('./servers/express-server');
 const setupRoutes = require('./routes/');
 const cluster = require('cluster');
 const http = require('http');

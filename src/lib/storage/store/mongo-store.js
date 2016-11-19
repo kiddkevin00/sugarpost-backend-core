@@ -1,5 +1,5 @@
 const BaseStore = require('./base');
-const constants = require('../../constants/index');
+const constants = require('../../constants/');
 
 /*
  * This class should only contains static members.
