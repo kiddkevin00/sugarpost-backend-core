@@ -29,7 +29,7 @@ class RepoFactory {
           message: constants.STORE.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
         },
       ]);
-      
+
       throw err;
     }
 

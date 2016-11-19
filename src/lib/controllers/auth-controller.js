@@ -9,33 +9,76 @@ let requestCount = 0;
 class AuthController {
 
   static signup(req, res) {
+    const context = { containerId, requestCount };
+    const state = ProcessSate.create(req.body, context);
     const signupStrategy = {
-      operation: constants.STORE.OPERATIONS.INSERT,
+      operation: {
+        type: constants.STORE.OPERATIONS.INSERT,
+        data: [
+          {
+            email: state.email,
+            password: state.password,
+            firstName: state.firstName,
+            lastName: state.lastName,
+          },
+        ],
+      },
       tableName: constants.STORE.TABLE_NAMES.USER,
       uniqueFields: ['email'],
     };
-    const options = req.body;
 
-    return AuthController._handleRequest(options, res, DatabaseService, signupStrategy);
-  }
-
-  static _handleRequest(options = {}, res, Svc, strategy) {
-    const context = { containerId, requestCount };
-    const state = ProcessSate.create(options, context);
-
-    return Svc.execute(state, strategy)
+    return AuthController._handleRequest(state, res, DatabaseService, signupStrategy)
       .then((result) => {
         requestCount += 1;
 
         return res.status(constants.SYSTEM.STATUS_CODES.OK)
           .send(result);
-      })
+      });
+  }
+
+  static login(req, res) {
+    const context = { containerId, requestCount };
+    const state = ProcessSate.create(req.body, context);
+    const signupStrategy = {
+      operation: {
+        type: constants.STORE.OPERATIONS.SELECT,
+        data: [
+          {
+            email: state.email,
+            password: state.password,
+          },
+        ],
+      },
+      tableName: constants.STORE.TABLE_NAMES.USER,
+    };
+    const options = req.body;
+
+    return AuthController._handleRequest(options, res, DatabaseService, signupStrategy)
+      .then((result) => {
+        const response = { isAuthenticated: false };
+        let statusCode = constants.SYSTEM.STATUS_CODES.UNAUTHENTICATED;
+
+        if (result.length) {
+          response.isAuthenticated = true;
+          statusCode = constants.SYSTEM.STATUS_CODES.OK;
+        }
+
+        requestCount += 1;
+
+        return res.status(statusCode)
+          .send(response);
+      });
+  }
+
+  static _handleRequest(state, res, Svc, strategy) {
+    return Svc.execute(state, strategy)
       .catch((_err) => {
         let err;
 
         if (_err instanceof StandardErrorWrapper) {
           err = _err;
         } else {
+          console.log(_err)
           err = new StandardErrorWrapper(_err);
         }
 

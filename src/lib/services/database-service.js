@@ -14,6 +14,10 @@ class DatabaseService {
 
     return repo.select(conn, tableName)
       .then((docs) => {
+        if (!Array.isArray(uniqueFields) || !uniqueFields.length) {
+          return;
+        }
+
         for (const doc of docs) {
           for (const field of uniqueFields) {
             if (state[field] === doc[field]) {
@@ -32,12 +36,10 @@ class DatabaseService {
         }
       })
       .then(() => {
-        repo[operation](conn, tableName, {
-          email: state.email,
-          password: state.password,
-          firstName: state.firstName,
-          lastName: state.lastName,
-        });
+        const operationType = operation.type;
+        const operationData = operation.data;
+
+        return repo[operationType](conn, tableName, ...operationData);
       });
   }
 
