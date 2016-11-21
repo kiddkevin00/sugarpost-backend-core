@@ -83,7 +83,6 @@ class AuthController {
         if (_err instanceof StandardErrorWrapper) {
           err = _err;
         } else {
-          console.log(_err)
           err = new StandardErrorWrapper(_err);
         }
 
