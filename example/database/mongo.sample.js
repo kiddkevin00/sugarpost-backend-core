@@ -1,41 +1,24 @@
-const ConnectionPool = require('../src/lib/storage/connection-pool');
-const RepoFactory = require('../src/lib/storage/repo-factory');
-const constants = require('../src/lib/constants/');
-const Sequelize = require('sequelize');
+const ConnectionPool = require('../../src/lib/storage/connection-pool');
+const RepoFactory = require('../../src/lib/storage/repo-factory');
+const constants = require('../../src/lib/constants/index');
 const Chance = require('chance');
 const Promise = require('bluebird');
 
-let conn;
-const repo = RepoFactory.manufacture(constants.STORE.TYPES.POSTGRES);
-const host = '127.0.0.1';
-const port = 5432;
-const dbName = 'testingDb';
-const tableName = 'person';
-const schema = {
-  firstName: {
-    type: Sequelize.STRING,
-  },
-  lastName: {
-    type: Sequelize.STRING,
-  },
-  age: {
-    type: Sequelize.INTEGER,
-  },
-  underAge: {
-    type: Sequelize.BOOLEAN,
-  },
-};
-const seedDataLength = 5;
+const conn = new ConnectionPool(constants.STORE.TYPES.MONGO_DB);
+const repo = RepoFactory.manufacture(constants.STORE.TYPES.MONGO_DB);
+const tableName = 'testPerson';
+const seedDataLength = 3;
 const chance = new Chance();
 
-conn = new ConnectionPool(constants.STORE.TYPES.POSTGRES, host, port, dbName);
+repo.on(conn, 'connect')
+  .then(() => {
+    console.log('Connection established successfully.');
+  });
+repo.on(conn, 'error')
+  .then(printErrorMsg);
 
-repo.createDb(host, port, dbName)
-  .then(() => {
-    conn = new ConnectionPool(constants.STORE.TYPES.POSTGRES, host, port, dbName);
-  })
-  .then(() => repo.createTable(conn, tableName, schema))
-  .then(() => {
+Promise.try(
+  () => {
     const promises = [];
 
     for (let i = 0; i < seedDataLength; i += 1) {
@@ -61,7 +44,8 @@ repo.createDb(host, port, dbName)
   .then(() => repo.select(conn, tableName))
   .then(validateResult.bind(null, 'deleting'))
   .then(() => repo.dropTable(conn, tableName))
-  .then(() => repo.dropDb(conn, 'localhost', 5432, tableName))
+  .then(() => repo.dropDb(conn))
+  .then(() => repo.close(conn))
   .catch(printErrorMsg);
 
 function validateResult(type, rows) {

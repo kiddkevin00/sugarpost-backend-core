@@ -1,6 +1,7 @@
 const MongoStore = require('./store/mongo-store');
 const PostgresStore = require('./store/postgres-store');
 const Validator = require('../utility/precondition-validator');
+const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const constants = require('../constants/');
 
 const stores = {
@@ -20,16 +21,14 @@ class RepoFactory {
     if (repository) {
       RepoFactory._validateStoreInterface(repository);
     } else {
-      const err = new Error({
-        errors: [
-          {
-            status: constants.SYSTEM.STATUS_CODES.NOT_IMPLEMENTED,
-            code: constants.STORE.ERROR_CODES.STORAGE_TYPE_NOT_FOUND,
-            source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-            message: constants.STORE.ERROR_MSG.STORAGE_TYPE_NOT_FOUND,
-          },
-        ],
-      });
+      const err = new StandardErrorWrapper([
+        {
+          code: constants.SYSTEM.STATUS_CODES.NOT_IMPLEMENTED,
+          name: constants.STORE.ERROR_NAMES.NOT_IMPLEMENTED,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: constants.STORE.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,
+        },
+      ]);
 
       throw err;
     }
@@ -38,14 +37,14 @@ class RepoFactory {
   }
 
   static _validateStoreInterface(repo) {
-    Validator.shouldNotBeEmpty(repo.insert, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(repo.select, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(repo.update, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(repo.delete, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(repo.configIndex, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(repo.upsert, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(repo.dropTable, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED)
-      .shouldNotBeEmpty(repo.dropDb, constants.STORE.ERROR_CODES.INTERFACE_NOT_IMPLEMENTED);
+    Validator.shouldNotBeEmpty(repo.insert, constants.STORE.ERROR_NAMES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.select, constants.STORE.ERROR_NAMES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.update, constants.STORE.ERROR_NAMES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.delete, constants.STORE.ERROR_NAMES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.configIndex, constants.STORE.ERROR_NAMES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.upsert, constants.STORE.ERROR_NAMES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.dropTable, constants.STORE.ERROR_NAMES.INTERFACE_NOT_IMPLEMENTED)
+      .shouldNotBeEmpty(repo.dropDb, constants.STORE.ERROR_NAMES.INTERFACE_NOT_IMPLEMENTED);
   }
 
 }

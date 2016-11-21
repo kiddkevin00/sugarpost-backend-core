@@ -19,7 +19,7 @@ describe('Route component', () => {
   });
 
   it('attaches core routes', () => {
-    expect(expressApp.use).to.have.been.calledWith('/api/admin', match.func);
+    expect(expressApp.use).to.have.been.calledWith('/api', match.func);
   });
 
 });
