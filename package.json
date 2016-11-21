@@ -1,6 +1,6 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "This is the backend stack of a generic BBS.",
   "main": "./src/lib/app.js",
   "bin": {
