@@ -12,10 +12,13 @@ class DatabaseService {
       process.env.MONGODB_URI.split('@')[1].split(':')[1].split('/')[0] : null;
     const dbUser = process.env.MONGODB_URI ?
       process.env.MONGODB_URI.split('@')[0].split('://')[1].split(':')[0] : null;
+    const dbName = process.env.MONGODB_URI ?
+      process.env.MONGODB_URI.split('://')[1].split('/')[1] : null;
     const dbPassword = process.env.MONGODB_URI ?
       process.env.MONGODB_URI.split('@')[0].split('://')[1].split(':')[1] : null;
-    const conn = new ConnectionPool(constants.STORE.TYPES.MONGO_DB, dbHost, dbPort, dbUser,
-      dbPassword);
+
+    const conn = new ConnectionPool(constants.STORE.TYPES.MONGO_DB, dbHost, dbPort, dbName,
+      dbUser, dbPassword);
     const repo = RepoFactory.manufacture(constants.STORE.TYPES.MONGO_DB);
     const tableName = strategy.tableName;
     const operation = strategy.operation;
