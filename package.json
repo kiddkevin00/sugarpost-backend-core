@@ -13,7 +13,7 @@
       "mongo-store": {
         "host": "127.0.0.1",
         "port": 27017,
-        "dbName": "bulletin-board-system",
+        "dbName": "BulletinBoardSystem",
         "options": {
           "auto_reconnect": true,
           "poolSize": 10,
@@ -26,11 +26,12 @@
       "postgres-store": {
         "host": "127.0.0.1",
         "port": 5432,
-        "dbName": "bulletin-board-system",
+        "dbName": "BulletinBoardSystem",
         "options": {
           "pool": {
-            "max": 10,
-            "idle": 3000
+            "maxConnections": 10,
+            "maxIdleTime": 240,
+            "logging": true
           }
         }
       }

@@ -7,20 +7,30 @@ const Promise = require('bluebird');
 
 let conn;
 const repo = RepoFactory.manufacture(constants.STORE.TYPES.POSTGRES);
-const tableName = 'person';
+const tableName = 'testPerson';
 // [TODO] Shoudn't have to require `Sequelize` npm.
 const schema = {
+  _id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    allowNull: false,
+    autoIncrement: true,
+  },
   firstName: {
     type: Sequelize.STRING,
+    allowNull: false,
   },
   lastName: {
     type: Sequelize.STRING,
+    allowNull: false,
   },
   age: {
     type: Sequelize.INTEGER,
+    allowNull: false,
   },
   underAge: {
     type: Sequelize.BOOLEAN,
+    allowNull: false,
   },
 };
 const seedDataLength = 5;

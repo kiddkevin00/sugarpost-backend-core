@@ -40,7 +40,7 @@ class PostgresStore extends BaseStore {
     const port = connection.port;
     const dbName = connection.dbName;
     const adminDbName = 'postgres';
-    const sequelize = new Sequelize(`postgres://${host}:${port}/${adminDbName}`);
+    const sequelize = new Sequelize(`postgres://${host}:${port}/${adminDbName}`, packageJsonDbConfig.options);
 
     return sequelize.query(`DROP DATABASE "${dbName}"`);
   }
@@ -62,7 +62,7 @@ class PostgresStore extends BaseStore {
   static createDb(host = packageJsonDbConfig.host,
                   port = packageJsonDbConfig.port,
                   dbName = packageJsonDbConfig.dbName) {
-    const sequelize = new Sequelize(`postgres://${host}:${port}`);
+    const sequelize = new Sequelize(`postgres://${host}:${port}`, packageJsonDbConfig.options);
 
     return sequelize.query(`CREATE DATABASE "${dbName}"`);
   }

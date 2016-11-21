@@ -17,9 +17,14 @@ class AuthController {
         data: [
           {
             email: state.email,
-            password: state.password,
+            passwordHash: state.password,
             firstName: state.firstName,
             lastName: state.lastName,
+            emailValidated: false,
+            version: 0,
+            suspended: false,
+            dataCreated: null,
+            lastModified: null,
           },
         ],
       },
@@ -45,7 +50,7 @@ class AuthController {
         data: [
           {
             email: state.email,
-            password: state.password,
+            passwordHash: state.password,
           },
         ],
       },
