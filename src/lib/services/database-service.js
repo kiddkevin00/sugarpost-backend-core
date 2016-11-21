@@ -11,7 +11,7 @@ class DatabaseService {
     const dbPort = process.env.MONGODB_URI ?
       process.env.MONGODB_URI.split('@')[1].split(':')[1].split('/')[0] : null;
     const dbUser = process.env.MONGODB_URI ?
-      process.env.MONGODB_URIa.split('@')[0].split('://')[1].split(':')[0] : null;
+      process.env.MONGODB_URI.split('@')[0].split('://')[1].split(':')[0] : null;
     const dbPassword = process.env.MONGODB_URI ?
       process.env.MONGODB_URI.split('@')[0].split('://')[1].split(':')[1] : null;
     const conn = new ConnectionPool(constants.STORE.TYPES.MONGO_DB, dbHost, dbPort, dbUser,
