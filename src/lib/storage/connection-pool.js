@@ -19,13 +19,15 @@ Promise.promisifyAll([
  */
 class ConnectionPool {
 
-  constructor(storeType = constants.STORE.TYPES.MONGO_DB, host, port, dbName) {
+  constructor(storeType = constants.STORE.TYPES.MONGO_DB, host, port, dbName, dbUser, dbPassword) {
     const packageJsonDbConfig = packageJson.config.databases[storeType];
 
     this.client = null;
     this.host = host || packageJsonDbConfig.host;
     this.port = port || packageJsonDbConfig.port;
     this.dbName = dbName || packageJsonDbConfig.dbName;
+    this.dbUser = dbUser;
+    this.dbPassword = dbPassword;
 
     const err = new StandardErrorWrapper([
       {
@@ -36,15 +38,23 @@ class ConnectionPool {
       },
     ]);
 
+    let connectionUriPrefix;
+
     switch (storeType) {
       case constants.STORE.TYPES.MONGO_DB:
-        this.client = mongojs(`${this.host}:${this.port}/${this.dbName}`, [], packageJsonDbConfig.options);
+        if (this.dbUser && this.dbPassword) {
+          this.client = mongojs(`mongodb://${this.dbUser}:${this.dbPassword}@${this.host}:${this.port}/${this.dbName}`, [], packageJsonDbConfig.options);
+        } else {
+          this.client = mongojs(`mongodb://${this.host}:${this.port}/${this.dbName}`, [], packageJsonDbConfig.options);
+        }
         break;
-
       case constants.STORE.TYPES.POSTGRES:
-        this.client = new Sequelize(`postgres://${this.host}:${this.port}/${this.dbName}`, packageJsonDbConfig.options);
+        if (this.dbUser && this.dbPassword) {
+          this.client = new Sequelize(`postgres://${this.dbUser}:${this.dbPassword}@${this.host}:${this.port}/${this.dbName}`, packageJsonDbConfig.options);
+        } else {
+          this.client = new Sequelize(`postgres://${this.host}:${this.port}/${this.dbName}`, packageJsonDbConfig.options);
+        }
         break;
-
       default:
         throw(err);
     }
