@@ -1,7 +1,7 @@
-const SYSTEM_CONSTANTS = require('./system');
-const STORE_CONSTANTS = require('./store');
+const systemConstants = require('./system');
+const storeConstants = require('./store');
 
 module.exports = exports = {
-  SYSTEM: SYSTEM_CONSTANTS,
-  STORE: STORE_CONSTANTS,
+  SYSTEM: systemConstants,
+  STORE: storeConstants,
 };

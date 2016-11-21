@@ -1,6 +1,6 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "This is the backend stack of a generic BBS.",
   "main": "./src/lib/app.js",
   "bin": {
@@ -13,7 +13,7 @@
       "mongo-store": {
         "host": "127.0.0.1",
         "port": 27017,
-        "dbName": "bulletin-board-system",
+        "dbName": "BulletinBoardSystem",
         "options": {
           "auto_reconnect": true,
           "poolSize": 10,
@@ -26,11 +26,12 @@
       "postgres-store": {
         "host": "127.0.0.1",
         "port": 5432,
-        "dbName": "bulletin-board-system",
+        "dbName": "BulletinBoardSystem",
         "options": {
           "pool": {
-            "max": 10,
-            "idle": 3000
+            "maxConnections": 10,
+            "maxIdleTime": 240,
+            "logging": true
           }
         }
       }
@@ -47,6 +48,7 @@
   "scripts": {
     "------------- EXPOSED -------------": "",
     "start": "node --stack-size=65500 src/lib/app.js",
+    "start-prod": "NODE_ENV=production node --stack-size=65500 src/lib/app.js",
     "lint": "npm run eslint",
     "test": "cat src/spec/support/run_all_the_tests.txt; npm run mocha-unit-test",
     "integration-test": "",

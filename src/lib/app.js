@@ -3,7 +3,7 @@
  */
 
 const packageJson = require('../../package.json');
-const setupExpressServer = require('./server/express-server');
+const setupExpressServer = require('./servers/express-server');
 const setupRoutes = require('./routes/');
 const express = require('express');
 const http = require('http');
@@ -17,11 +17,28 @@ const server = http.createServer(app);
 setupExpressServer(app);
 setupRoutes(app);
 
-const webServer = server.listen(packageJson.config.port, packageJson.config.ip, () => {
+const ip = process.env.IP || packageJson.config.ip;
+const port = process.env.PORT || packageJson.config.port;
+
+const webServer = server.listen(port, ip, () => {
   // [TODO] Replace with logger module.
   console.log('Express server listening on port: %d at IP: %s, in %s mode',
     webServer.address().port,
     webServer.address().address, app.get('env'));
+});
+
+// [TODO] Cleans up whenever the app crashes.
+process.on('uncaughtException', () => {
+  console.log('Crashed..');
+});
+// [TODO] Cleans up whenever getting interrupted by an user (ctrl + c).
+process.on('SIGINT', () => {
+  console.log('Interrupted by an user..');
+});
+
+// [TODO] Cleans up whenever getting a default kill signal.
+process.on('SIGTERM', () => {
+  console.log('Got a default kill signal..');
 });
 
 module.exports = exports = app;

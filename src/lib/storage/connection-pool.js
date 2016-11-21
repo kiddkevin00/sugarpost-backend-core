@@ -1,3 +1,4 @@
+const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const constants = require('../constants/');
 const packageJson = require('../../../package.json');
 const Promise = require('bluebird');
@@ -26,15 +27,14 @@ class ConnectionPool {
     this.port = port || packageJsonDbConfig.port;
     this.dbName = dbName || packageJsonDbConfig.dbName;
 
-    const err = new Error({
-      errors: [
-        {
-          code: constants.STORE.ERROR_CODES.STORAGE_TYPE_NOT_FOUND,
-          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-          message: constants.STORE.ERROR_MSG.STORAGE_TYPE_NOT_FOUND,
-        },
-      ],
-    });
+    const err = new StandardErrorWrapper([
+      {
+        code: constants.SYSTEM.ERROR_CODES.NOT_FOUND,
+        name: constants.STORE.ERROR_NAMES.STORAGE_TYPE_NOT_FOUND,
+        message: constants.STORE.ERROR_MSG.STORAGE_TYPE_NOT_FOUND,
+        source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+      },
+    ]);
 
     switch (storeType) {
       case constants.STORE.TYPES.MONGO_DB:

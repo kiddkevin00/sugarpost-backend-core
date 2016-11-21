@@ -6,16 +6,30 @@ class ProcessState {
     this[stateContext] = {};
 
     this[stateContext].context = { containerId, requestCount };
-    this[stateContext].sampleParam = options.sampleParam;
-
+    this[stateContext].email = options.email;
+    this[stateContext].password = options.password;
+    this[stateContext].firstName = options.firstName;
+    this[stateContext].lastName = options.lastName;
   }
 
   get context() {
     return this[stateContext].context;
   }
 
-  get sampleParam() {
-    return this[stateContext].sampleParam;
+  get email() {
+    return this[stateContext].email;
+  }
+
+  get password() {
+    return this[stateContext].password;
+  }
+
+  get firstName() {
+    return this[stateContext].firstName;
+  }
+
+  get lastName() {
+    return this[stateContext].lastName;
   }
 
   static create(options, context) {
