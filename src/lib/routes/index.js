@@ -7,8 +7,23 @@ const { Router } = require('express');
 
 function setupRoutes(app) {
   // [TODO]
-  app.get('/ping', (req, res) => { res.send('OK'); });
-  app.get('/health', (req, res) => {});
+  app.get('/ping', (req, res) => res.json({
+    uptime: 123,
+    hostname: 'host 1',
+  }));
+  app.get('/health', (req, res) => res.json({
+    version: 0,
+    self: {
+      name: 'bulletin-board-system-backend',
+      version: 1,
+      status: 200,
+      dateStamp: new Date().toString(),
+      hostname: 'host 1',
+    },
+    dependencies: {
+      http: [],
+    },
+  }));
 
   app.use('/api', setupApiRoutes());
 

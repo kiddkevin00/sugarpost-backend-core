@@ -1,3 +1,18 @@
+/*
+ * Standard error format:
+ *  {
+ *    errors: [
+ *      {
+ *        code: 404,
+ *        source: 'current-app',
+ *        name: 'SOMETHING_NOT_FOUND', // optional
+ *        message: 'Something is not found.', // optional
+ *        detail: `err` // optional
+ *      }
+ *    ]
+ *  }
+ */
+
 class StandardErrorWrapper {
 
   constructor(err) {

@@ -2,6 +2,7 @@ const DatabaseService = require('../services/database-service');
 const ProcessSate = require('../process-state/');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const constants = require('../constants/');
+const Promise = require('bluebird');
 
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;
@@ -12,18 +13,20 @@ class AuthController {
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
     const signupStrategy = {
+      storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
+        storeType: constants.STORE.TYPES.MONGO_DB,
         type: constants.STORE.OPERATIONS.INSERT,
         data: [
           {
             email: state.email,
-            passwordHash: state.password,
+            passwordHash: state.password, // [TODO]
             firstName: state.firstName,
             lastName: state.lastName,
             emailValidated: false,
             version: 0,
             suspended: false,
-            dataCreated: null,
+            dateCreated: null,
             lastModified: null,
           },
         ],
@@ -45,6 +48,7 @@ class AuthController {
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
     const signupStrategy = {
+      storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
         type: constants.STORE.OPERATIONS.SELECT,
         data: [
@@ -76,7 +80,7 @@ class AuthController {
   }
 
   static _handleRequest(state, res, Svc, strategy) {
-    return Svc.execute(state, strategy)
+    return Promise.try(() => Svc.execute(state, strategy))
       .catch((_err) => {
         let err;
 

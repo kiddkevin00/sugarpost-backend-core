@@ -38,8 +38,6 @@ class ConnectionPool {
       },
     ]);
 
-    let connectionUriPrefix;
-
     switch (storeType) {
       case constants.STORE.TYPES.MONGO_DB:
         if (this.dbUser && this.dbPassword) {
