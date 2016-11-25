@@ -15,22 +15,34 @@
 
 class StandardErrorWrapper {
 
-  constructor(err) {
-    if (Array.isArray(err)) {
-      this.errorStack = err;
-    } else if (err) {
-      const errMsg = err.toString !== '[object Object]' ?
-        err.toString() : JSON.stringify(err, null, 2);
+  constructor(initialErr) {
+    if (Array.isArray(initialErr)) {
+      /*
+       * If initial error(s) is(are) wrapped into an array, each of them should follow standard
+       * error format.
+       */
+      this.errorStack = initialErr;
+    } else if (initialErr) {
+      // An initial error doesn't follow standard error format, and will try to standardized it.
+      const errMsg = initialErr.toString !== '[object Object]' ?
+        initialErr.toString() : JSON.stringify(initialErr, null, 2);
 
-      this.errorStack = [{ message: errMsg }];
+      this.errorStack = [{ message: errMsg, detail: initialErr }];
     } else {
+      // Without initial error.
       this.errorStack = [];
     }
   }
 
   append(newError) {
-    const errElement = (newError instanceof Error) ?
-      { message: newError.toString() } : newError;
+    let errElement;
+
+    if (newError.toString !== '[object Object]') {
+      errElement = { message: newError.toString(), detail: newError };
+    } else {
+      // If new error is an object, it should follow standard error format.
+      errElement = newError;
+    }
 
     this.errorStack.unshift(errElement);
   }
@@ -42,21 +54,6 @@ class StandardErrorWrapper {
     };
   }
 
-  static standardizeError(newError, originalError) {
-    let standardizedError;
-
-    if (originalError && originalError.append) {
-      standardizedError = originalError;
-    } else if (originalError) {
-      standardizedError = new StandardErrorWrapper(originalError);
-    } else {
-      standardizedError = new StandardErrorWrapper();
-    }
-
-    standardizedError.append(newError);
-
-    return standardizedError;
-  }
 }
 
 module.exports = exports = StandardErrorWrapper;

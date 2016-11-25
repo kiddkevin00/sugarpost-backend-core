@@ -11,8 +11,8 @@
     "no-underscore-dangle": 0,
     "no-unused-expressions": 1,
     "no-unused-vars": 1,
-    "no-use-before-define": ["error", { "functions": false, "classes": true }],
+    "no-use-before-define": [2, { "functions": false, "classes": true }],
     "new-cap": [2, { "capIsNew": false }],
-    "import/no-extraneous-dependencies": [2, {"devDependencies": true, "optionalDependencies": false, "peerDependencies": false}]
+    "import/no-extraneous-dependencies": [2, {"devDependencies": true, "optionalDependencies": false}]
   }
 }

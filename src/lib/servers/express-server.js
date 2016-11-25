@@ -48,6 +48,8 @@ function setupExpressServer(app) {
     app.use(morgan('dev'));
     app.use(errorHandler()); // Error handler - has to be the last
   }
+
+  return app;
 }
 
 module.exports = exports = setupExpressServer;
