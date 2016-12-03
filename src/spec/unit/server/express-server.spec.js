@@ -1,31 +1,28 @@
-const setupExpressServer = require('../../../lib/server/express-server');
+const setupExpressServer = require('../../../lib/servers/express-server');
+const bodyParser = require('body-parser');
 const compression = require('compression');
+const session = require('express-session');
 
-// [TODO]
 describe('Express server', function () {
   let expressApp;
   let app;
 
-  beforeEach(() => {
-    expressApp = { use: stub(), get: stub() };
+  beforeEach(function () {
+    expressApp = { use: stub(), get: stub(), set: stub() };
+    app = setupExpressServer(expressApp);
   });
 
-  it('can be initialized', () => {
-    app = setupExpressServer(expressApp);
-
+  it('can be initialized', function () {
     expect(app).to.equal(expressApp);
   });
-  
-  it('attaches middleware for compression ', function () {
-    const s = spy(compression);
 
-    app = setupExpressServer(expressApp);
-
-    expect(s).to.have.been.called;
+  it('attaches at least all the required middlewares', function () {
+    expect(app.use.callCount).to.be.at.least(8);
   });
 
-  it('attaches middles for parsing request body', function () {
-
+  it('sets Jade as view engine', function () {
+    expect(app.set).to.have.been.calledWith('views');
+    expect(app.set).to.have.been.calledWith('view engine', 'jade');
   });
 
 });

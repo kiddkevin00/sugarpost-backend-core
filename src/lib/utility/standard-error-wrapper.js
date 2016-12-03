@@ -1,5 +1,6 @@
 /*
  * Standard error format:
+ *  ```
  *  {
  *    errors: [
  *      {
@@ -11,6 +12,7 @@
  *      }
  *    ]
  *  }
+ *  ```
  */
 
 class StandardErrorWrapper {

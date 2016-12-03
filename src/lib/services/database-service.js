@@ -37,7 +37,7 @@ class DatabaseService {
     const dbName = connUri ? connUri.split('://')[1].split('/')[1] : null;
     const dbPassword = connUri ? connUri.split('@')[0].split('://')[1].split(':')[1] : null;
 
-    const conn = new ConnectionPool(constants.STORE.TYPES.MONGO_DB, dbHost, dbPort, dbName,
+    const conn = new ConnectionPool(storeType, dbHost, dbPort, dbName,
       dbUser, dbPassword);
     const repo = RepoFactory.manufacture(storeType);
 

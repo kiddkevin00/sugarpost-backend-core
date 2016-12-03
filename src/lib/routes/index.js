@@ -27,7 +27,7 @@ function setupRoutes(app) {
 
   app.use('/api', setupApiRoutes());
 
-  // All not-found API endpoints should return an custom 404 page.
+  // All not-found API endpoints should return a custom 404 page.
   app.route('/:url(api)*')
     .get((req, res) => res.render('404', (err) => {
       if (err) {

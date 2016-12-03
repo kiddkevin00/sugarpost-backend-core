@@ -1,27 +1,31 @@
 const RepoFactory = require('../../../lib/storage/repo-factory');
+const MongoStore = require('../../../lib/storage/store/mongo-store');
 const constants = require('../../../lib/constants/');
 
-describe('Repo factory', () => {
+describe('Repo factory', function () {
   let repo;
+  let stubFuncs;
 
-  beforeEach(() => {
-    repo = {};
+  beforeEach(function () {
+    stubFuncs = [];
   });
 
-  it('can manufacture a fully-functional Mongo repo', () => {
+  afterEach(function () {
+    for (const stubFunc of stubFuncs) {
+      stubFunc.restore();
+    }
+  });
+
+  it('can manufacture an existed fully-functional repo :: manufacture()', function () {
+    stubFuncs.push(stub(RepoFactory, '_validateStoreInterface'));
+
     repo = RepoFactory.manufacture(constants.STORE.TYPES.MONGO_DB);
 
-    expect(repo).to.have.property('insert').that.is.an('function');
-    expect(repo).to.have.property('select').that.is.an('function');
-    expect(repo).to.have.property('update').that.is.an('function');
-    expect(repo).to.have.property('delete').that.is.an('function');
-    expect(repo).to.have.property('configIndex').that.is.an('function');
-    expect(repo).to.have.property('upsert').that.is.an('function');
-    expect(repo).to.have.property('dropTable').that.is.an('function');
-    expect(repo).to.have.property('dropDb').that.is.an('function');
+    expect(RepoFactory._validateStoreInterface).to.have.been.calledWith(repo);
+    expect(repo).to.equal(MongoStore);
   });
 
-  it('can check if the store interface implemented fully', () => {
+  it('can check if the store interface implemented fully :: _validateStoreInterface()', function () {
     repo = {
       insert: () => {},
       select: () => {},

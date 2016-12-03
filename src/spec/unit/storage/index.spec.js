@@ -12,6 +12,6 @@ describe('Storage root', function () {
       expect(storeModule.ConnectionPool).to.exist;
     });
 
-  })
+  });
 
 });

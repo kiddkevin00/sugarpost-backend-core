@@ -14,8 +14,9 @@ Promise.promisifyAll([
 /**
  * This is the only class that is stateful for storage component.
  *
- * [Note] Don't cache the connection for the reason of separate concern: DB Connector (Driver)
- * should handle that itself if there is lots of connections created at the same time.
+ * [Note] Don't cache the connection for the reason of separate concern.  DB Connector (Driver)
+ * should be the one that handles that itself if there is lots of connections created at the same
+ * time.
  */
 class ConnectionPool {
 

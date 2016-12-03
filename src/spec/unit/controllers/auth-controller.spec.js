@@ -1,14 +1,17 @@
-const SampleController = require('../../../lib/controllers/auth-controller');
-const SampleSvc = require('../../../lib/services/database-service');
+const AuthController = require('../../../lib/controllers/auth-controller');
+const DatabaseSvc = require('../../../lib/services/database-service');
 
-describe('Sample controller', function () {
+describe('Auth controller', function () {
   let req;
   let res;
   let stubFuncs;
 
   beforeEach(function () {
-    req = {};
     res = {};
+    res.status = stub().returnsThis;
+    res.json = stub().returnsThis;
+
+    req = {};
     stubFuncs = [];
   });
 
@@ -19,51 +22,53 @@ describe('Sample controller', function () {
   });
 
   // [TODO]
-  it('can handle signup request :: login()', function () {
+  it('can handle signup request :: signup()', function () {
 
   });
-
-  // [TODO]
+  
   it('can handle login request :: login()', function () {
-    const result = {};
-    const expectedResult = JSON.parse(JSON.stringify(result));
+    stubFuncs.push(stub(AuthController, '_handleRequest', () => Promise.resolve()));
 
-    stubFuncs.push(stub(SampleController, '_handleRequest', () => Promise.resolve(result)));
+    req.body = {
+      email: 'foo@bar.com',
+      password: 'foobar-secret',
+    };
 
-    const promise = SampleController.login(req, res);
+    const promise = AuthController.login(req, res);
 
-    expect(SampleController._handleRequest).to.have.been.calledWith(req, res);
-    return expect(promise).to.be.eventually.deep.equal(expectedResult);
+    expect(AuthController._handleRequest).to.have.been.calledWith(match.object, res);
+    return expect(promise).to.eventually.deep.equal(res);
   });
 
-  describe('can handle general request :: _handleRequest()', () => {
+  describe('can handle general request :: _handleRequest()', function () {
 
     beforeEach(function () {
-      res.status = stub().returnsThis;
-      res.send = stub().returnsThis;
-      res.json = stub().returnsThis;
-      stubFuncs.push(stub(SampleSvc, 'execute'));
+      stubFuncs.push(stub(DatabaseSvc, 'execute'));
     });
 
     it('on success', function () {
+      const result = {};
+      const expectedResult = JSON.parse(JSON.stringify(result));
+      const state = {};
       const strategy = {};
 
-      SampleSvc.execute.returns(Promise.resolve());
+      DatabaseSvc.execute.returns(Promise.resolve(result));
 
-      const promise = SampleController._handleRequest({}, res, SampleSvc, strategy);
+      const promise = AuthController._handleRequest(state, res, DatabaseSvc, strategy);
 
-      expect(SampleSvc.execute).to.have.been.calledWith(match.object, strategy);
-      return expect(promise).to.eventually.equal(res);
+      expect(DatabaseSvc.execute).to.have.been.calledWith(state, strategy);
+      return expect(promise).to.eventually.deep.equal(expectedResult);
     });
 
     it('on failure', function () {
+      const state = {};
       const strategy = {};
 
-      SampleSvc.execute.returns(Promise.reject());
+      DatabaseSvc.execute.returns(Promise.reject());
 
-      const promise = SampleController._handleRequest({}, res, SampleSvc, strategy);
+      const promise = AuthController._handleRequest(state, res, DatabaseSvc, strategy);
 
-      expect(SampleSvc.execute).to.have.been.calledWith(match.object, strategy);
+      expect(DatabaseSvc.execute).to.have.been.calledWith(state, strategy);
       return expect(promise).to.eventually.equal(res);
     });
 

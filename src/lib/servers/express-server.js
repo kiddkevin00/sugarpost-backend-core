@@ -23,7 +23,7 @@ function setupExpressServer(app) {
 
   // [TODO] Uses JWT instead of session.
   app.use(session({
-    secret: 'SESSION_SECRET', // [TODO]
+    secret: 'SESSION_SECRET',
     path: '/',
     httpOnly: false,
     secure: false, // HTTPS-enabled website required.

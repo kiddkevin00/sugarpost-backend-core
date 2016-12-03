@@ -40,7 +40,7 @@ class AuthController {
         requestCount += 1;
 
         return res.status(constants.SYSTEM.STATUS_CODES.OK)
-          .send(result);
+          .json(result);
       });
   }
 
@@ -60,22 +60,24 @@ class AuthController {
       },
       tableName: constants.STORE.TABLE_NAMES.USER,
     };
-    const options = req.body;
 
-    return AuthController._handleRequest(options, res, DatabaseService, signupStrategy)
+    return AuthController._handleRequest(state, res, DatabaseService, signupStrategy)
       .then((result) => {
-        const response = { isAuthenticated: false };
-        let statusCode = constants.SYSTEM.STATUS_CODES.UNAUTHENTICATED;
+        let response;
+        let statusCode;
 
-        if (result.length) {
-          response.isAuthenticated = true;
+        if (result && result.length) {
+          response = { isAuthenticated: true };
           statusCode = constants.SYSTEM.STATUS_CODES.OK;
+        } else {
+          response = { isAuthenticated: false };
+          statusCode = constants.SYSTEM.STATUS_CODES.UNAUTHENTICATED;
         }
 
         requestCount += 1;
 
         return res.status(statusCode)
-          .send(response);
+          .json(response);
       });
   }
 
@@ -95,10 +97,10 @@ class AuthController {
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
         });
 
-        res.status(constants.SYSTEM.STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .json(err.format({ containerId, requestCount }));
-
         requestCount += 1;
+
+        return res.status(constants.SYSTEM.STATUS_CODES.INTERNAL_SERVER_ERROR)
+          .json(err.format({ containerId, requestCount }));
       });
   }
 
