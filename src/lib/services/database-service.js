@@ -49,13 +49,17 @@ class DatabaseService {
 
         for (const doc of docs) {
           for (const field of uniqueFields) {
-            if (state[field] === doc[field]) {
+            if (doc[field] === state[field]) {
               const validationErr = new StandardErrorWrapper([
                 {
                   code: constants.SYSTEM.ERROR_CODES.TABLE_CONSTRAINT_VALIDATION,
                   name: constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE,
                   source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
                   message: constants.STORE.ERROR_MSG.REQUIRED_FIELDS_NOT_UNIQUE,
+                  detail: {
+                    violateField: doc[field],
+                    requiredFields: [uniqueFields],
+                  },
                 },
               ]);
 

@@ -39,7 +39,7 @@ class StandardErrorWrapper {
   append(newError) {
     let errElement;
 
-    if (newError.toString !== '[object Object]') {
+    if (newError.toString() !== '[object Object]') {
       errElement = { message: newError.toString(), detail: newError };
     } else {
       // If new error is an object, it should follow standard error format.

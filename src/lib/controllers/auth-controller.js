@@ -9,6 +9,38 @@ let requestCount = 0;
 
 class AuthController {
 
+  static subscribe(req, res) {
+    const context = { containerId, requestCount };
+    const state = ProcessSate.create(req.body, context);
+    const subscribeStrategy =  {
+      storeType: constants.STORE.TYPES.MONGO_DB,
+      operation: {
+        storeType: constants.STORE.TYPES.MONGO_DB,
+        type: constants.STORE.OPERATIONS.INSERT,
+        data: [
+          {
+            email: state.email,
+            emailValidated: false,
+            dateCreated: new Date(),
+            lastModified: null,
+          },
+        ],
+      },
+      tableName: constants.STORE.TABLE_NAMES.SUBSCRIBER,
+      uniqueFields: ['email'],
+    };
+
+    return AuthController._handleRequest(state, res, DatabaseService, subscribeStrategy)
+      .then((result) => {
+
+
+        requestCount += 1;
+
+        return res.status(constants.SYSTEM.ERROR_CODES.OK)
+          .json(result);
+      });
+  }
+
   static signup(req, res) {
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
@@ -26,7 +58,7 @@ class AuthController {
             emailValidated: false,
             version: 0,
             suspended: false,
-            dateCreated: null,
+            dateCreated: new Date(),
             lastModified: null,
           },
         ],
@@ -91,7 +123,6 @@ class AuthController {
         } else {
           err = new StandardErrorWrapper(_err);
         }
-
         err.append({
           code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,

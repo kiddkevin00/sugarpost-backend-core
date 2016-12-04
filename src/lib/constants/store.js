@@ -24,4 +24,5 @@ exports.OPERATIONS = {
 
 exports.TABLE_NAMES = {
   USER: 'user',
+  SUBSCRIBER: 'subscriber',
 };
