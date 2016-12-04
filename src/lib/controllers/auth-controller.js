@@ -39,7 +39,7 @@ class AuthController {
       .then((result) => {
         requestCount += 1;
 
-        return res.status(constants.SYSTEM.STATUS_CODES.OK)
+        return res.status(constants.SYSTEM.ERROR_CODES.OK)
           .json(result);
       });
   }
@@ -68,10 +68,10 @@ class AuthController {
 
         if (result && result.length) {
           response = { isAuthenticated: true };
-          statusCode = constants.SYSTEM.STATUS_CODES.OK;
+          statusCode = constants.SYSTEM.ERROR_CODES.OK;
         } else {
           response = { isAuthenticated: false };
-          statusCode = constants.SYSTEM.STATUS_CODES.UNAUTHENTICATED;
+          statusCode = constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED;
         }
 
         requestCount += 1;
@@ -93,13 +93,13 @@ class AuthController {
         }
 
         err.append({
-          code: constants.SYSTEM.STATUS_CODES.INTERNAL_SERVER_ERROR,
+          code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
         });
 
         requestCount += 1;
 
-        return res.status(constants.SYSTEM.STATUS_CODES.INTERNAL_SERVER_ERROR)
+        return res.status(constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR)
           .json(err.format({ containerId, requestCount }));
       });
   }

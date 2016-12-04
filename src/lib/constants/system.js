@@ -1,10 +1,8 @@
 const sources = {
-  bulletinBoardSystem: 'bulletin-board-system',
+  BULLETIN_BOARD_SYSTEM: 'bulletin-board-system',
 };
 
-exports.SOURCES = sources;
-
-const statusCodes = {
+const httpStatusCodes = {
   OK: 200,
   BAD_REQUEST: 400,
   UNAUTHENTICATED: 401,
@@ -13,14 +11,16 @@ const statusCodes = {
   NOT_IMPLEMENTED: 501,
 };
 
-exports.STATUS_CODES = statusCodes;
+exports.SOURCES = sources;
 
-exports.ERROR_CODES = Object.assign(statusCodes, {
+exports.HTTP_STATUS_CODES = httpStatusCodes;
+
+exports.ERROR_CODES = Object.assign({}, httpStatusCodes, {
   TABLE_CONSTRAINT_VALIDATION: 1000,
 });
 
 exports.COMMON = {
-  CURRENT_SOURCE: sources.bulletinBoardSystem,
+  CURRENT_SOURCE: sources.BULLETIN_BOARD_SYSTEM,
 };
 
 exports.DEFAULT_CONFIG = {

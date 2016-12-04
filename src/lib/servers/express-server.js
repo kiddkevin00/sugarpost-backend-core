@@ -3,13 +3,17 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const favicon = require('serve-favicon');
 const morgan = require('morgan');
 const errorHandler = require('errorhandler');
 const fs = require('fs');
 const path = require('path');
+const cors = require('cors');
 const express = require('express');
 
 function setupExpressServer(app) {
+  app.use(cors()); // [TODO]
+
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(bodyParser.json({
@@ -31,6 +35,8 @@ function setupExpressServer(app) {
     resave: true, // Forces the session to be saved back to the session store.
     saveUninitialized: false,
   }));
+
+  app.use(favicon(path.resolve(__dirname, '../assets/', 'favicon.ico')));
 
   // For an 404 error page only.
   app.set('views', path.resolve(__dirname, '../views'));
