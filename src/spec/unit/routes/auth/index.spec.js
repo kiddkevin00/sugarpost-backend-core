@@ -1,8 +1,8 @@
 const authRouter = require('../../../../lib/routes/auth/');
 
-describe('Auth router', () => {
+describe('Auth router', function () {
 
-  it('should have all the endpoints registered', () => {
+  it('should have all the endpoints registered', function () {
     const routes = [];
 
     authRouter.stack.forEach((r) => {
@@ -12,6 +12,7 @@ describe('Auth router', () => {
     });
 
     expect(routes).to.include('/signup');
+    expect(routes).to.include('/login');
   });
 
 });

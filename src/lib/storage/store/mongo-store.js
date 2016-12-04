@@ -23,6 +23,7 @@ class MongoStore extends BaseStore {
     return connection.client.collection(collectionName).removeAsync(query);
   }
 
+  // [TODO]
   static configIndex(connection) {
 
   }

@@ -23,7 +23,7 @@ class RepoFactory {
     } else {
       const err = new StandardErrorWrapper([
         {
-          code: constants.SYSTEM.STATUS_CODES.NOT_IMPLEMENTED,
+          code: constants.SYSTEM.ERROR_CODES.NOT_IMPLEMENTED,
           name: constants.STORE.ERROR_NAMES.NOT_IMPLEMENTED,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
           message: constants.STORE.ERROR_MSG.INTERFACE_NOT_IMPLEMENTED,

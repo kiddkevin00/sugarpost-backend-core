@@ -1,14 +1,13 @@
 const ConnectionPool = require('../../src/lib/storage/connection-pool');
 const RepoFactory = require('../../src/lib/storage/repo-factory');
 const constants = require('../../src/lib/constants/index');
-const Sequelize = require('sequelize');
+const Sequelize = require('sequelize'); // [TODO] Should not have to require `Sequelize` npm.
 const Chance = require('chance');
 const Promise = require('bluebird');
 
 let conn;
 const repo = RepoFactory.manufacture(constants.STORE.TYPES.POSTGRES);
 const tableName = 'testPerson';
-// [TODO] Shoudn't have to require `Sequelize` npm.
 const schema = {
   _id: {
     type: Sequelize.INTEGER,

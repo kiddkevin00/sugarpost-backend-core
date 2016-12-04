@@ -3,6 +3,7 @@ const { Router } = require('express');
 
 const router = Router();
 
+router.post('/subscribe', Controller.subscribe);
 router.post('/signup', Controller.signup);
 router.post('/login', Controller.login);
 

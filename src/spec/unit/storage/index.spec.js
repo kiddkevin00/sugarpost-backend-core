@@ -1,13 +1,17 @@
 const storeModule = require('../../../lib/storage/');
 
-describe('Storage component', () => {
+describe('Storage root', function () {
 
-  it('exposes a repo factory class', () => {
-    expect(storeModule.RepoFactory).to.exist;
-  });
+  describe('should contain all the exposed class(es) within storage component', function () {
 
-  it('exposes a connection pool class', () => {
-    expect(storeModule.ConnectionPool).to.exist;
+    it('including a repo factory class', function () {
+      expect(storeModule.RepoFactory).to.exist;
+    });
+
+    it('including a connection pool class', function () {
+      expect(storeModule.ConnectionPool).to.exist;
+    });
+
   });
 
 });

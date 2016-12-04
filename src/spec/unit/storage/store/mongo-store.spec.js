@@ -1,6 +1,6 @@
 const MongoStore = require('../../../../lib/storage/store/mongo-store');
 
-describe('Mongo (low-level) store', () => {
+describe('Mongo (low-level) store', function () {
   let conn;
   let saveAsync;
   let findAsync;
@@ -12,8 +12,9 @@ describe('Mongo (low-level) store', () => {
   let onAsync;
   let collectionName;
   let mockDoc;
+  let mockDoc2;
 
-  beforeEach(() => {
+  beforeEach(function () {
     saveAsync = stub();
     findAsync = stub();
     updateAsync = stub();
@@ -22,6 +23,7 @@ describe('Mongo (low-level) store', () => {
     dropDatabaseAsync = stub();
     closeAsync = stub();
     onAsync = stub();
+
     conn = {
       client: {
         dropDatabaseAsync,
@@ -36,56 +38,64 @@ describe('Mongo (low-level) store', () => {
         }),
       },
     };
+    spy(conn.client, 'collection');
+
     collectionName = 'foo';
     mockDoc = {};
+    mockDoc2 = {};
   });
 
-  it('implements insert functionality', () => {
+  it('implements insert functionality :: insert()', function () {
     expect(MongoStore).to.have.property('insert').that.is.an('function');
 
     MongoStore.insert(conn, collectionName, mockDoc);
 
-    expect(saveAsync).to.have.been.called;
+    expect(conn.client.collection).to.have.been.calledWith(collectionName);
+    expect(saveAsync).to.have.been.calledWith(mockDoc);
   });
 
-  it('implements select functionality', () => {
+  it('implements select functionality :: select()', function () {
     expect(MongoStore).to.have.property('select').that.is.an('function');
 
     MongoStore.select(conn, collectionName, mockDoc);
 
-    expect(findAsync).to.have.been.called;
+    expect(conn.client.collection).to.have.been.calledWith(collectionName);
+    expect(findAsync).to.have.been.calledWith(mockDoc);
   });
 
-  it('implements update functionality', () => {
+  it('implements update functionality :: update()', function () {
     expect(MongoStore).to.have.property('update').that.is.an('function');
 
-    MongoStore.update(conn, collectionName, mockDoc);
+    MongoStore.update(conn, collectionName, mockDoc, mockDoc2);
 
-    expect(updateAsync).to.have.been.called;
+    expect(conn.client.collection).to.have.been.calledWith(collectionName);
+    expect(updateAsync).to.have.been.calledWith(mockDoc, { $set: mockDoc2 });
   });
 
-  it('implements delete functionality', () => {
+  it('implements delete functionality :: delete()', function () {
     expect(MongoStore).to.have.property('delete').that.is.an('function');
 
     MongoStore.delete(conn, collectionName, mockDoc);
 
-    expect(removeAsync).to.have.been.called;
+    expect(conn.client.collection).to.have.been.calledWith(collectionName);
+    expect(removeAsync).to.have.been.calledWith(mockDoc);
   });
 
-  it('implements configuring index functionality', () => {
+  it('implements configuring index functionality :: configIndex() - [TODO]', function () {
     expect(MongoStore).to.have.property('configIndex').that.is.an('function');
 
   });
 
-  it('implements drop table functionality', () => {
+  it('implements drop table functionality :: dropTable()', function () {
     expect(MongoStore).to.have.property('dropTable').that.is.a('function');
 
     MongoStore.dropTable(conn, collectionName, mockDoc);
 
+    expect(conn.client.collection).to.have.been.calledWith(collectionName);
     expect(dropAsync).to.have.been.called;
   });
 
-  it('implements drop DB functionality', () => {
+  it('implements drop DB functionality :: dropDb()', function () {
     expect(MongoStore).to.have.property('dropDb').that.is.a('function');
 
     MongoStore.dropDb(conn, collectionName, mockDoc);
@@ -93,7 +103,7 @@ describe('Mongo (low-level) store', () => {
     expect(dropDatabaseAsync).to.have.been.called;
   });
 
-  it('implements close connection functionality', () => {
+  it('implements close connection functionality :: close()', function () {
     expect(MongoStore).to.have.property('close').that.is.a('function');
 
     MongoStore.close(conn);
@@ -101,14 +111,14 @@ describe('Mongo (low-level) store', () => {
     expect(closeAsync).to.have.been.called;
   });
 
-  it('implements event handling functionality', () => {
+  it('implements event handling functionality :: on()', function () {
     expect(MongoStore).to.have.property('on').that.is.a('function');
 
-    const evnet = 'connect';
+    const event = 'connect';
 
-    MongoStore.on(conn, evnet);
+    MongoStore.on(conn, event);
 
-    expect(onAsync).to.have.been.called;
+    expect(onAsync).to.have.been.calledWith(event);
   });
 
 });

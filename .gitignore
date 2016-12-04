@@ -143,4 +143,4 @@ package.tgz
 
 # test reports
 .coverage/
-/spec
+/spec/

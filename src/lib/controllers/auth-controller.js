@@ -2,28 +2,63 @@ const DatabaseService = require('../services/database-service');
 const ProcessSate = require('../process-state/');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const constants = require('../constants/');
+const Promise = require('bluebird');
 
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;
 
 class AuthController {
 
-  static signup(req, res) {
+  static subscribe(req, res) {
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
-    const signupStrategy = {
+    const subscribeStrategy = {
+      storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
+        storeType: constants.STORE.TYPES.MONGO_DB,
         type: constants.STORE.OPERATIONS.INSERT,
         data: [
           {
             email: state.email,
-            passwordHash: state.password,
+            emailValidated: false,
+            dateCreated: new Date(),
+            lastModified: null,
+          },
+        ],
+      },
+      tableName: constants.STORE.TABLE_NAMES.SUBSCRIBER,
+      uniqueFields: ['email'],
+    };
+
+    return AuthController._handleRequest(state, res, DatabaseService, subscribeStrategy)
+      .then((result) => {
+
+
+        requestCount += 1;
+
+        return res.status(constants.SYSTEM.ERROR_CODES.OK)
+          .json(result);
+      });
+  }
+
+  static signup(req, res) {
+    const context = { containerId, requestCount };
+    const state = ProcessSate.create(req.body, context);
+    const signupStrategy = {
+      storeType: constants.STORE.TYPES.MONGO_DB,
+      operation: {
+        storeType: constants.STORE.TYPES.MONGO_DB,
+        type: constants.STORE.OPERATIONS.INSERT,
+        data: [
+          {
+            email: state.email,
+            passwordHash: state.password, // [TODO]
             firstName: state.firstName,
             lastName: state.lastName,
             emailValidated: false,
             version: 0,
             suspended: false,
-            dataCreated: null,
+            dateCreated: new Date(),
             lastModified: null,
           },
         ],
@@ -36,8 +71,8 @@ class AuthController {
       .then((result) => {
         requestCount += 1;
 
-        return res.status(constants.SYSTEM.STATUS_CODES.OK)
-          .send(result);
+        return res.status(constants.SYSTEM.ERROR_CODES.OK)
+          .json(result);
       });
   }
 
@@ -45,6 +80,7 @@ class AuthController {
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
     const signupStrategy = {
+      storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
         type: constants.STORE.OPERATIONS.SELECT,
         data: [
@@ -56,27 +92,29 @@ class AuthController {
       },
       tableName: constants.STORE.TABLE_NAMES.USER,
     };
-    const options = req.body;
 
-    return AuthController._handleRequest(options, res, DatabaseService, signupStrategy)
+    return AuthController._handleRequest(state, res, DatabaseService, signupStrategy)
       .then((result) => {
-        const response = { isAuthenticated: false };
-        let statusCode = constants.SYSTEM.STATUS_CODES.UNAUTHENTICATED;
+        let response;
+        let statusCode;
 
-        if (result.length) {
-          response.isAuthenticated = true;
-          statusCode = constants.SYSTEM.STATUS_CODES.OK;
+        if (result && result.length) {
+          response = { isAuthenticated: true };
+          statusCode = constants.SYSTEM.ERROR_CODES.OK;
+        } else {
+          response = { isAuthenticated: false };
+          statusCode = constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED;
         }
 
         requestCount += 1;
 
         return res.status(statusCode)
-          .send(response);
+          .json(response);
       });
   }
 
   static _handleRequest(state, res, Svc, strategy) {
-    return Svc.execute(state, strategy)
+    return Promise.try(() => Svc.execute(state, strategy))
       .catch((_err) => {
         let err;
 
@@ -85,16 +123,15 @@ class AuthController {
         } else {
           err = new StandardErrorWrapper(_err);
         }
-
         err.append({
-          code: constants.SYSTEM.STATUS_CODES.INTERNAL_SERVER_ERROR,
+          code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
         });
 
-        res.status(constants.SYSTEM.STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .json(err.format({ containerId, requestCount }));
-
         requestCount += 1;
+
+        return res.status(constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR)
+          .json(err.format({ containerId, requestCount }));
       });
   }
 

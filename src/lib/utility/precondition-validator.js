@@ -5,7 +5,7 @@ class PreconditionValidator {
   static shouldNotBeEmpty(value, errCode) {
     if (Object.is(value, undefined) || Object.is(value, null) || Object.is(value, '')) {
       const err = {
-        status: constants.SYSTEM.STATUS_CODES.BAD_REQUEST,
+        status: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
         code: errCode,
         source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
       };
@@ -18,7 +18,7 @@ class PreconditionValidator {
   static shouldBeEnumType(value, options, errCode) {
     if (options.indexOf(value) < 0) {
       const err = {
-        status: constants.SYSTEM.STATUS_CODES.BAD_REQUEST,
+        status: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
         code: errCode,
         source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
       };
@@ -31,7 +31,7 @@ class PreconditionValidator {
   static shouldBeValidTime(value, errCode) {
     if (isNaN((new Date(value)).getTime())) {
       const err = {
-        status: constants.SYSTEM.STATUS_CODES.BAD_REQUEST,
+        status: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
         code: errCode,
         source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
       };
@@ -49,7 +49,7 @@ class PreconditionValidator {
         array = JSON.parse(array);
       } catch (_err) {
         const err = {
-          status: constants.SYSTEM.STATUS_CODES.BAD_REQUEST,
+          status: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
           code: errCode,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
           message: _err,
@@ -61,7 +61,7 @@ class PreconditionValidator {
 
     if (!Array.isArray(array)) {
       const err = {
-        status: constants.SYSTEM.STATUS_CODES.BAD_REQUEST,
+        status: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
         code: errCode,
         source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
       };
