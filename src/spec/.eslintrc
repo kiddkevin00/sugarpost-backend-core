@@ -8,5 +8,8 @@
     "spy": true,
     "stub": true,
     "match": true
+  },
+  "rules": {
+    "prefer-arrow-callback": 1
   }
 }

@@ -11,6 +11,7 @@ const packageJsonDbConfig = packageJson.config.databases[storeType];
  * This class should only contains static members.
  */
 class PostgresStore extends BaseStore {
+
   static insert(connection, tableName, newDoc) {
     return connection.client.model(tableName).create(newDoc);
   }
@@ -27,6 +28,7 @@ class PostgresStore extends BaseStore {
     return connection.client.model(tableName).destroy({ where: query });
   }
 
+  // [TODO]
   static configIndex(connection) {
 
   }

@@ -28,17 +28,20 @@ const webServer = server.listen(port, ip, () => {
 });
 
 // [TODO] Cleans up whenever the app crashes.
-process.on('uncaughtException', () => {
-  console.log('Crashed..');
+process.on('uncaughtException', (err) => {
+  console.log('Crashed..', err);
+  process.exit(0);
 });
 // [TODO] Cleans up whenever getting interrupted by an user (ctrl + c).
-process.on('SIGINT', () => {
-  console.log('Interrupted by an user..');
+process.on('SIGINT', (err) => {
+  console.log('Interrupted by an user..', err);
+  process.exit(0);
 });
 
 // [TODO] Cleans up whenever getting a default kill signal.
-process.on('SIGTERM', () => {
-  console.log('Got a default kill signal..');
+process.on('SIGTERM', (err) => {
+  console.log('Got a default kill signal..', err);
+  process.exit(0);
 });
 
 module.exports = exports = app;
