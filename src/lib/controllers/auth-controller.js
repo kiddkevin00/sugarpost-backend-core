@@ -12,7 +12,7 @@ class AuthController {
   static subscribe(req, res) {
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
-    const subscribeStrategy =  {
+    const subscribeStrategy = {
       storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
         storeType: constants.STORE.TYPES.MONGO_DB,

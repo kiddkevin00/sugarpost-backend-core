@@ -44,9 +44,12 @@ function setupRoutes(app) {
 function setupApiRoutes() {
   const router = Router();
   const authMiddleware = (req, res, next) => {
+    /* eslint-disable */
     //if (req.session.userId) {
       return next();
     //}
+    /* eslint-ensable */
+
     return res.status(401)
       .send('Unauthenticated');
   };

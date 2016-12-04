@@ -37,5 +37,5 @@ describe('Precondition validator', function () {
     });
 
   });
-  
+
 });

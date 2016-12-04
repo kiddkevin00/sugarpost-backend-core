@@ -25,7 +25,7 @@ describe('Auth controller', function () {
   it('can handle signup request :: signup()', function () {
 
   });
-  
+
   it('can handle login request :: login()', function () {
     stubFuncs.push(stub(AuthController, '_handleRequest', () => Promise.resolve()));
 
