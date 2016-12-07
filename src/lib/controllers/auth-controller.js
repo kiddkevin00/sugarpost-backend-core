@@ -32,12 +32,30 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, subscribeStrategy)
       .then((result) => {
-
-
         requestCount += 1;
 
         return res.status(constants.SYSTEM.ERROR_CODES.OK)
           .json(result);
+      })
+      .catch((_err) => {
+        requestCount += 1;
+
+        if (_err instanceof StandardErrorWrapper &&
+            _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
+          // [TODO] Should use `ResponseFormatter`.
+          return res.status(constants.SYSTEM.ERROR_CODES.OK)
+            .json({ isSubscribed: true });
+        }
+
+        const err = new StandardErrorWrapper(_err);
+
+        err.append({
+          code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+        });
+
+        return res.status(constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR)
+          .json(err.format({ containerId, requestCount }));
       });
   }
 
@@ -73,6 +91,27 @@ class AuthController {
 
         return res.status(constants.SYSTEM.ERROR_CODES.OK)
           .json(result);
+      })
+      .catch((_err) => {
+        requestCount += 1;
+
+        if (_err instanceof StandardErrorWrapper &&
+            _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
+          // [TODO] Should use `ResponseFormatter`.
+          return res.status(constants.SYSTEM.ERROR_CODES.OK)
+            .json({ isSignedUp: true });
+        }
+
+        const err = new StandardErrorWrapper(_err);
+
+        err.append({
+          code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+        });
+
+        return res.status(constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR)
+          .json(err.format({ containerId, requestCount }));
+
       });
   }
 
@@ -95,26 +134,22 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, signupStrategy)
       .then((result) => {
-        let response;
         let statusCode;
+        let response;
 
         if (result && result.length) {
-          response = { isAuthenticated: true };
           statusCode = constants.SYSTEM.ERROR_CODES.OK;
+          response = { isAuthenticated: true };
         } else {
-          response = { isAuthenticated: false };
           statusCode = constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED;
+          response = { isAuthenticated: false };
         }
 
         requestCount += 1;
 
         return res.status(statusCode)
           .json(response);
-      });
-  }
-
-  static _handleRequest(state, res, Svc, strategy) {
-    return Promise.try(() => Svc.execute(state, strategy))
+      })
       .catch((_err) => {
         let err;
 
@@ -133,6 +168,10 @@ class AuthController {
         return res.status(constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR)
           .json(err.format({ containerId, requestCount }));
       });
+  }
+
+  static _handleRequest(state, res, Svc, strategy) {
+    return Promise.try(() => Svc.execute(state, strategy));
   }
 
 }

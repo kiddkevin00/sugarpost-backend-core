@@ -37,7 +37,9 @@ describe('Repo factory', function () {
       dropDb: () => {},
     };
 
-    expect(() => { RepoFactory._validateStoreInterface(repo); }).to.not.throw();
+    expect(() => {
+      RepoFactory._validateStoreInterface(repo);
+    }).to.not.throw();
   });
 
 });
