@@ -22,22 +22,45 @@ describe('Auth controller', function () {
   });
 
   // [TODO]
+  it('can handle subscribe request :: subscribe()', function () {
+
+  });
+
+  // [TODO]
   it('can handle signup request :: signup()', function () {
 
   });
 
-  it('can handle login request :: login()', function () {
-    stubFuncs.push(stub(AuthController, '_handleRequest', () => Promise.resolve()));
+  describe('can handle login request :: login()', function () {
 
-    req.body = {
-      email: 'foo@bar.com',
-      password: 'foobar-secret',
-    };
+    it('on success', function () {
+      stubFuncs.push(stub(AuthController, '_handleRequest', () => Promise.resolve()));
 
-    const promise = AuthController.login(req, res);
+      req.body = {
+        email: 'foo@bar.com',
+        password: 'foobar-secret',
+      };
 
-    expect(AuthController._handleRequest).to.have.been.calledWith(match.object, res);
-    return expect(promise).to.eventually.deep.equal(res);
+      const promise = AuthController.login(req, res);
+
+      expect(AuthController._handleRequest).to.have.been.calledWith(match.object, res);
+      return expect(promise).to.eventually.deep.equal(res);
+    });
+
+    it('on error', function () {
+      stubFuncs.push(stub(AuthController, '_handleRequest', () => Promise.reject()));
+
+      req.body = {
+        email: 'foo@bar.com',
+        password: 'foobar-secret',
+      };
+
+      const promise = AuthController.login(req, res);
+
+      expect(AuthController._handleRequest).to.have.been.calledWith(match.object, res);
+      return expect(promise).to.eventually.deep.equal(res);
+    });
+
   });
 
   describe('can handle general request :: _handleRequest()', function () {
@@ -58,18 +81,6 @@ describe('Auth controller', function () {
 
       expect(DatabaseSvc.execute).to.have.been.calledWith(state, strategy);
       return expect(promise).to.eventually.deep.equal(expectedResult);
-    });
-
-    it('on failure', function () {
-      const state = {};
-      const strategy = {};
-
-      DatabaseSvc.execute.returns(Promise.reject());
-
-      const promise = AuthController._handleRequest(state, res, DatabaseSvc, strategy);
-
-      expect(DatabaseSvc.execute).to.have.been.calledWith(state, strategy);
-      return expect(promise).to.eventually.equal(res);
     });
 
   });
