@@ -1,6 +1,7 @@
 {
   "extends": "airbnb",
   "rules": {
+    "max-len": [2, {"code": 100, "ignoreStrings": true }],
     "keyword-spacing": [2, {
       "overrides": {
         "throw": { "after": false, "before": true }

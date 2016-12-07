@@ -42,7 +42,8 @@ class PostgresStore extends BaseStore {
     const port = connection.port;
     const dbName = connection.dbName;
     const adminDbName = 'postgres';
-    const sequelize = new Sequelize(`postgres://${host}:${port}/${adminDbName}`, packageJsonDbConfig.options);
+    const sequelize = new Sequelize(`postgres://${host}:${port}/${adminDbName}`,
+      packageJsonDbConfig.options);
 
     return sequelize.query(`DROP DATABASE "${dbName}"`);
   }

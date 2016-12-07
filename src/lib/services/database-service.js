@@ -15,8 +15,8 @@ class DatabaseService {
       {
         code: constants.SYSTEM.ERROR_CODES.NOT_FOUND,
         name: constants.STORE.ERROR_NAMES.STORAGE_TYPE_NOT_FOUND,
-        message: constants.STORE.ERROR_MSG.STORAGE_TYPE_NOT_FOUND,
         source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+        message: constants.STORE.ERROR_MSG.STORAGE_TYPE_NOT_FOUND,
       },
     ]);
 
