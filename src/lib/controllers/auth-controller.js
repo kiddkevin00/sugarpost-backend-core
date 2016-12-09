@@ -1,6 +1,7 @@
 const DatabaseService = require('../services/database-service');
 const ProcessSate = require('../process-state/');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
+const StandardResponseWrapper = require('../utility/standard-error-wrapper');
 const constants = require('../constants/');
 const Promise = require('bluebird');
 
@@ -42,9 +43,10 @@ class AuthController {
 
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
-          // [TODO] Should use `ResponseFormatter`.
+          const response = new StandardResponseWrapper({ isSubscribed: true });
+
           return res.status(constants.SYSTEM.ERROR_CODES.OK)
-            .json({ isSubscribed: true });
+            .json(response);
         }
 
         const err = new StandardErrorWrapper(_err);
@@ -97,9 +99,10 @@ class AuthController {
 
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
-          // [TODO] Should use `ResponseFormatter`.
+          const response = new StandardResponseWrapper({ isSignedUp: true });
+
           return res.status(constants.SYSTEM.ERROR_CODES.OK)
-            .json({ isSignedUp: true });
+            .json(response);
         }
 
         const err = new StandardErrorWrapper(_err);
