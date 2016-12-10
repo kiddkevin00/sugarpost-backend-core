@@ -10,28 +10,32 @@
  * ```
  */
 
+const responseContext = Symbol('response-context');
+
 class StandardResponseWrapper {
 
   constructor(initialData, name) {
+    this[responseContext] = {};
+
     if (Array.isArray(initialData)) {
-      this.data = initialData;
+      this[responseContext].data = initialData;
     } else if (initialData) {
-      this.data = [initialData]
+      this[responseContext].data = [initialData];
     } else {
-      this.data = [];
+      this[responseContext].data = [];
     }
 
-    this.name = name;
+    this[responseContext].name = name;
   }
 
   append(newData) {
-    this.data.push(newData);
+    this[responseContext].data.push(newData);
   }
 
   get format() {
     return {
-      meta: { name: this.name },
-      data: this.data,
+      meta: { name: this[responseContext].name },
+      data: this[responseContext].data,
     };
   }
 

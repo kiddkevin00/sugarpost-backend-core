@@ -15,24 +15,28 @@
  *  ```
  */
 
+const errorContext = Symbol('error-context');
+
 class StandardErrorWrapper {
 
   constructor(initialErr) {
+    this[errorContext] = {};
+
     if (Array.isArray(initialErr)) {
       /*
        * If initial error(s) is(are) wrapped into an array, each of them should follow standard
        * error format.
        */
-      this.errorStack = initialErr;
+      this[errorContext].errorStack = initialErr;
     } else if (initialErr) {
       // An initial error doesn't follow standard error format, and will try to standardized it.
-      const errMsg = initialErr.toString !== '[object Object]' ?
+      const errMsg = initialErr.toString() !== '[object Object]' ?
         initialErr.toString() : JSON.stringify(initialErr, null, 2);
 
-      this.errorStack = [{ message: errMsg, detail: initialErr }];
+      this[errorContext].errorStack = [{ message: errMsg, detail: initialErr }];
     } else {
       // Without initial error.
-      this.errorStack = [];
+      this[errorContext].errorStack = [];
     }
   }
 
@@ -46,17 +50,17 @@ class StandardErrorWrapper {
       errElement = newError;
     }
 
-    this.errorStack.unshift(errElement);
+    this[errorContext].errorStack.unshift(errElement);
   }
 
   getNthError(number) {
-    return this.errorStack[number];
+    return this[errorContext].errorStack[number];
   }
 
   format(context) {
     return {
       context,
-      errors: this.errorStack,
+      errors: this[errorContext].errorStack,
     };
   }
 
