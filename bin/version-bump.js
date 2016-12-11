@@ -13,8 +13,8 @@ const newVersion = process.argv[process.argv.length - 1];
 const versionRegex = /[0-9]+.[0-9]+.[0-9]+/g;
 
 if (!versionRegex.test(newVersion)) {
-  console.error(`[Version Bump] Provided version - ${newVersion || 'N/A'} is invalid (or missing).`);
-  return;
+  console.error(`[Version Bump Error] Provided version - ${newVersion || 'N/A'} is invalid (or missing).`);
+  process.exit(1);
 }
 
 console.log(`[Version Bump] Updating version to ${newVersion}`);
@@ -54,7 +54,11 @@ Promise.all(promises)
     execSync(gitAddExecString);
     execSync(`git commit -m "[System] Bump the version to ${newVersion}."`);
   })
-  .then(() => console.log('[Version Bump] All files containing version number are updated.'))
+  .then(() => {
+    console.log('[Version Bump] All files containing version number are updated.');
+    return process.exit(0);
+  })
   .catch((err) => {
-    console.log(`[Version Bump] ${err}.`);
+    console.error(`[Version Bump Error] ${err}.`);
+    return process.exit(1);
   });
