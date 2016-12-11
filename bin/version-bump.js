@@ -10,12 +10,17 @@ const childProcess = require('child_process');
 Promise.promisifyAll(fs);
 
 const newVersion = process.argv[process.argv.length - 1];
+const versionRegex = /[0-9]+.[0-9]+.[0-9]+/g;
+
+if (!versionRegex.test(newVersion)) {
+  console.error(`[Version Bump] Provided version - ${newVersion || 'N/A'} is invalid (or missing).`);
+  return;
+}
 
 console.log(`[Version Bump] Updating version to ${newVersion}`);
 
 const promises = [];
 const updateFilePaths = [];
-const versionRegex = /[0-9]+.[0-9]+.[0-9]+/g;
 
 for (const filePath of updateFilePaths) {
   const promise = fs.readFileAsync(filePath, 'utf8')
@@ -34,8 +39,10 @@ const newPackageJson = JSON.parse(JSON.stringify(packageJson));
 
 newPackageJson.version = newVersion;
 
+const newPackageJsonContent = `${JSON.stringify(newPackageJson, null, 2)}\n`;
+
 Promise.all(promises)
-  .then(() => fs.writeFileAsync(packageJsonFileName, `${JSON.stringify(newPackageJson, null, 2)}\n`))
+  .then(() => fs.writeFileAsync(packageJsonFileName, newPackageJsonContent))
   .then(() => {
     let gitAddExecString = 'git add ';
     const gitAddFilePaths = [packageJsonFileName].concat(updateFilePaths);
