@@ -34,17 +34,23 @@ class AuthController {
       .then((result) => {
         requestCount += 1;
 
+        const response = new StandardResponseWrapper(result,
+          constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
+
         return res.status(constants.SYSTEM.ERROR_CODES.OK)
-          .json(result);
+          .json(response);
       })
       .catch((_err) => {
         requestCount += 1;
 
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
-          // [TODO] Should use `ResponseFormatter`.
+
+          const response = new StandardResponseWrapper([{ isSubscribed: true }],
+            constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
+
           return res.status(constants.SYSTEM.ERROR_CODES.OK)
-            .json({ isSubscribed: true });
+            .json(response);
         }
 
         const err = new StandardErrorWrapper(_err);
@@ -89,17 +95,22 @@ class AuthController {
       .then((result) => {
         requestCount += 1;
 
+        const response = new StandardResponseWrapper(result,
+          constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
+
         return res.status(constants.SYSTEM.ERROR_CODES.OK)
-          .json(result);
+          .json(response);
       })
       .catch((_err) => {
         requestCount += 1;
 
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
-          // [TODO] Should use `ResponseFormatter`.
+          const response = new StandardResponseWrapper([{ isSignedUp: true }],
+            constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
+
           return res.status(constants.SYSTEM.ERROR_CODES.OK)
-            .json({ isSignedUp: true });
+            .json(response);
         }
 
         const err = new StandardErrorWrapper(_err);
@@ -145,10 +156,13 @@ class AuthController {
           response = { isAuthenticated: false };
         }
 
+        const standardResponse = new StandardResponseWrapper([response],
+          constants.SYSTEM.RESPONSE_NAMES.LOGIN);
+
         requestCount += 1;
 
         return res.status(statusCode)
-          .json(response);
+          .json(standardResponse);
       })
       .catch((_err) => {
         let err;
