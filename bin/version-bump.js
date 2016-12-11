@@ -34,8 +34,10 @@ const newPackageJson = JSON.parse(JSON.stringify(packageJson));
 
 newPackageJson.version = newVersion;
 
+const newPackageJsonContent = `${JSON.stringify(newPackageJson, null, 2)}\n`;
+
 Promise.all(promises)
-  .then(() => fs.writeFileAsync(packageJsonFileName, `${JSON.stringify(newPackageJson, null, 2)}\n`))
+  .then(() => fs.writeFileAsync(packageJsonFileName, newPackageJsonContent))
   .then(() => {
     let gitAddExecString = 'git add ';
     const gitAddFilePaths = [packageJsonFileName].concat(updateFilePaths);

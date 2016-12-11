@@ -46,7 +46,8 @@ class AuthController {
 
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
-          const response = new StandardResponseWrapper([{ isSubscribed: true }], constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
+          const response = new StandardResponseWrapper([{ isSubscribed: true }],
+            constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
           return res.status(constants.SYSTEM.ERROR_CODES.OK)
             .json(response.format);
@@ -94,7 +95,8 @@ class AuthController {
       .then((result) => {
         requestCount += 1;
 
-        const response = new StandardResponseWrapper(result, constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
+        const response = new StandardResponseWrapper(result,
+          constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
         return res.status(constants.SYSTEM.ERROR_CODES.OK)
           .json(response.format);
@@ -104,7 +106,8 @@ class AuthController {
 
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
-          const response = new StandardResponseWrapper([{ isSignedUp: true }], constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
+          const response = new StandardResponseWrapper([{ isSignedUp: true }],
+            constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
           return res.status(constants.SYSTEM.ERROR_CODES.OK)
             .json(response);
@@ -152,8 +155,6 @@ class AuthController {
           statusCode = constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED;
           response = { isAuthenticated: false };
         }
-        const standardResponse = new StandardResponseWrapper([response], constants.SYSTEM.RESPONSE_NAMES.LOGIN);
-
         const standardResponse = new StandardResponseWrapper([response],
           constants.SYSTEM.RESPONSE_NAMES.LOGIN);
 
