@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-'use strict';
+'use strict'; // eslint-disable-line strict, lines-around-directive
 
 const childProcess = require('child_process');
 const fs = require('fs');
@@ -15,9 +15,9 @@ const order = [
   'lines',
 ];
 
-exec('npm run-script coverage:report', (err, stdOut, stdErr) => {
-  if (err) {
-    console.log(`[Coverage] ${stdErr}`);
+exec('npm run-script coverage:report', (error, stdOut, stdErr) => {
+  if (error) {
+    console.log(`[Coverage Update] ${stdErr}.`);
   }
 
   let changed = false;
@@ -37,15 +37,15 @@ exec('npm run-script coverage:report', (err, stdOut, stdErr) => {
   if (changed) {
     fs.writeFile('package.json', JSON.stringify(packageJson, null, 2), (err) => {
       if (err) {
-        console.log(`[Coverage] ${err}`);
+        console.log(`[Coverage Update] ${err}.`);
       }
 
       execSync('git add package.json');
-      execSync('git commit -m "Update each threshold for test coverage"');
+      execSync('git commit -m "[System] Update each threshold for test coverage"');
 
-      console.log('[Coverage] Each threshold is updated for test coverage')
+      console.log('[Coverage Update] Each threshold is updated for test coverage.');
     });
   } else {
-    console.log('[Coverage] No threshold is updated for test coverage')
+    console.log('[Coverage Update] No threshold is updated for test coverage.');
   }
 });

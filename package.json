@@ -1,6 +1,6 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "A generic RESTful API backend with all major database connection/ops interfaces implemented.",
   "main": "./src/lib/app.js",
   "bin": {
@@ -38,10 +38,10 @@
     }
   },
   "nyc": {
-    "statements": 74.23,
+    "statements": 81.14,
     "branches": 38.75,
-    "functions": 51.14,
-    "lines": 74.32,
+    "functions": 73.38,
+    "lines": 81.16,
     "excludes": [],
     "report-dir": "./spec/coverage"
   },
@@ -54,11 +54,14 @@
     "integration-test": "",
     "coverage:unit-test": "nyc --check-coverage --reporter cobertura --reporter html mocha --opts mocha.opts",
     "coverage:integration-test": "",
-    "prepush": "npm run lint && npm run coverage:unit-test && ./bin/update-test-coverage.js",
+    "prepush": "npm run lint && npm run coverage:unit-test && npm run coverage:update-thresholds",
+    "version:bump": "npm run version:instruction && ./bin/version-bump.js",
     "------------- INTERNAL ------------": "",
-    "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/ example/",
+    "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/ example/ bin/",
     "jasmine-unit-test": "node src/spec/support/jasmine-test-runner.js -- -t unit",
     "mocha-unit-test": "multi='tap=- xunit=spec/reports/xunit.xml' mocha --opts mocha.opts --reporter mocha-multi | faucet",
+    "coverage:update-thresholds": "./bin/update-test-coverage.js",
+    "version:instruction": "echo 'Please specify full version number after `npm run version:bump`.  E.g. $ npm run version:bump 0.0.1'",
     "------------- LOCAL DEV -----------": "",
     "local-unit-test": "mocha --opts mocha.opts --bail",
     "local-integration-test": "",
