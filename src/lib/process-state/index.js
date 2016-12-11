@@ -1,4 +1,4 @@
-const stateContext = Symbol('internalStateContext');
+const stateContext = Symbol('process-state-context');
 
 class ProcessState {
 

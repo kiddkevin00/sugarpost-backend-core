@@ -19,6 +19,12 @@ exports.ERROR_CODES = Object.assign({}, httpStatusCodes, {
   TABLE_CONSTRAINT_VALIDATION: 1000,
 });
 
+exports.RESPONSE_NAMES = {
+  SUBSCRIBE: 'SUBSCRIBE',
+  SIGN_UP: 'SIGN_UP',
+  LOGIN: 'LOGIN',
+};
+
 exports.COMMON = {
   CURRENT_SOURCE: sources.BULLETIN_BOARD_SYSTEM,
 };

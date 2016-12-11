@@ -1,6 +1,7 @@
 const DatabaseService = require('../services/database-service');
 const ProcessSate = require('../process-state/');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
+const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
 const Promise = require('bluebird');
 
@@ -38,19 +39,17 @@ class AuthController {
           constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
         return res.status(constants.SYSTEM.ERROR_CODES.OK)
-          .json(response);
+          .json(response.format);
       })
       .catch((_err) => {
         requestCount += 1;
 
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
-
-          const response = new StandardResponseWrapper([{ isSubscribed: true }],
-            constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
+          const response = new StandardResponseWrapper([{ isSubscribed: true }], constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
           return res.status(constants.SYSTEM.ERROR_CODES.OK)
-            .json(response);
+            .json(response.format);
         }
 
         const err = new StandardErrorWrapper(_err);
@@ -95,19 +94,17 @@ class AuthController {
       .then((result) => {
         requestCount += 1;
 
-        const response = new StandardResponseWrapper(result,
-          constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
+        const response = new StandardResponseWrapper(result, constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
         return res.status(constants.SYSTEM.ERROR_CODES.OK)
-          .json(response);
+          .json(response.format);
       })
       .catch((_err) => {
         requestCount += 1;
 
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
-          const response = new StandardResponseWrapper([{ isSignedUp: true }],
-            constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
+          const response = new StandardResponseWrapper([{ isSignedUp: true }], constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
           return res.status(constants.SYSTEM.ERROR_CODES.OK)
             .json(response);
@@ -155,6 +152,7 @@ class AuthController {
           statusCode = constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED;
           response = { isAuthenticated: false };
         }
+        const standardResponse = new StandardResponseWrapper([response], constants.SYSTEM.RESPONSE_NAMES.LOGIN);
 
         const standardResponse = new StandardResponseWrapper([response],
           constants.SYSTEM.RESPONSE_NAMES.LOGIN);
@@ -162,7 +160,7 @@ class AuthController {
         requestCount += 1;
 
         return res.status(statusCode)
-          .json(standardResponse);
+          .json(standardResponse.format);
       })
       .catch((_err) => {
         let err;
