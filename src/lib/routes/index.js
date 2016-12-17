@@ -3,7 +3,15 @@
  */
 
 const adminRoute = require('./auth/');
+const subscriberRoute = require('./subscriber/');
+const StandardErrorWrapper = require('../utility/standard-error-wrapper');
+const constants = require('../constants');
 const { Router } = require('express');
+const jwt = require('jsonwebtoken');
+
+const jwtSecret = 'my-jwt-secret'; // [TODO]
+const containerId = process.env.HOSTNAME;
+let requestCount = 0;
 
 function setupRoutes(app) {
   // [TODO]
@@ -44,17 +52,47 @@ function setupRoutes(app) {
 function setupApiRoutes() {
   const router = Router();
   const authMiddleware = (req, res, next) => {
-    /* eslint-disable */
-    //if (req.session.userId) {
-      return next();
-    //}
-    /* eslint-ensable */
+    const jwtToken = req.cookies.jwt;
 
-    return res.status(401)
-      .send('Unauthenticated');
+    try {
+      const decodedJwt = jwt.verify(jwtToken, jwtSecret, {
+        issuer: 'bulletin-board-system.herokuapp.com',
+        audience: '.sugarpost.com',
+      });
+
+      console.log('##', decodedJwt);
+
+      /* eslint-disable no-param-reassign */
+      req.user = {
+        _id: decodedJwt._id,
+        email: decodedJwt.email,
+        type: decodedJwt.type,
+        firstName: decodedJwt.firstName,
+        lastName: decodedJwt.lastName,
+      };
+      /* eslint-enable */
+
+      return next();
+    } catch (_err) {
+      requestCount += 1;
+
+      const err = new StandardErrorWrapper([
+        {
+          code: constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED,
+          name: constants.AUTH.ERROR_NAMES.JWT_INVALID,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: constants.AUTH.ERROR_MSG.JWT_INVALID,
+          detail: _err,
+        },
+      ]);
+
+      return res.status(401)
+        .json(err.format({ containerId, requestCount }));
+    }
   };
 
-  router.use('/auth', [authMiddleware], adminRoute);
+  router.use('/auth', adminRoute);
+  router.use('/subscriber', [authMiddleware], subscriberRoute);
 
   return router;
 }

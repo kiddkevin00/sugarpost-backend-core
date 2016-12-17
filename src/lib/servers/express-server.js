@@ -22,21 +22,8 @@ function setupExpressServer(app) {
 
   app.use(methodOverride()); // Simulates DELETE and PUT methods if browser doesn't support.
   app.use(cookieParser());
-
   app.use(compression());
-
-  // [TODO] Uses JWT instead of session.
-  app.use(session({
-    secret: 'SESSION_SECRET',
-    path: '/',
-    httpOnly: false,
-    secure: false, // HTTPS-enabled website required.
-    maxAge: 1000 * 60 * 60 * 8, // [TBD] Set 8 Hours for now.
-    resave: true, // Forces the session to be saved back to the session store.
-    saveUninitialized: false,
-  }));
-
-  app.use(favicon(path.resolve(__dirname, '../assets/', 'favicon.ico')));
+  app.use(favicon(path.resolve(__dirname, '../assets/', 'favicon.png')));
 
   // For an 404 error page only.
   app.set('views', path.resolve(__dirname, '../views'));

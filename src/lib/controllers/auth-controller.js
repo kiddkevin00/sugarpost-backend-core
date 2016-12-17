@@ -4,7 +4,9 @@ const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
 const Promise = require('bluebird');
+const jwt = require('jsonwebtoken');
 
+const jwtSecret = 'my-jwt-secret'; // [TODO]
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;
 
@@ -45,7 +47,7 @@ class AuthController {
         requestCount += 1;
 
         if (_err instanceof StandardErrorWrapper &&
-            _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
+          _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
           const response = new StandardResponseWrapper([{ isSubscribed: true }],
             constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
@@ -80,8 +82,8 @@ class AuthController {
             firstName: state.firstName,
             lastName: state.lastName,
             emailValidated: false,
-            version: 0,
             suspended: false,
+            version: 0,
             dateCreated: new Date(),
             lastModified: null,
           },
@@ -95,6 +97,29 @@ class AuthController {
       .then((result) => {
         requestCount += 1;
 
+        const jwtToken = jwt.sign({
+          sub: 'test-type:test-email:test-id',
+          _id: 'test-id',
+          email: 'test-email',
+          type: 'test-type',
+          firstName: 'test-first',
+          lastName: 'test-last',
+        }, {
+          expiresIn: '1h',
+          notBefore: 0,
+          issuer: 'bulletin-board-system.herokuapp.com',
+          audience: '.sugarpost.com',
+        }, jwtSecret);
+
+        if (jwtToken) {
+          res.cookie('jwt', jwtToken, {
+            httpOnly: true,
+            secure: true,
+            path: '/api',
+            signed: true,
+          });
+        }
+
         const response = new StandardResponseWrapper(result,
           constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
@@ -105,7 +130,7 @@ class AuthController {
         requestCount += 1;
 
         if (_err instanceof StandardErrorWrapper &&
-            _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
+          _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
           const response = new StandardResponseWrapper([{ isSignedUp: true }],
             constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
@@ -129,7 +154,7 @@ class AuthController {
   static login(req, res) {
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
-    const signupStrategy = {
+    const loginStrategy = {
       storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
         type: constants.STORE.OPERATIONS.SELECT,
@@ -143,14 +168,39 @@ class AuthController {
       tableName: constants.STORE.TABLE_NAMES.USER,
     };
 
-    return AuthController._handleRequest(state, res, DatabaseService, signupStrategy)
+    return AuthController._handleRequest(state, res, DatabaseService, loginStrategy)
       .then((result) => {
+        requestCount += 1;
+
         let statusCode;
         let response;
 
         if (result && result.length) {
           statusCode = constants.SYSTEM.ERROR_CODES.OK;
           response = { isAuthenticated: true };
+
+          const jwtToken = jwt.sign({
+            sub: 'test-type:test-email:test-id',
+            _id: 'test-id',
+            email: 'test-email',
+            type: 'test-type',
+            firstName: 'test-first',
+            lastName: 'test-last',
+          }, {
+            expiresIn: '1h',
+            notBefore: 0,
+            issuer: 'bulletin-board-system.herokuapp.com',
+            audience: '.sugarpost.com',
+          }, jwtSecret);
+
+          if (jwtToken) {
+            res.cookie('jwt', jwtToken, {
+              httpOnly: true,
+              secure: true,
+              path: '/api',
+              signed: true,
+            });
+          }
         } else {
           statusCode = constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED;
           response = { isAuthenticated: false };
@@ -158,12 +208,12 @@ class AuthController {
         const standardResponse = new StandardResponseWrapper([response],
           constants.SYSTEM.RESPONSE_NAMES.LOGIN);
 
-        requestCount += 1;
-
         return res.status(statusCode)
           .json(standardResponse.format);
       })
       .catch((_err) => {
+        requestCount += 1;
+
         let err;
 
         if (_err instanceof StandardErrorWrapper) {
@@ -176,11 +226,57 @@ class AuthController {
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
         });
 
-        requestCount += 1;
-
         return res.status(constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR)
           .json(err.format({ containerId, requestCount }));
       });
+  }
+
+  static getToken(req, res) {
+    try {
+      const jwtToken = jwt.sign({
+        sub: 'test-type:test-email:test-id',
+        _id: 'test-id',
+        email: 'test-email',
+        type: 'test-type',
+        firstName: 'test-first',
+        lastName: 'test-last',
+      }, jwtSecret, {
+        expiresIn: '1h',
+        notBefore: 0,
+        issuer: 'bulletin-board-system.herokuapp.com',
+        audience: '.sugarpost.com',
+      });
+
+      if (jwtToken) {
+        res.cookie('jwt', jwtToken, {
+          httpOnly: true,
+          secure: false,  // [TODO]
+          path: '/', // [TODO]
+          signed: false,
+        });
+      }
+
+      return res.status(200)
+        .json(jwtToken);
+    } catch (_err) {
+      const err = new StandardErrorWrapper([
+        {
+          code: constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED,
+          name: constants.AUTH.ERROR_NAMES.JWT_INVALID,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: constants.AUTH.ERROR_MSG.JWT_INVALID,
+          detail: _err,
+        },
+      ]);
+
+      err.append({
+        code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
+        source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+      });
+
+      return res.status(constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR)
+        .json(err.format({ containerId, requestCount }));
+    }
   }
 
   static _handleRequest(state, res, Svc, strategy) {
