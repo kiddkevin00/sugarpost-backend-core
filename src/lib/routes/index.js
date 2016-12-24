@@ -10,8 +10,6 @@ const { Router } = require('express');
 const jwt = require('jsonwebtoken');
 
 const jwtSecret = 'my-jwt-secret'; // [TODO]
-const containerId = process.env.HOSTNAME;
-let requestCount = 0;
 
 function setupRoutes(app) {
   // [TODO]
@@ -60,8 +58,6 @@ function setupApiRoutes() {
         audience: '.sugarpost.com',
       });
 
-      console.log('##', decodedJwt);
-
       /* eslint-disable no-param-reassign */
       req.user = {
         _id: decodedJwt._id,
@@ -74,20 +70,18 @@ function setupApiRoutes() {
 
       return next();
     } catch (_err) {
-      requestCount += 1;
-
       const err = new StandardErrorWrapper([
         {
           code: constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED,
-          name: constants.AUTH.ERROR_NAMES.JWT_INVALID,
+          name: (_err && _err.name) || constants.AUTH.ERROR_NAMES.JWT_INVALID,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-          message: constants.AUTH.ERROR_MSG.JWT_INVALID,
+          message: (_err && _err.message) || constants.AUTH.ERROR_MSG.JWT_INVALID,
           detail: _err,
         },
       ]);
 
       return res.status(401)
-        .json(err.format({ containerId, requestCount }));
+        .json(err.format());
     }
   };
 

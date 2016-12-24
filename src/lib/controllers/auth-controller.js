@@ -47,7 +47,7 @@ class AuthController {
         requestCount += 1;
 
         if (_err instanceof StandardErrorWrapper &&
-          _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
+            _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
           const response = new StandardResponseWrapper([{ isSubscribed: true }],
             constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
@@ -105,7 +105,7 @@ class AuthController {
           firstName: 'test-first',
           lastName: 'test-last',
         }, {
-          expiresIn: '1h',
+          expiresIn: '365 days',
           notBefore: 0,
           issuer: 'bulletin-board-system.herokuapp.com',
           audience: '.sugarpost.com',
@@ -114,9 +114,9 @@ class AuthController {
         if (jwtToken) {
           res.cookie('jwt', jwtToken, {
             httpOnly: true,
-            secure: true,
+            secure: false,
             path: '/api',
-            signed: true,
+            signed: false,
           });
         }
 
@@ -187,7 +187,7 @@ class AuthController {
             firstName: 'test-first',
             lastName: 'test-last',
           }, {
-            expiresIn: '1h',
+            expiresIn: '365 days',
             notBefore: 0,
             issuer: 'bulletin-board-system.herokuapp.com',
             audience: '.sugarpost.com',
@@ -196,9 +196,9 @@ class AuthController {
           if (jwtToken) {
             res.cookie('jwt', jwtToken, {
               httpOnly: true,
-              secure: true,
+              secure: false,
               path: '/api',
-              signed: true,
+              signed: false,
             });
           }
         } else {
@@ -241,20 +241,18 @@ class AuthController {
         firstName: 'test-first',
         lastName: 'test-last',
       }, jwtSecret, {
-        expiresIn: '1h',
+        expiresIn: '365 days',
         notBefore: 0,
         issuer: 'bulletin-board-system.herokuapp.com',
         audience: '.sugarpost.com',
       });
 
-      if (jwtToken) {
-        res.cookie('jwt', jwtToken, {
-          httpOnly: true,
-          secure: false,  // [TODO]
-          path: '/', // [TODO]
-          signed: false,
-        });
-      }
+      res.cookie('jwt', jwtToken, {
+        httpOnly: true,
+        secure: false,
+        path: '/api',
+        signed: false,
+      });
 
       return res.status(200)
         .json(jwtToken);

@@ -1,6 +1,7 @@
 const ConnectionPool = require('../storage/connection-pool');
 const RepoFactory = require('../storage/repo-factory');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
+const packageJson = require('../../../package.json');
 const constants = require('../constants/');
 
 class DatabaseService {
@@ -11,6 +12,7 @@ class DatabaseService {
     const tableName = strategy.tableName;
     const operation = strategy.operation;
     const uniqueFields = strategy.uniqueFields;
+    const packageJsonDbConfig = packageJson.config.databases[storeType];
     const notFoundErr = new StandardErrorWrapper([
       {
         code: constants.SYSTEM.ERROR_CODES.NOT_FOUND,
@@ -31,10 +33,10 @@ class DatabaseService {
         throw notFoundErr;
     }
 
-    const dbHost = connUri ? connUri.split('@')[1].split(':')[0] : null;
-    const dbPort = connUri ? connUri.split('@')[1].split(':')[1].split('/')[0] : null;
+    const dbHost = connUri ? connUri.split('@')[1].split(':')[0] : packageJsonDbConfig.host;
+    const dbPort = connUri ? connUri.split('@')[1].split(':')[1].split('/')[0] : packageJsonDbConfig.port;
+    const dbName = connUri ? connUri.split('://')[1].split('/')[1] : packageJsonDbConfig.dbName;
     const dbUser = connUri ? connUri.split('@')[0].split('://')[1].split(':')[0] : null;
-    const dbName = connUri ? connUri.split('://')[1].split('/')[1] : null;
     const dbPassword = connUri ? connUri.split('@')[0].split('://')[1].split(':')[1] : null;
 
     const conn = new ConnectionPool(storeType, dbHost, dbPort, dbName,
@@ -43,13 +45,11 @@ class DatabaseService {
 
     return repo.select(conn, tableName)
       .then((docs) => {
-        if (!Array.isArray(uniqueFields) || !uniqueFields.length) {
-          return;
-        }
+        if (!Array.isArray(uniqueFields) || !uniqueFields.length) return;
 
         for (const doc of docs) {
           for (const field of uniqueFields) {
-            if (doc[field] === state[field]) {
+            if (!state[field] || doc[field] === state[field]) {
               const validationErr = new StandardErrorWrapper([
                 {
                   code: constants.SYSTEM.ERROR_CODES.TABLE_CONSTRAINT_VALIDATION,

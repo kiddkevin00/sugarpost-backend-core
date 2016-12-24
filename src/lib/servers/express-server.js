@@ -2,7 +2,6 @@ const compression = require('compression');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
-const session = require('express-session');
 const favicon = require('serve-favicon');
 const morgan = require('morgan');
 const errorHandler = require('errorhandler');
@@ -12,7 +11,16 @@ const cors = require('cors');
 const express = require('express');
 
 function setupExpressServer(app) {
-  app.use(cors()); // [TODO]
+  const whitelist = ['http://127.0.0.1:8088', 'http://0.0.0.0:8088', 'http://localhost:8088',
+    'https://www.mysugarpost.com', 'http://www.mysugarpost.com'];
+
+  app.use(cors({
+    optionsSuccessStatus: 200, // [Note] Some legacy browsers (IE 11, some SmartTVs) choke on 204.
+    origin: whitelist,
+    credentials: true,
+    maxAge: 86400,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  }));
 
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());

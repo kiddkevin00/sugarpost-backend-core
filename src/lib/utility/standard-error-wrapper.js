@@ -57,7 +57,7 @@ class StandardErrorWrapper {
     return this[errorContext].errorStack[number];
   }
 
-  format(context) {
+  format(context = {}) {
     return {
       context,
       errors: this[errorContext].errorStack,
