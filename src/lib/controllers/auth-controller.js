@@ -18,7 +18,6 @@ class AuthController {
     const subscribeStrategy = {
       storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
-        storeType: constants.STORE.TYPES.MONGO_DB,
         type: constants.STORE.OPERATIONS.INSERT,
         data: [
           {
@@ -73,7 +72,6 @@ class AuthController {
     const signupStrategy = {
       storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
-        storeType: constants.STORE.TYPES.MONGO_DB,
         type: constants.STORE.OPERATIONS.INSERT,
         data: [
           {
@@ -104,12 +102,12 @@ class AuthController {
           type: 'test-type',
           firstName: 'test-first',
           lastName: 'test-last',
-        }, {
+        }, jwtSecret, {
           expiresIn: '365 days',
           notBefore: 0,
           issuer: 'bulletin-board-system.herokuapp.com',
           audience: '.sugarpost.com',
-        }, jwtSecret);
+        });
 
         if (jwtToken) {
           res.cookie('jwt', jwtToken, {
@@ -130,12 +128,12 @@ class AuthController {
         requestCount += 1;
 
         if (_err instanceof StandardErrorWrapper &&
-          _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
+            _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
           const response = new StandardResponseWrapper([{ isSignedUp: true }],
             constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
           return res.status(constants.SYSTEM.ERROR_CODES.OK)
-            .json(response);
+            .json(response.format);
         }
 
         const err = new StandardErrorWrapper(_err);
@@ -186,12 +184,12 @@ class AuthController {
             type: 'test-type',
             firstName: 'test-first',
             lastName: 'test-last',
-          }, {
+          }, jwtSecret, {
             expiresIn: '365 days',
             notBefore: 0,
             issuer: 'bulletin-board-system.herokuapp.com',
             audience: '.sugarpost.com',
-          }, jwtSecret);
+          });
 
           if (jwtToken) {
             res.cookie('jwt', jwtToken, {

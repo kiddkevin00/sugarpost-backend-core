@@ -4,9 +4,16 @@
  *  {
  *    errors: [
  *      {
+ *        code: 500,
+ *        name: 'SOMETHING_WENT_WRONG', // optional
+ *        source: 'current-app',
+ *        message: 'Something went wrong.', // optional
+ *        detail: `err` // optional
+ *      },
+ *      {
  *        code: 404,
  *        name: 'SOMETHING_NOT_FOUND', // optional
- *        source: 'current-app',
+ *        source: 'another-app',
  *        message: 'Something is not found.', // optional
  *        detail: `err` // optional
  *      }
@@ -15,7 +22,8 @@
  *  ```
  */
 
-const errorContext = Symbol('error-context');
+// [TODO] If throws an object with `Symbol('error-context')` property, the object will be `{}`.
+const errorContext = 'error-context';
 
 class StandardErrorWrapper {
 
@@ -53,8 +61,8 @@ class StandardErrorWrapper {
     this[errorContext].errorStack.unshift(errElement);
   }
 
-  getNthError(number) {
-    return this[errorContext].errorStack[number];
+  getNthError(nth) {
+    return this[errorContext].errorStack[nth];
   }
 
   format(context = {}) {

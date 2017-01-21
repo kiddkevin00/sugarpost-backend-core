@@ -17,8 +17,17 @@ exports.SOURCES = sources;
 exports.HTTP_STATUS_CODES = httpStatusCodes;
 
 exports.ERROR_CODES = Object.assign({}, httpStatusCodes, {
-  TABLE_CONSTRAINT_VALIDATION: 1000,
+  INVALID_RESPONSE_INTERFACE: 1000,
+  TABLE_CONSTRAINT_VALIDATION: 1001,
 });
+
+exports.ERROR_NAMES = {
+  RESPONSE_OBJ_PARSE_ERROR: 'RESPONSE_OBJ_PARSE_ERROR',
+};
+
+exports.ERROR_MSG = {
+  RESPONSE_OBJ_PARSE_ERROR: 'The response object is not able to deserialize back to an instance of Standard Reponse Wrapper',
+};
 
 exports.RESPONSE_NAMES = {
   SUBSCRIBE: 'SUBSCRIBE',
