@@ -35,7 +35,7 @@ function authMiddleware(req, res, next) {
       },
     ]);
 
-    return res.status(401)
+    return res.status(constants.SYSTEM.HTTP_STATUS_CODES.UNAUTHENTICATED)
       .json(err.format());
   }
 }

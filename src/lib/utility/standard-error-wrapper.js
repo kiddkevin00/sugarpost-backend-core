@@ -27,7 +27,9 @@
  *  ```
  */
 
-// [TODO] If throws an object with `Symbol('error-context')` property, the object will be `{}`.
+const constants = require('../constants/');
+
+// [TODO] When throwing an object with `Symbol('error-context')` property, it will become `{}`.
 const errorContext = 'error-context';
 
 class StandardErrorWrapper {
@@ -77,9 +79,29 @@ class StandardErrorWrapper {
     };
   }
 
-  // [TODO] Verify if `obj` follows standard error format.
-  static verifyFormat(obj) {
+  static deserialize(errorPayloadObj) {
+    if (!StandardErrorWrapper.verifyFormat(errorPayloadObj)) {
+      const err = new StandardErrorWrapper([
+        {
+          code: constants.SYSTEM.ERROR_CODES.INVALID_ERROR_INTERFACE,
+          name: constants.SYSTEM.ERROR_NAMES.ERROR_OBJ_PARSE_ERROR,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: constants.SYSTEM.ERROR_MSG.ERROR_OBJ_PARSE_ERROR,
+        },
+      ]);
 
+      throw err;
+    }
+
+    const errors = errorPayloadObj.errors;
+
+    return new StandardErrorWrapper(errors);
+  }
+
+  static verifyFormat(obj) {
+    const errors = obj.errors;
+
+    return !!Array.isArray(errors);
   }
 
 }

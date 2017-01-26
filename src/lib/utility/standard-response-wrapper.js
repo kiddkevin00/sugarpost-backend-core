@@ -65,9 +65,7 @@ class StandardResponseWrapper {
   }
 
   static deserialize(successPayloadObj) {
-    const data = successPayloadObj.result && successPayloadObj.result.data;
-
-    if (!Array.isArray(data)) {
+    if (!StandardResponseWrapper.verifyFormat(successPayloadObj)) {
       const err = new StandardErrorWrapper([
         {
           code: constants.SYSTEM.ERROR_CODES.INVALID_RESPONSE_INTERFACE,
@@ -79,7 +77,18 @@ class StandardResponseWrapper {
 
       throw err;
     }
-    return new StandardResponseWrapper(successPayloadObj.result.data);
+
+    const data = successPayloadObj.result && successPayloadObj.result.data;
+    const name = successPayloadObj.result && successPayloadObj.result.meta &&
+      successPayloadObj.result.meta.name;
+
+    return new StandardResponseWrapper(data, name);
+  }
+
+  static verifyFormat(obj) {
+    const data = obj.result && obj.result.data;
+
+    return !!Array.isArray(data);
   }
 
 }
