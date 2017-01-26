@@ -33,6 +33,7 @@ exports.RESPONSE_NAMES = {
   SUBSCRIBE: 'SUBSCRIBE',
   SIGN_UP: 'SIGN_UP',
   LOGIN: 'LOGIN',
+  AUTH_CHECK: 'AUTH_CHECK',
 };
 
 exports.COMMON = {

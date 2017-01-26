@@ -275,6 +275,14 @@ class AuthController {
     }
   }
 
+  static passAuthCheck(req, res) {
+    const response = new StandardResponseWrapper([{ isloggedIn: true }],
+      constants.SYSTEM.RESPONSE_NAMES.AUTH_CHECK);
+
+    return res.status(constants.SYSTEM.ERROR_CODES.OK)
+      .json(response.format);
+  }
+
   static _handleRequest(state, res, Svc, strategy) {
     return Promise.try(() => Svc.execute(state, strategy));
   }

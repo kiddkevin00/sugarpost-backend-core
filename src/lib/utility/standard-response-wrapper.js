@@ -1,19 +1,20 @@
 /*
  * Standard response format (for 200 status code only):
+ *
  * ```
  * {
  *   result: {
  *     meta: { name: "INSERT" },
  *     data: [
  *       {
- *         field1: value1,
- *         field2: value2,
- *         field3: value3
+ *         field1: "value1",
+ *         field2: "value2",
+ *         field3: "value3"
  *        },
  *        {
- *         field1: value4,
- *         field2: value5,
- *         field3: value6
+ *         field1: "value4",
+ *         field2: "value5",
+ *         field3: "value6"
  *       }
  *     ]
  *   }

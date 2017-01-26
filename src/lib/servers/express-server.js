@@ -12,7 +12,7 @@ const express = require('express');
 
 function setupExpressServer(app) {
   const whitelist = ['http://127.0.0.1:8088', 'http://0.0.0.0:8088', 'http://localhost:8088',
-    'https://www.mysugarpost.com', 'http://www.mysugarpost.com'];
+    'http://www.mysugarpost.com', 'https://www.mysugarpost.com'];
 
   app.use(cors({
     optionsSuccessStatus: 200, // [Note] Some legacy browsers (IE 11, some SmartTVs) choke on 204.

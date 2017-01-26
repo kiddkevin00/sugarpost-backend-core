@@ -2,14 +2,10 @@
  * This is the place for exposing module(s) for route component.
  */
 
-const adminRoute = require('./auth/');
+const authRoute = require('./auth/');
 const subscriberRoute = require('./subscriber/');
-const StandardErrorWrapper = require('../utility/standard-error-wrapper');
-const constants = require('../constants');
+const authCheckMiddleware = require('../utility/auth-check-middleware');
 const { Router } = require('express');
-const jwt = require('jsonwebtoken');
-
-const jwtSecret = 'my-jwt-secret'; // [TODO]
 
 function setupRoutes(app) {
   // [TODO]
@@ -34,7 +30,7 @@ function setupRoutes(app) {
   app.use('/api', setupApiRoutes());
 
   // All not-found API endpoints should return a custom 404 page.
-  app.route('/:url(api)*')
+  app.route('/:url(api)/*')
     .get((req, res) => res.render('404', (err) => {
       if (err) {
         return res.status(404)
@@ -49,44 +45,9 @@ function setupRoutes(app) {
 
 function setupApiRoutes() {
   const router = Router();
-  const authMiddleware = (req, res, next) => {
-    const jwtToken = req.cookies.jwt;
 
-    try {
-      const decodedJwt = jwt.verify(jwtToken, jwtSecret, {
-        issuer: 'bulletin-board-system.herokuapp.com',
-        audience: '.sugarpost.com',
-      });
-
-      /* eslint-disable no-param-reassign */
-      req.user = {
-        _id: decodedJwt._id,
-        email: decodedJwt.email,
-        type: decodedJwt.type,
-        firstName: decodedJwt.firstName,
-        lastName: decodedJwt.lastName,
-      };
-      /* eslint-enable */
-
-      return next();
-    } catch (_err) {
-      const err = new StandardErrorWrapper([
-        {
-          code: constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED,
-          name: (_err && _err.name) || constants.AUTH.ERROR_NAMES.JWT_INVALID,
-          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-          message: (_err && _err.message) || constants.AUTH.ERROR_MSG.JWT_INVALID,
-          detail: _err,
-        },
-      ]);
-
-      return res.status(401)
-        .json(err.format());
-    }
-  };
-
-  router.use('/auth', adminRoute);
-  router.use('/subscriber', [authMiddleware], subscriberRoute);
+  router.use('/auth', authRoute);
+  router.use('/subscriber', [authCheckMiddleware], subscriberRoute);
 
   return router;
 }
