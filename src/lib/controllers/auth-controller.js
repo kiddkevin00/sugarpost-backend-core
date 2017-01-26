@@ -39,7 +39,7 @@ class AuthController {
         const response = new StandardResponseWrapper(result,
           constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
-        return res.status(constants.SYSTEM.ERROR_CODES.OK)
+        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
           .json(response.format);
       })
       .catch((_err) => {
@@ -50,7 +50,7 @@ class AuthController {
           const response = new StandardResponseWrapper([{ isSubscribed: true }],
             constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
-          return res.status(constants.SYSTEM.ERROR_CODES.OK)
+          return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
             .json(response.format);
         }
 
@@ -103,7 +103,7 @@ class AuthController {
           firstName: 'test-first',
           lastName: 'test-last',
         }, jwtSecret, {
-          expiresIn: '365 days',
+          expiresIn: '300 days',
           notBefore: 0,
           issuer: 'bulletin-board-system.herokuapp.com',
           audience: '.sugarpost.com',
@@ -121,7 +121,7 @@ class AuthController {
         const response = new StandardResponseWrapper(result,
           constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
-        return res.status(constants.SYSTEM.ERROR_CODES.OK)
+        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
           .json(response.format);
       })
       .catch((_err) => {
@@ -132,7 +132,7 @@ class AuthController {
           const response = new StandardResponseWrapper([{ isSignedUp: true }],
             constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
-          return res.status(constants.SYSTEM.ERROR_CODES.OK)
+          return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
             .json(response.format);
         }
 
@@ -174,7 +174,7 @@ class AuthController {
         let response;
 
         if (result && result.length) {
-          statusCode = constants.SYSTEM.ERROR_CODES.OK;
+          statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
           response = { isAuthenticated: true };
 
           const jwtToken = jwt.sign({
@@ -185,7 +185,7 @@ class AuthController {
             firstName: 'test-first',
             lastName: 'test-last',
           }, jwtSecret, {
-            expiresIn: '365 days',
+            expiresIn: '2 days',
             notBefore: 0,
             issuer: 'bulletin-board-system.herokuapp.com',
             audience: '.sugarpost.com',
@@ -229,6 +229,21 @@ class AuthController {
       });
   }
 
+  static logout(req, res) {
+    const response = new StandardResponseWrapper([{ isAuthenticated: false }],
+      constants.SYSTEM.RESPONSE_NAMES.LOGOUT);
+
+    res.cookie('jwt', '', {
+      httpOnly: true,
+      secure: false,
+      path: '/api',
+      signed: false,
+    });
+
+    return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
+      .json(response.format);
+  }
+
   static getToken(req, res) {
     try {
       const jwtToken = jwt.sign({
@@ -239,7 +254,7 @@ class AuthController {
         firstName: 'test-first',
         lastName: 'test-last',
       }, jwtSecret, {
-        expiresIn: '365 days',
+        expiresIn: '2 days',
         notBefore: 0,
         issuer: 'bulletin-board-system.herokuapp.com',
         audience: '.sugarpost.com',
@@ -252,7 +267,7 @@ class AuthController {
         signed: false,
       });
 
-      return res.status(200)
+      return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
         .json(jwtToken);
     } catch (_err) {
       const err = new StandardErrorWrapper([
@@ -276,10 +291,10 @@ class AuthController {
   }
 
   static passAuthCheck(req, res) {
-    const response = new StandardResponseWrapper([{ isloggedIn: true }],
+    const response = new StandardResponseWrapper([{ isAuthenticated: true }],
       constants.SYSTEM.RESPONSE_NAMES.AUTH_CHECK);
 
-    return res.status(constants.SYSTEM.ERROR_CODES.OK)
+    return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
       .json(response.format);
   }
 

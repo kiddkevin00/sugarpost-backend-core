@@ -34,6 +34,7 @@ exports.RESPONSE_NAMES = {
   SIGN_UP: 'SIGN_UP',
   LOGIN: 'LOGIN',
   AUTH_CHECK: 'AUTH_CHECK',
+  LOGOUT: 'LOGOUT',
 };
 
 exports.COMMON = {
