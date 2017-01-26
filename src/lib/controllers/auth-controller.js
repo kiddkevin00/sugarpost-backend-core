@@ -61,7 +61,7 @@ class AuthController {
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
         });
 
-        return res.status(constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR)
+        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
           .json(err.format({ containerId, requestCount }));
       });
   }
@@ -143,7 +143,7 @@ class AuthController {
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
         });
 
-        return res.status(constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR)
+        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
           .json(err.format({ containerId, requestCount }));
 
       });
@@ -200,7 +200,7 @@ class AuthController {
             });
           }
         } else {
-          statusCode = constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED;
+          statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
           response = { isAuthenticated: false };
         }
         const standardResponse = new StandardResponseWrapper([response],
@@ -224,7 +224,7 @@ class AuthController {
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
         });
 
-        return res.status(constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR)
+        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
           .json(err.format({ containerId, requestCount }));
       });
   }
@@ -285,7 +285,7 @@ class AuthController {
         source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
       });
 
-      return res.status(constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR)
+      return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
         .json(err.format({ containerId, requestCount }));
     }
   }
