@@ -2,7 +2,9 @@
  * This is the place for exposing module(s) for route component.
  */
 
-const adminRoute = require('./auth/');
+const authRoute = require('./auth/');
+const subscriberRoute = require('./subscriber/');
+const authCheckMiddleware = require('../utility/auth-check-middleware');
 const { Router } = require('express');
 
 function setupRoutes(app) {
@@ -28,7 +30,7 @@ function setupRoutes(app) {
   app.use('/api', setupApiRoutes());
 
   // All not-found API endpoints should return a custom 404 page.
-  app.route('/:url(api)*')
+  app.route('/:url(api)/*')
     .get((req, res) => res.render('404', (err) => {
       if (err) {
         return res.status(404)
@@ -43,18 +45,9 @@ function setupRoutes(app) {
 
 function setupApiRoutes() {
   const router = Router();
-  const authMiddleware = (req, res, next) => {
-    /* eslint-disable */
-    //if (req.session.userId) {
-      return next();
-    //}
-    /* eslint-ensable */
 
-    return res.status(401)
-      .send('Unauthenticated');
-  };
-
-  router.use('/auth', [authMiddleware], adminRoute);
+  router.use('/auth', authRoute);
+  router.use('/subscriber', [authCheckMiddleware], subscriberRoute);
 
   return router;
 }

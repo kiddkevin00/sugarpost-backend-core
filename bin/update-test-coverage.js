@@ -15,6 +15,7 @@ const order = [
   'lines',
 ];
 
+// eslint-disable-next-line  consistent-return
 exec('npm run-script coverage:report', (error, stdOut, stdErr) => {
   if (error) {
     console.error(`[Coverage Update Error] ${stdErr}.`);
@@ -45,10 +46,11 @@ exec('npm run-script coverage:report', (error, stdOut, stdErr) => {
       execSync('git add package.json');
       execSync('git commit -m "[System] Update each threshold for test coverage"');
 
-      return console.log('[Coverage Update] Each threshold is updated for test coverage.');
+      console.log('[Coverage Update] Each threshold is updated for test coverage.');
+      return process.exit(0);
     });
   } else {
     console.log('[Coverage Update] No threshold is updated for test coverage.');
+    return process.exit(0);
   }
-  return process.exit(0);
 });

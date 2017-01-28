@@ -1,13 +1,25 @@
 /*
  * Standard error format:
+ *
  *  ```
  *  {
+ *    context: {
+ *      containerId: "a123",
+ *      requestCount: 0
+ *    },
  *    errors: [
  *      {
+ *        code: 500,
+ *        name: "SOMETHING_WENT_WRONG", // optional
+ *        source: "current-app",
+ *        message: "Something went wrong.", // optional
+ *        detail: `err` // optional
+ *      },
+ *      {
  *        code: 404,
- *        name: 'SOMETHING_NOT_FOUND', // optional
- *        source: 'current-app',
- *        message: 'Something is not found.', // optional
+ *        name: "SOMETHING_NOT_FOUND", // optional
+ *        source: "another-app",
+ *        message: "Something is not found.", // optional
  *        detail: `err` // optional
  *      }
  *    ]
@@ -15,7 +27,10 @@
  *  ```
  */
 
-const errorContext = Symbol('error-context');
+const constants = require('../constants/');
+
+// [TODO] When throwing an object with `Symbol('error-context')` property, it will become `{}`.
+const errorContext = 'error-context';
 
 class StandardErrorWrapper {
 
@@ -53,20 +68,40 @@ class StandardErrorWrapper {
     this[errorContext].errorStack.unshift(errElement);
   }
 
-  getNthError(number) {
-    return this[errorContext].errorStack[number];
+  getNthError(nth) {
+    return this[errorContext].errorStack[nth];
   }
 
-  format(context) {
+  format(context = {}) {
     return {
       context,
       errors: this[errorContext].errorStack,
     };
   }
 
-  // [TODO] Verify if `obj` follows standard error format.
-  static verifyFormat(obj) {
+  static deserialize(errorPayloadObj) {
+    if (!StandardErrorWrapper.verifyFormat(errorPayloadObj)) {
+      const err = new StandardErrorWrapper([
+        {
+          code: constants.SYSTEM.ERROR_CODES.INVALID_ERROR_INTERFACE,
+          name: constants.SYSTEM.ERROR_NAMES.ERROR_OBJ_PARSE_ERROR,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: constants.SYSTEM.ERROR_MSG.ERROR_OBJ_PARSE_ERROR,
+        },
+      ]);
 
+      throw err;
+    }
+
+    const errors = errorPayloadObj.errors;
+
+    return new StandardErrorWrapper(errors);
+  }
+
+  static verifyFormat(obj) {
+    const errors = obj.errors;
+
+    return !!Array.isArray(errors);
   }
 
 }

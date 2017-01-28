@@ -1,7 +1,4 @@
 const setupExpressServer = require('../../../lib/servers/express-server');
-const bodyParser = require('body-parser');
-const compression = require('compression');
-const session = require('express-session');
 
 describe('Express server', function () {
   let expressApp;
