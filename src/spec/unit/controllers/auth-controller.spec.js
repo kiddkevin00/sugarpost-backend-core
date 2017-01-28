@@ -22,12 +22,12 @@ describe('Auth controller', function () {
   });
 
   // [TODO]
-  it('can handle subscribe request :: subscribe()', function () {
+  describe('can handle subscribe request :: subscribe()', function () {
 
   });
 
   // [TODO]
-  it('can handle signup request :: signup()', function () {
+  describe('can handle signup request :: signup()', function () {
 
   });
 

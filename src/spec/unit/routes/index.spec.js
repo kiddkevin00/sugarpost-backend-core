@@ -23,7 +23,7 @@ describe('Route component', function () {
   });
 
   it('will handle the case when any API endpoint is not found', function () {
-    expect(expressApp.route).to.have.been.calledWith('/:url(api)*');
+    expect(expressApp.route).to.have.been.calledWith('/:url(api)/*');
   });
 
 });
