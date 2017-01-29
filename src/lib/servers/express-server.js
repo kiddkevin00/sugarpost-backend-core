@@ -1,3 +1,4 @@
+const constants = require('../constants/');
 const compression = require('compression');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
@@ -11,12 +12,9 @@ const cors = require('cors');
 const express = require('express');
 
 function setupExpressServer(app) {
-  const whitelist = ['http://127.0.0.1:8088', 'http://0.0.0.0:8088', 'http://localhost:8088',
-    'http://www.mysugarpost.com', 'https://www.mysugarpost.com'];
-
   app.use(cors({
     optionsSuccessStatus: 200, // [Note] Some legacy browsers (IE 11, some SmartTVs) choke on 204.
-    origin: whitelist,
+    origin: constants.AUTH.CORS.WHITELIST,
     credentials: true,
     maxAge: 86400,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
