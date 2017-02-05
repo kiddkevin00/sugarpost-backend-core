@@ -13,6 +13,8 @@ let requestCount = 0;
 class AuthController {
 
   static subscribe(req, res) {
+    requestCount += 1;
+
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
     const subscribeStrategy = {
@@ -34,8 +36,6 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, subscribeStrategy)
       .then((result) => {
-        requestCount += 1;
-
         const response = new StandardResponseWrapper(result,
           constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
@@ -43,8 +43,6 @@ class AuthController {
           .json(response.format);
       })
       .catch((_err) => {
-        requestCount += 1;
-
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
           const response = new StandardResponseWrapper([{ isSubscribed: true }],
@@ -62,11 +60,16 @@ class AuthController {
         });
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .json(err.format({ containerId, requestCount }));
+          .json(err.format({
+            containerId: state.context.containerId,
+            requestCount: state.context.requestCount,
+          }));
       });
   }
 
   static signup(req, res) {
+    requestCount += 1;
+
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
     const signupStrategy = {
@@ -76,7 +79,7 @@ class AuthController {
         data: [
           {
             email: state.email,
-            passwordHash: state.password, // [TODO]
+            passwordHash: state.password, // [TODO] Should only store haded password.
             firstName: state.firstName,
             lastName: state.lastName,
             emailValidated: false,
@@ -93,8 +96,6 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, signupStrategy)
       .then((result) => {
-        requestCount += 1;
-
         const jwtToken = jwt.sign({
           sub: 'test-type:test-email:test-id',
           _id: 'test-id',
@@ -125,8 +126,6 @@ class AuthController {
           .json(response.format);
       })
       .catch((_err) => {
-        requestCount += 1;
-
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
           const response = new StandardResponseWrapper([{ isSignedUp: true }],
@@ -144,12 +143,16 @@ class AuthController {
         });
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .json(err.format({ containerId, requestCount }));
-
+          .json(err.format({
+            containerId: state.context.containerId,
+            requestCount: state.context.requestCount,
+          }));
       });
   }
 
   static login(req, res) {
+    requestCount += 1;
+
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
     const loginStrategy = {
@@ -168,8 +171,6 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, loginStrategy)
       .then((result) => {
-        requestCount += 1;
-
         let statusCode;
         let response;
 
@@ -210,8 +211,6 @@ class AuthController {
           .json(standardResponse.format);
       })
       .catch((_err) => {
-        requestCount += 1;
-
         let err;
 
         if (_err instanceof StandardErrorWrapper) {
@@ -225,7 +224,10 @@ class AuthController {
         });
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .json(err.format({ containerId, requestCount }));
+          .json(err.format({
+            containerId: state.context.containerId,
+            requestCount: state.context.requestCount,
+          }));
       });
   }
 
