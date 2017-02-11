@@ -5,6 +5,7 @@ const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
 const Promise = require('bluebird');
 const jwt = require('jsonwebtoken');
+const couponCode = require('coupon-code');
 
 const jwtSecret = 'my-jwt-secret'; // [TODO]
 const containerId = process.env.HOSTNAME;
@@ -72,14 +73,19 @@ class AuthController {
 
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
+    const referCode = couponCode.generate({
+      parts: 1,
+      partLen: 5,
+    });
     const signupStrategy = {
       storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
         type: constants.STORE.OPERATIONS.INSERT,
         data: [
           {
+            referCode,
             email: state.email,
-            passwordHash: state.password, // [TODO] Should only store haded password.
+            passwordHash: state.password, // [TODO] Should only store hashed password.
             firstName: state.firstName,
             lastName: state.lastName,
             emailValidated: false,
@@ -104,7 +110,7 @@ class AuthController {
           firstName: 'test-first',
           lastName: 'test-last',
         }, jwtSecret, {
-          expiresIn: '300 days',
+          expiresIn: '45 days',
           notBefore: 0,
           issuer: 'bulletin-board-system.herokuapp.com',
           audience: '.sugarpost.com',
@@ -162,7 +168,7 @@ class AuthController {
         data: [
           {
             email: state.email,
-            passwordHash: state.password,
+            passwordHash: state.password, // [TODO] Should only verify hashed password.
           },
         ],
       },
@@ -174,7 +180,7 @@ class AuthController {
         let statusCode;
         let response;
 
-        if (result && result.length) {
+        if (result && (result.length === 1)) {
           statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
           response = { isAuthenticated: true };
 
@@ -186,7 +192,7 @@ class AuthController {
             firstName: 'test-first',
             lastName: 'test-last',
           }, jwtSecret, {
-            expiresIn: '2 days',
+            expiresIn: '45 days',
             notBefore: 0,
             issuer: 'bulletin-board-system.herokuapp.com',
             audience: '.sugarpost.com',

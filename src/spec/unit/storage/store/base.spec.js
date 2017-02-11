@@ -1,4 +1,4 @@
-const BaseStore = require('../../../../lib/storage/store/base');
+const BaseStore = require('../../../../lib/storage/stores/base');
 
 describe('High-level (base) store', function () {
 

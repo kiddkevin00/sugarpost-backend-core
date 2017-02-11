@@ -19,6 +19,7 @@ exports.HTTP_STATUS_CODES = httpStatusCodes;
 exports.ERROR_CODES = Object.assign({}, httpStatusCodes, {
   INVALID_RESPONSE_INTERFACE: 1000,
   TABLE_CONSTRAINT_VALIDATION: 1001,
+  PAYMENT_CHECK_FAILURE: 1002,
 });
 
 exports.ERROR_NAMES = {
