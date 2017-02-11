@@ -1,6 +1,6 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.5.4",
+  "version": "1.6.0",
   "description": "A generic RESTful API backend with all major database connection/ops interfaces implemented.",
   "main": "./src/lib/app.js",
   "bin": {
@@ -70,7 +70,7 @@
     "coverage:html-report": "open spec/coverage/index.html",
     "dev:reload": "nodemon --watch src/",
     "dev:watch": "watch 'npm run lint' src/",
-    "dev:performance": "nodemon -perf_basic_prof --debug --trace_gc",
+    "dev:performance": "nodemon --perf_basic_prof --debug --trace_gc",
     "debug": "node --debug --debug-brk src/lib/app.js"
   },
   "engines": {
@@ -83,6 +83,7 @@
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.1",
+    "coupon-code": "^0.4.5",
     "errorhandler": "^1.4.3",
     "express": "^4.14.0",
     "express-session": "^1.14.0",
@@ -94,7 +95,8 @@
     "pg": "^6.1.0",
     "pgtools": "^0.2.2",
     "sequelize": "^3.25.0",
-    "serve-favicon": "^2.3.2"
+    "serve-favicon": "^2.3.2",
+    "stripe": "^4.15.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",

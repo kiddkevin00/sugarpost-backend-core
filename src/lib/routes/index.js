@@ -4,6 +4,7 @@
 
 const authRoute = require('./auth/');
 const subscriberRoute = require('./subscriber/');
+const paymentRoute = require('./payment/');
 const authCheckMiddleware = require('../utility/auth-check-middleware');
 const { Router } = require('express');
 
@@ -48,6 +49,7 @@ function setupApiRoutes() {
 
   router.use('/auth', authRoute);
   router.use('/subscriber', [authCheckMiddleware], subscriberRoute);
+  router.use('/payment', [authCheckMiddleware], paymentRoute);
 
   return router;
 }

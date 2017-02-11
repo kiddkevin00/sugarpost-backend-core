@@ -49,7 +49,7 @@ class DatabaseService {
 
         for (const doc of docs) {
           for (const field of uniqueFields) {
-            if (!state[field] || doc[field] === state[field]) {
+            if (!state[field] || (doc[field] === state[field])) {
               const validationErr = new StandardErrorWrapper([
                 {
                   code: constants.SYSTEM.ERROR_CODES.TABLE_CONSTRAINT_VALIDATION,

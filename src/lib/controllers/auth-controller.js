@@ -5,6 +5,7 @@ const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
 const Promise = require('bluebird');
 const jwt = require('jsonwebtoken');
+const couponCode = require('coupon-code');
 
 const jwtSecret = 'my-jwt-secret'; // [TODO]
 const containerId = process.env.HOSTNAME;
@@ -13,6 +14,8 @@ let requestCount = 0;
 class AuthController {
 
   static subscribe(req, res) {
+    requestCount += 1;
+
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
     const subscribeStrategy = {
@@ -34,8 +37,6 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, subscribeStrategy)
       .then((result) => {
-        requestCount += 1;
-
         const response = new StandardResponseWrapper(result,
           constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
@@ -43,8 +44,6 @@ class AuthController {
           .json(response.format);
       })
       .catch((_err) => {
-        requestCount += 1;
-
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
           const response = new StandardResponseWrapper([{ isSubscribed: true }],
@@ -62,21 +61,31 @@ class AuthController {
         });
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .json(err.format({ containerId, requestCount }));
+          .json(err.format({
+            containerId: state.context.containerId,
+            requestCount: state.context.requestCount,
+          }));
       });
   }
 
   static signup(req, res) {
+    requestCount += 1;
+
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
+    const referCode = couponCode.generate({
+      parts: 1,
+      partLen: 5,
+    });
     const signupStrategy = {
       storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
         type: constants.STORE.OPERATIONS.INSERT,
         data: [
           {
+            referCode,
             email: state.email,
-            passwordHash: state.password, // [TODO]
+            passwordHash: state.password, // [TODO] Should only store hashed password.
             firstName: state.firstName,
             lastName: state.lastName,
             emailValidated: false,
@@ -93,8 +102,6 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, signupStrategy)
       .then((result) => {
-        requestCount += 1;
-
         const jwtToken = jwt.sign({
           sub: 'test-type:test-email:test-id',
           _id: 'test-id',
@@ -103,7 +110,7 @@ class AuthController {
           firstName: 'test-first',
           lastName: 'test-last',
         }, jwtSecret, {
-          expiresIn: '300 days',
+          expiresIn: '45 days',
           notBefore: 0,
           issuer: 'bulletin-board-system.herokuapp.com',
           audience: '.sugarpost.com',
@@ -125,8 +132,6 @@ class AuthController {
           .json(response.format);
       })
       .catch((_err) => {
-        requestCount += 1;
-
         if (_err instanceof StandardErrorWrapper &&
             _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
           const response = new StandardResponseWrapper([{ isSignedUp: true }],
@@ -144,12 +149,16 @@ class AuthController {
         });
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .json(err.format({ containerId, requestCount }));
-
+          .json(err.format({
+            containerId: state.context.containerId,
+            requestCount: state.context.requestCount,
+          }));
       });
   }
 
   static login(req, res) {
+    requestCount += 1;
+
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
     const loginStrategy = {
@@ -159,7 +168,7 @@ class AuthController {
         data: [
           {
             email: state.email,
-            passwordHash: state.password,
+            passwordHash: state.password, // [TODO] Should only verify hashed password.
           },
         ],
       },
@@ -168,12 +177,10 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, loginStrategy)
       .then((result) => {
-        requestCount += 1;
-
         let statusCode;
         let response;
 
-        if (result && result.length) {
+        if (result && (result.length === 1)) {
           statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
           response = { isAuthenticated: true };
 
@@ -185,7 +192,7 @@ class AuthController {
             firstName: 'test-first',
             lastName: 'test-last',
           }, jwtSecret, {
-            expiresIn: '2 days',
+            expiresIn: '45 days',
             notBefore: 0,
             issuer: 'bulletin-board-system.herokuapp.com',
             audience: '.sugarpost.com',
@@ -210,8 +217,6 @@ class AuthController {
           .json(standardResponse.format);
       })
       .catch((_err) => {
-        requestCount += 1;
-
         let err;
 
         if (_err instanceof StandardErrorWrapper) {
@@ -225,7 +230,10 @@ class AuthController {
         });
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .json(err.format({ containerId, requestCount }));
+          .json(err.format({
+            containerId: state.context.containerId,
+            requestCount: state.context.requestCount,
+          }));
       });
   }
 
