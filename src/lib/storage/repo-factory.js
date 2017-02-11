@@ -1,5 +1,5 @@
-const MongoStore = require('./store/mongo-store');
-const PostgresStore = require('./store/postgres-store');
+const MongoStore = require('./stores/mongo-store');
+const PostgresStore = require('./stores/postgres-store');
 const Validator = require('../utility/precondition-validator');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const constants = require('../constants/');

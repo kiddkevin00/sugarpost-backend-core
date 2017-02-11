@@ -10,6 +10,7 @@ class ProcessState {
     this[stateContext].password = options.password;
     this[stateContext].firstName = options.firstName;
     this[stateContext].lastName = options.lastName;
+    this[stateContext].referCode = options.referCode;
   }
 
   get context() {
@@ -30,6 +31,10 @@ class ProcessState {
 
   get lastName() {
     return this[stateContext].lastName;
+  }
+
+  get referCode() {
+    return this[stateContext].referCode;
   }
 
   static create(options, context) {
