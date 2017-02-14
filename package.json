@@ -68,7 +68,7 @@
     "local-integration-test": "",
     "coverage:report": "nyc report",
     "coverage:html-report": "open spec/coverage/index.html",
-    "dev:reload": "nodemon --watch src/",
+    "dev:start": "nodemon --watch src/",
     "dev:watch": "watch 'npm run lint' src/",
     "dev:performance": "nodemon --perf_basic_prof --debug --trace_gc",
     "debug": "node --debug --debug-brk src/lib/app.js"
