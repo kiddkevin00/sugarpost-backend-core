@@ -128,8 +128,10 @@ class AuthController {
           });
         }
 
-        const response = new StandardResponseWrapper(result,
-          constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
+        const response = new StandardResponseWrapper({
+          success: true,
+          detail: result,
+        }, constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
           .json(response.format);
@@ -192,7 +194,10 @@ class AuthController {
 
         if (result && (result.length === 1)) {
           statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
-          response = { success: true };
+          response = {
+            success: true,
+            detail: result[0],
+          };
 
           const jwtToken = jwt.sign({
             sub: 'test-type:test-email:test-id',
