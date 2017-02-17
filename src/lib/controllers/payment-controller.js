@@ -47,7 +47,7 @@ class PaymentController {
 
           return PaymentController._handleRequest(state, res, DatabaseService, referCodeStrategy);
         }
-        return { withReferCode: false };
+        return { withReferCode: !!referCode };
       })
       .then((result) => {
         if (result && result.length === 1) {
@@ -178,7 +178,7 @@ class PaymentController {
         return stripe.subscriptions.update(id, { trial_end, prorate });
       })
       .then(() => {
-        const response = new StandardResponseWrapper([{ status: 'success' }],
+        const response = new StandardResponseWrapper([{ success: true }],
           constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
@@ -194,7 +194,8 @@ class PaymentController {
         ) {
           const response = new StandardResponseWrapper([
             {
-              status: 'fail',
+              success: false,
+              status: err.getNthError(0).name,
               detail: err.format({
                 containerId: state.context.containerId,
                 requestCount: state.context.requestCount,

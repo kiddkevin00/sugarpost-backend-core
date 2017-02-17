@@ -13,6 +13,7 @@ let requestCount = 0;
 
 class AuthController {
 
+  // Will be deprecated.
   static subscribe(req, res) {
     requestCount += 1;
 
@@ -44,8 +45,10 @@ class AuthController {
           .json(response.format);
       })
       .catch((_err) => {
-        if (_err instanceof StandardErrorWrapper &&
-            _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
+        if (
+          _err instanceof StandardErrorWrapper &&
+          _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE
+        ) {
           const response = new StandardResponseWrapper([{ isSubscribed: true }],
             constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
@@ -134,9 +137,17 @@ class AuthController {
       .catch((_err) => {
         const err = new StandardErrorWrapper(_err);
 
-        if (_err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
-          const response = new StandardResponseWrapper([{ isSignedUp: true }],
-            constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
+        if (err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
+          const response = new StandardResponseWrapper([
+            {
+              success: false,
+              status: err.getNthError(0).name,
+              detail: err.format({
+                containerId: state.context.containerId,
+                requestCount: state.context.requestCount,
+              }),
+            },
+          ], constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
           return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
             .json(response.format);
@@ -181,7 +192,7 @@ class AuthController {
 
         if (result && (result.length === 1)) {
           statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
-          response = { isAuthenticated: true };
+          response = { success: true };
 
           const jwtToken = jwt.sign({
             sub: 'test-type:test-email:test-id',
@@ -207,7 +218,7 @@ class AuthController {
           }
         } else {
           statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
-          response = { isAuthenticated: false };
+          response = { success: false };
         }
         const standardResponse = new StandardResponseWrapper([response],
           constants.SYSTEM.RESPONSE_NAMES.LOGIN);
@@ -232,7 +243,7 @@ class AuthController {
   }
 
   static logout(req, res) {
-    const response = new StandardResponseWrapper([{ isAuthenticated: false }],
+    const response = new StandardResponseWrapper([{ success: true }],
       constants.SYSTEM.RESPONSE_NAMES.LOGOUT);
 
     res.cookie('jwt', '', {
