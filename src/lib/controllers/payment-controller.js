@@ -1,6 +1,7 @@
 const DatabaseService = require('../services/database-service');
 const ProcessSate = require('../process-state/');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
+const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
 const stripeApi = require('stripe');
 const couponCode = require('coupon-code');
@@ -14,8 +15,8 @@ let requestCount = 0;
 class PaymentController {
 
   static proceed(req, res) {
-    const email = req.body.token && req.body.token.email;
-    const source = req.body.token && req.body.token.id;
+    const email = req.body.email;
+    const source = req.body.tokenId;
     const referCode = req.body.referCode;
     const validatedReferCode = referCode && couponCode.validate(referCode, {
       parts: 1,
@@ -46,10 +47,10 @@ class PaymentController {
 
           return PaymentController._handleRequest(state, res, DatabaseService, referCodeStrategy);
         }
-        return null;
+        return { withReferCode: false };
       })
       .then((result) => {
-        if (result && (result.length === 1)) {
+        if (result && result.length === 1) {
           account_balance = -200;
 
           stripe.customers.update(result[0].stripeCustomerId, { account_balance: -250 })
@@ -61,10 +62,25 @@ class PaymentController {
                 source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
               });
 
-              throw err;
+              return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
+                .json(err.format({
+                  containerId: state.context.containerId,
+                  requestCount: state.context.requestCount,
+                }));
             });
-        } else {
+        } else if (!result.withReferCode) {
           account_balance = 0;
+        } else {
+          const referCodeNotFoundErr = new StandardErrorWrapper([
+            {
+              code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
+              name: constants.AUTH.ERROR_NAMES.REFER_CODE_NOT_FOUND,
+              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+              message: constants.AUTH.ERROR_MSG.REFER_CODE_NOT_FOUND,
+            },
+          ]);
+
+          throw referCodeNotFoundErr;
         }
 
         const paymentCheckStrategy = {
@@ -88,36 +104,31 @@ class PaymentController {
           err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,
-              name: constants.STORE.ERROR_NAMES.EMAIL_NOT_FOUND,
+              name: constants.AUTH.ERROR_NAMES.EMAIL_NOT_FOUND,
               source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.STORE.ERROR_MSG.EMAIL_NOT_FOUND,
+              message: constants.AUTH.ERROR_MSG.EMAIL_NOT_FOUND,
             },
           ]);
+
+          throw err;
         } else if (result[0].stripeCustomerId) {
           err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,
-              name: constants.STORE.ERROR_NAMES.ALREADY_LINK_TO_STRIPE_ACC,
+              name: constants.AUTH.ERROR_NAMES.ALREADY_LINK_TO_STRIPE_ACC,
               source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.STORE.ERROR_MSG.ALREADY_LINK_TO_STRIPE_ACC,
+              message: constants.AUTH.ERROR_MSG.ALREADY_LINK_TO_STRIPE_ACC,
             },
           ]);
+
+          throw err;
         } else {
           userId = result[0]._id;
         }
 
-        if (err) {
-          err.append({
-            code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-            source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-          });
-
-          throw err;
-        }
-
         const description = `Customer for ${email}`;
 
-        return stripe.customers.create({ source, email, description, account_balance });
+        return stripe.customers.create({ source, email, description, account_balance })
       })
       .then((customer) => {
         stripeCustomerId = customer.id;
@@ -146,12 +157,8 @@ class PaymentController {
         const tax_percent = 10.0; // [TODO] This still need to be calculated carefully including Stripe fee and sales tax.
         const prorate = false;
 
-        return stripe.subscriptions.create({
-          items,
-          tax_percent,
-          prorate,
-          customer: stripeCustomerId,
-        });
+        return stripe.subscriptions
+          .create({ items, tax_percent, prorate, customer: stripeCustomerId });
       })
       .then((subscription) => {
         const id = subscription.id;
@@ -170,15 +177,45 @@ class PaymentController {
 
         return stripe.subscriptions.update(id, { trial_end, prorate });
       })
+      .then(() => {
+        const response = new StandardResponseWrapper([{ status: 'success' }],
+          constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
+
+        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
+          .json(response.format);
+      })
       .catch((_err) => {
         const err = new StandardErrorWrapper(_err);
+
+        if (
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.REFER_CODE_NOT_FOUND ||
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.EMAIL_NOT_FOUND ||
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.ALREADY_LINK_TO_STRIPE_ACC
+        ) {
+          const response = new StandardResponseWrapper([
+            {
+              status: 'fail',
+              detail: err.format({
+                containerId: state.context.containerId,
+                requestCount: state.context.requestCount,
+              }),
+            },
+          ], constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
+
+          return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
+            .json(response.format);
+        }
 
         err.append({
           code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
         });
 
-        throw err;
+        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+          .json(err.format({
+            containerId: state.context.containerId,
+            requestCount: state.context.requestCount,
+          }));
       });
 
   }

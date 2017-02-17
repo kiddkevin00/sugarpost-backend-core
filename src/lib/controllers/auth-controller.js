@@ -132,16 +132,15 @@ class AuthController {
           .json(response.format);
       })
       .catch((_err) => {
-        if (_err instanceof StandardErrorWrapper &&
-            _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
+        const err = new StandardErrorWrapper(_err);
+
+        if (_err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
           const response = new StandardResponseWrapper([{ isSignedUp: true }],
             constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
           return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
             .json(response.format);
         }
-
-        const err = new StandardErrorWrapper(_err);
 
         err.append({
           code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
@@ -217,13 +216,8 @@ class AuthController {
           .json(standardResponse.format);
       })
       .catch((_err) => {
-        let err;
+        const err = new StandardErrorWrapper(_err);
 
-        if (_err instanceof StandardErrorWrapper) {
-          err = _err;
-        } else {
-          err = new StandardErrorWrapper(_err);
-        }
         err.append({
           code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
@@ -250,6 +244,10 @@ class AuthController {
 
     return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
       .json(response.format);
+  }
+
+  static forgotPassword(req, res) {
+
   }
 
   static getToken(req, res) {
@@ -281,17 +279,12 @@ class AuthController {
       const err = new StandardErrorWrapper([
         {
           code: constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED,
-          name: constants.AUTH.ERROR_NAMES.JWT_INVALID,
+          name: constants.AUTH.ERROR_NAMES.JWT_GENERATION_ERROR,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-          message: constants.AUTH.ERROR_MSG.JWT_INVALID,
+          message: constants.AUTH.ERROR_MSG.JWT_GENERATION_ERROR,
           detail: _err,
         },
       ]);
-
-      err.append({
-        code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-        source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-      });
 
       return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
         .json(err.format({ containerId, requestCount }));

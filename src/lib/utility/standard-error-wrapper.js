@@ -37,7 +37,9 @@ class StandardErrorWrapper {
   constructor(initialErr) {
     this[errorContext] = {};
 
-    if (Array.isArray(initialErr)) {
+    if (initialErr instanceof StandardErrorWrapper) {
+      this[errorContext].errorStack = initialErr[errorContext].errorStack;
+    } else if (Array.isArray(initialErr)) {
       /*
        * If initial error(s) is(are) wrapped into an array, each of them should follow standard
        * error format.
