@@ -47,6 +47,10 @@ class StandardResponseWrapper {
     this[responseContext].data.push(newData);
   }
 
+  getNthData(nth) {
+    return this[responseContext].data[nth];
+  }
+
   get name() {
     return this[responseContext].name;
   }
