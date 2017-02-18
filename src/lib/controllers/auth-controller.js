@@ -89,8 +89,7 @@ class AuthController {
             referCode,
             email: state.email,
             passwordHash: state.password, // [TODO] Should only store hashed password.
-            firstName: state.firstName,
-            lastName: state.lastName,
+            fullName: state.fullName,
             emailValidated: false,
             suspended: false,
             version: 0,
@@ -110,8 +109,7 @@ class AuthController {
           _id: 'test-id',
           email: 'test-email',
           type: 'test-type',
-          firstName: 'test-first',
-          lastName: 'test-last',
+          fullName: 'test-name',
         }, jwtSecret, {
           expiresIn: '45 days',
           notBefore: 0,
@@ -204,8 +202,7 @@ class AuthController {
             _id: 'test-id',
             email: 'test-email',
             type: 'test-type',
-            firstName: 'test-first',
-            lastName: 'test-last',
+            fullName: 'test-name',
           }, jwtSecret, {
             expiresIn: '45 days',
             notBefore: 0,
@@ -273,8 +270,7 @@ class AuthController {
         _id: 'test-id',
         email: 'test-email',
         type: 'test-type',
-        firstName: 'test-first',
-        lastName: 'test-last',
+        fullName: 'test-name',
       }, jwtSecret, {
         expiresIn: '2 days',
         notBefore: 0,

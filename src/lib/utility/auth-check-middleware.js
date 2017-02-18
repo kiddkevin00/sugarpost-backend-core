@@ -18,8 +18,7 @@ function authMiddleware(req, res, next) {
       _id: decodedJwt._id,
       email: decodedJwt.email,
       type: decodedJwt.type,
-      firstName: decodedJwt.firstName,
-      lastName: decodedJwt.lastName,
+      fullName: decodedJwt.fullName,
     };
     /* eslint-enable */
 
