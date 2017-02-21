@@ -6,6 +6,7 @@ const authRoute = require('./auth/');
 const subscriberRoute = require('./subscriber/');
 const paymentRoute = require('./payment/');
 const authCheckMiddleware = require('../utility/auth-check-middleware');
+const constants = require('../constants/');
 const { Router } = require('express');
 
 function setupRoutes(app) {
@@ -34,10 +35,10 @@ function setupRoutes(app) {
   app.route('/:url(api)/*')
     .get((req, res) => res.render('404', (err) => {
       if (err) {
-        return res.status(404)
+        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.NOT_FOUND)
           .json(err);
       }
-      return res.status(404)
+      return res.status(constants.SYSTEM.HTTP_STATUS_CODES.NOT_FOUND)
         .render('404');
     }));
 
