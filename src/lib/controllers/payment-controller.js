@@ -15,6 +15,8 @@ let requestCount = 0;
 class PaymentController {
 
   static proceed(req, res) {
+    requestCount += 1;
+
     const email = req.body.email;
     const source = req.body.tokenId;
     const referCode = req.body.referCode;
@@ -23,7 +25,7 @@ class PaymentController {
       partLen: 5,
     });
     let userId;
-    let account_balance;
+    let account_balance; // eslint-disable-line camelcase
     let stripeCustomerId;
 
     const context = { containerId, requestCount };
@@ -51,7 +53,7 @@ class PaymentController {
       })
       .then((result) => {
         if (result && result.length === 1) {
-          account_balance = -200;
+          account_balance = -200; // eslint-disable-line camelcase
 
           stripe.customers.update(result[0].stripeCustomerId, { account_balance: -250 })
             .catch((_err) => {
@@ -59,7 +61,9 @@ class PaymentController {
 
               err.append({
                 code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
+                name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
                 source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+                message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
               });
 
               return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
@@ -69,9 +73,9 @@ class PaymentController {
                 }));
             });
         } else if (!result.withReferCode) {
-          account_balance = 0;
+          account_balance = 0; // eslint-disable-line camelcase
         } else {
-          const referCodeNotFoundErr = new StandardErrorWrapper([
+          const err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
               name: constants.AUTH.ERROR_NAMES.REFER_CODE_NOT_FOUND,
@@ -80,7 +84,7 @@ class PaymentController {
             },
           ]);
 
-          throw referCodeNotFoundErr;
+          throw err;
         }
 
         const paymentCheckStrategy = {
@@ -104,9 +108,9 @@ class PaymentController {
           err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,
-              name: constants.AUTH.ERROR_NAMES.EMAIL_NOT_FOUND,
+              name: constants.AUTH.ERROR_NAMES.PAYER_EMAIL_NOT_FOUND,
               source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.AUTH.ERROR_MSG.EMAIL_NOT_FOUND,
+              message: constants.AUTH.ERROR_MSG.PAYER_EMAIL_NOT_FOUND,
             },
           ]);
 
@@ -128,7 +132,8 @@ class PaymentController {
 
         const description = `Customer for ${email}`;
 
-        return stripe.customers.create({ source, email, description, account_balance })
+        // eslint-disable-next-line camelcase
+        return stripe.customers.create({ source, email, description, account_balance });
       })
       .then((customer) => {
         stripeCustomerId = customer.id;
@@ -154,7 +159,7 @@ class PaymentController {
             quantity: 1,
           },
         ];
-        const tax_percent = 10.0; // [TODO] This still need to be calculated carefully including Stripe fee and sales tax.
+        const tax_percent = 10.0; // eslint-disable-line camelcase
         const prorate = false;
 
         return stripe.subscriptions
@@ -167,14 +172,17 @@ class PaymentController {
         const month = date.getMonth();
         const year = date.getFullYear();
         const prorate = false;
-        let trial_end;
+        let trial_end; // eslint-disable-line camelcase
 
         if (day <= 28) {
+          // eslint-disable-next-line camelcase
           trial_end = new Date(year, month + 1, 15).getTime() / 1000;
         } else {
+          // eslint-disable-next-line camelcase
           trial_end = new Date(year, month + 2, 15).getTime() / 1000;
         }
 
+        // eslint-disable-next-line camelcase
         return stripe.subscriptions.update(id, { trial_end, prorate });
       })
       .then(() => {
@@ -189,7 +197,7 @@ class PaymentController {
 
         if (
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.REFER_CODE_NOT_FOUND ||
-          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.EMAIL_NOT_FOUND ||
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.PAYER_EMAIL_NOT_FOUND ||
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.ALREADY_LINK_TO_STRIPE_ACC
         ) {
           const response = new StandardResponseWrapper([
@@ -209,7 +217,9 @@ class PaymentController {
 
         err.append({
           code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
+          name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
         });
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)

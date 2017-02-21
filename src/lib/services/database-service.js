@@ -73,6 +73,18 @@ class DatabaseService {
         const operationData = operation.data;
 
         return repo[operationType](conn, tableName, ...operationData);
+      })
+      .catch((_err) => {
+        const err = new StandardErrorWrapper(_err);
+
+        err.append({
+          code: constants.SYSTEM.ERROR_CODES.DATABASE_OPERATION_ERROR,
+          name: constants.STORE.ERROR_NAMES.CAUGHT_ERROR_IN_DATABASE_SERVICE,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: constants.STORE.ERROR_MSG.CAUGHT_ERROR_IN_DATABASE_SERVICE,
+        });
+
+        throw err;
       });
   }
 

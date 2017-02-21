@@ -10,16 +10,16 @@
  *    errors: [
  *      {
  *        code: 500,
- *        name: "SOMETHING_WENT_WRONG", // optional
+ *        name: "SOMETHING_WENT_WRONG",
  *        source: "current-app",
- *        message: "Something went wrong.", // optional
+ *        message: "Something went wrong.",
  *        detail: `err` // optional
  *      },
  *      {
  *        code: 404,
- *        name: "SOMETHING_NOT_FOUND", // optional
+ *        name: "SOMETHING_NOT_FOUND",
  *        source: "another-app",
- *        message: "Something is not found.", // optional
+ *        message: "Something is not found.",
  *        detail: `err` // optional
  *      }
  *    ]
@@ -50,7 +50,13 @@ class StandardErrorWrapper {
       const errMsg = initialErr.toString() !== '[object Object]' ?
         initialErr.toString() : JSON.stringify(initialErr, null, 2);
 
-      this[errorContext].errorStack = [{ message: errMsg, detail: initialErr }];
+      this[errorContext].errorStack = [{
+        code: constants.SYSTEM.ERROR_CODES.UNKNOWN_ERROR,
+        name: constants.SYSTEM.ERROR_NAMES.UNKNOWN_ERROR,
+        source: constants.SYSTEM.CURRENT_SOURCE,
+        message: errMsg,
+        detail: initialErr,
+      }];
     } else {
       // Without initial error.
       this[errorContext].errorStack = [];

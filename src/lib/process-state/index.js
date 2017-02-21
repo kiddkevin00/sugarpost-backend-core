@@ -8,8 +8,7 @@ class ProcessState {
     this[stateContext].context = { containerId, requestCount };
     this[stateContext].email = options.email;
     this[stateContext].password = options.password;
-    this[stateContext].firstName = options.firstName;
-    this[stateContext].lastName = options.lastName;
+    this[stateContext].fullName = options.fullName;
     this[stateContext].referCode = options.referCode;
   }
 
@@ -25,8 +24,8 @@ class ProcessState {
     return this[stateContext].password;
   }
 
-  get firstName() {
-    return this[stateContext].firstName;
+  get fullName() {
+    return this[stateContext].fullName;
   }
 
   get lastName() {
