@@ -211,7 +211,7 @@ class PaymentController {
             },
           ], constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
 
-          return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
+          return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
             .json(response.format);
         }
 

@@ -221,7 +221,10 @@ class AuthController {
           });
         } else {
           statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
-          response = { success: false };
+          response = {
+            success: false,
+            detail: result,
+          };
         }
         const standardResponse = new StandardResponseWrapper([response],
           constants.SYSTEM.RESPONSE_NAMES.LOGIN);
@@ -427,7 +430,7 @@ class AuthController {
   }
 
   static passAuthCheck(req, res) {
-    const response = new StandardResponseWrapper([{ isAuthenticated: true }],
+    const response = new StandardResponseWrapper([{ success: true }],
       constants.SYSTEM.RESPONSE_NAMES.AUTH_CHECK);
 
     return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
