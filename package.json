@@ -1,6 +1,6 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "A generic RESTful API backend with all major database connection/ops interfaces implemented.",
   "main": "./src/lib/app.js",
   "bin": {
