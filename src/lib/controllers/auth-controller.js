@@ -79,17 +79,12 @@ class AuthController {
 
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
-    const referCode = couponCode.generate({
-      parts: 1,
-      partLen: 5,
-    });
     const signupStrategy = {
       storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
         type: constants.STORE.OPERATIONS.INSERT,
         data: [
           {
-            referCode,
             email: state.email,
             passwordHash: state.password, // [TODO] Should only store hashed password.
             fullName: state.fullName,
@@ -288,9 +283,9 @@ class AuthController {
           const err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
-              name: constants.AUTH.ERROR_NAMES.EMAIL_NOT_FOUND,
+              name: constants.AUTH.ERROR_NAMES.USER_EMAIL_NOT_FOUND,
               source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.AUTH.ERROR_MSG.EMAIL_NOT_FOUND,
+              message: constants.AUTH.ERROR_MSG.USER_EMAIL_NOT_FOUND,
             },
           ]);
 
