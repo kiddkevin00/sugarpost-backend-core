@@ -7,7 +7,10 @@ const Promise = require('bluebird');
 const jwt = require('jsonwebtoken');
 const couponCode = require('coupon-code');
 const nodemailer = require('nodemailer');
+const Mailchimp = require('mailchimp-api-v3');
 
+const mailchimp = new Mailchimp('f31c50146c261234d79265791a60aa2c-us15');
+const mailChimpListId = 'c298b7bb64';
 const jwtSecret = 'my-jwt-secret'; // [TODO]
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;
@@ -77,6 +80,12 @@ class AuthController {
   static signup(req, res) {
     requestCount += 1;
 
+    Object.assign(req.body, {
+      fullName: req.body.fullName.trim(),
+      email: req.body.email.trim(),
+      password: req.body.password.trim(),
+    });
+
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
     const signupStrategy = {
@@ -86,7 +95,7 @@ class AuthController {
         data: [
           {
             email: state.email,
-            passwordHash: state.password, // [TODO] Should only store hashed password.
+            passwordHash: state.password, // [TODO] Should store hashed password instead.
             fullName: state.fullName,
             emailValidated: false,
             suspended: false,
@@ -101,6 +110,16 @@ class AuthController {
     };
 
     return AuthController._handleRequest(state, res, DatabaseService, signupStrategy)
+      .then(() => mailchimp.post({
+        path: `/lists/${mailChimpListId}/members/`,
+        body: {
+          email_address: state.email,
+          status: 'pending',
+          merge_fields: {
+            FNAME: state.fullName,
+          },
+        },
+      }))
       .then((result) => {
         const jwtToken = jwt.sign({
           sub: 'test-type:test-email:test-id',
@@ -246,6 +265,8 @@ class AuthController {
   }
 
   static logout(req, res) {
+    requestCount += 1;
+
     const response = new StandardResponseWrapper([{ success: true }],
       constants.SYSTEM.RESPONSE_NAMES.LOGOUT);
 
@@ -323,8 +344,8 @@ class AuthController {
 
         const mailOptions = {
           from: '"Sugarpost Test" <kingkong@kingpong.com>',
-          to: 'kiddkevin01@gmail.com',
-          subject: 'Sugarpost - Reset Password',
+          to: state.email,
+          subject: '[Sugarpost] Reset Password',
           html: `
             <div>
                <p>Dear customer,</p>
@@ -355,7 +376,7 @@ class AuthController {
               }));
           }
           // [TODO] Replace with logger module.
-          return console.log('Message %s sent: %s', info.messageId, info.response);
+          return console.log('Forgot-password email message %s sent: %s', info.messageId, info.response);
         });
 
         const response = new StandardResponseWrapper({
@@ -385,6 +406,8 @@ class AuthController {
   }
 
   static getToken(req, res) {
+    requestCount += 1;
+
     try {
       const jwtToken = jwt.sign({
         sub: 'test-type:test-email:test-id',
@@ -425,6 +448,8 @@ class AuthController {
   }
 
   static passAuthCheck(req, res) {
+    requestCount += 1;
+
     const response = new StandardResponseWrapper([{ success: true }],
       constants.SYSTEM.RESPONSE_NAMES.AUTH_CHECK);
 

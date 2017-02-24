@@ -163,7 +163,8 @@ class PaymentController {
             quantity: 1,
           },
         ];
-        const tax_percent = 10.0; // eslint-disable-line camelcase
+        // [TODO] Should also include 4.8% for Stripe fee.
+        const tax_percent = 8.875 + 4.8; // eslint-disable-line camelcase
         const prorate = false;
 
         return stripe.subscriptions
@@ -178,6 +179,7 @@ class PaymentController {
         const prorate = false;
         let trial_end; // eslint-disable-line camelcase
 
+        // [TODO] Need to consider the variant of February.
         if (day <= 28) {
           // eslint-disable-next-line camelcase
           trial_end = new Date(year, month + 1, 15).getTime() / 1000;

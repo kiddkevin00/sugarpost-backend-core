@@ -89,6 +89,7 @@
     "express-session": "^1.14.0",
     "jade": "^1.11.0",
     "jsonwebtoken": "^7.2.1",
+    "mailchimp-api-v3": "^1.7.0",
     "method-override": "^2.3.6",
     "mongojs": "^2.4.0",
     "morgan": "^1.7.0",

@@ -28,10 +28,6 @@ class ProcessState {
     return this[stateContext].fullName;
   }
 
-  get lastName() {
-    return this[stateContext].lastName;
-  }
-
   get referCode() {
     return this[stateContext].referCode;
   }
