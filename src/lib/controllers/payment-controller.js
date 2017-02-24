@@ -52,7 +52,7 @@ class PaymentController {
         return { withReferCode: !!referCode };
       })
       .then((result) => {
-        if (result && result.length === 1) {
+        if (result && result.length === 1 && result[0].stripeCustomerId) {
           account_balance = -200; // eslint-disable-line camelcase
 
           stripe.customers.update(result[0].stripeCustomerId, { account_balance: -250 })
@@ -138,13 +138,17 @@ class PaymentController {
       .then((customer) => {
         stripeCustomerId = customer.id;
 
+        const myReferCode = couponCode.generate({
+          parts: 1,
+          partLen: 5,
+        });
         const linkAccountStrategy = {
           storeType: constants.STORE.TYPES.MONGO_DB,
           operation: {
             type: constants.STORE.OPERATIONS.UPDATE,
             data: [
               { _id: userId },
-              { stripeCustomerId },
+              { stripeCustomerId, myReferCode },
             ],
           },
           tableName: constants.STORE.TABLE_NAMES.USER,
@@ -159,7 +163,8 @@ class PaymentController {
             quantity: 1,
           },
         ];
-        const tax_percent = 10.0; // eslint-disable-line camelcase
+        // [TODO] Should also include 4.8% for Stripe fee.
+        const tax_percent = 8.875 + 4.8; // eslint-disable-line camelcase
         const prorate = false;
 
         return stripe.subscriptions
@@ -174,6 +179,7 @@ class PaymentController {
         const prorate = false;
         let trial_end; // eslint-disable-line camelcase
 
+        // [TODO] Need to consider the variant of February.
         if (day <= 28) {
           // eslint-disable-next-line camelcase
           trial_end = new Date(year, month + 1, 15).getTime() / 1000;

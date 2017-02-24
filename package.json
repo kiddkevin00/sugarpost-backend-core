@@ -1,6 +1,6 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "A generic RESTful API backend with all major database connection/ops interfaces implemented.",
   "main": "./src/lib/app.js",
   "bin": {
@@ -38,10 +38,10 @@
     }
   },
   "nyc": {
-    "statements": 66.02,
-    "branches": 22.7,
+    "statements": 65.8,
+    "branches": 22.54,
     "functions": 60.67,
-    "lines": 66.01,
+    "lines": 65.79,
     "excludes": [],
     "report-dir": "./spec/coverage"
   },
@@ -89,6 +89,7 @@
     "express-session": "^1.14.0",
     "jade": "^1.11.0",
     "jsonwebtoken": "^7.2.1",
+    "mailchimp-api-v3": "^1.7.0",
     "method-override": "^2.3.6",
     "mongojs": "^2.4.0",
     "morgan": "^1.7.0",
