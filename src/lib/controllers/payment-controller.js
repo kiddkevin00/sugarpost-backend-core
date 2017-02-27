@@ -19,7 +19,7 @@ class PaymentController {
 
     const email = req.body.email;
     const source = req.body.tokenId;
-    const referCode = req.body.referCode;
+    const referCode = req.body.referCode && req.body.referCode.trim();
     const validatedReferCode = referCode && couponCode.validate(referCode, {
       parts: 1,
       partLen: 5,
@@ -159,12 +159,11 @@ class PaymentController {
       .then((result) => {
         const items = [
           {
-            plan: '4-desserts-per-month',
+            plan: '4-dessert-per-month',
             quantity: 1,
           },
         ];
-        // [TODO] Should also include 4.8% for Stripe fee.
-        const tax_percent = 8.875 + 4.8; // eslint-disable-line camelcase
+        const tax_percent = 8.875; // eslint-disable-line camelcase
         const prorate = false;
 
         return stripe.subscriptions

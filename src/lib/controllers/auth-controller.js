@@ -81,9 +81,9 @@ class AuthController {
     requestCount += 1;
 
     Object.assign(req.body, {
-      fullName: req.body.fullName.trim(),
-      email: req.body.email.trim(),
-      password: req.body.password.trim(),
+      fullName: req.body.fullName && req.body.fullName.trim(),
+      email: req.body.email && req.body.email.trim(),
+      password: req.body.password && req.body.password.trim(),
     });
 
     const context = { containerId, requestCount };
