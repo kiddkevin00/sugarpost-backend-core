@@ -1,12 +1,12 @@
 const DatabaseService = require('../services/database-service');
 const ProcessSate = require('../process-state/');
+const EmailSender = require('../utility/email-sender');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
 const Promise = require('bluebird');
 const jwt = require('jsonwebtoken');
 const couponCode = require('coupon-code');
-const nodemailer = require('nodemailer');
 const Mailchimp = require('mailchimp-api-v3');
 
 const mailchimp = new Mailchimp('f31c50146c261234d79265791a60aa2c-us15');
@@ -94,6 +94,7 @@ class AuthController {
         type: constants.STORE.OPERATIONS.INSERT,
         data: [
           {
+            type: 'unpaid', // @enum{"unpaid", "paid", "vendor", "admin"}
             email: state.email,
             passwordHash: state.password, // [TODO] Should store hashed password instead.
             fullName: state.fullName,
@@ -318,6 +319,39 @@ class AuthController {
           partLen: 8,
         });
 
+        const emailSender = new EmailSender('gmail', 'kingpong123321@gmail.com', 'kingpong123');
+        const from = '"Sugarpost Test" <kingkong@kingpong.com>';
+        const to = state.email;
+        const subject = '[Sugarpost] Reset Password';
+        const html = `
+          <div>
+             <p>Dear customer,</p>
+             <h4>Here is your new password ${newPassword}</h4>
+             <p>Please follow the instruction below to change back to your preferred password.</p>
+             <br />
+             <p>Thank you,</p>
+             <p>Sugarpost Support</p>
+           </div>
+        `;
+
+        return emailSender.sendMail(from, to, subject, html)
+          .catch((_err) => {
+            const err = new StandardErrorWrapper(_err);
+
+            err.append({
+              code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
+              name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
+              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+              message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
+            });
+
+            throw err;
+          });
+      })
+      .then((info) => {
+        // [TODO] Replace with logger module.
+        console.log('Forgot-password email message %s sent: %s', info.messageId, info.response);
+
         const updatePasswordStrategy = {
           storeType: constants.STORE.TYPES.MONGO_DB,
           operation: {
@@ -330,55 +364,9 @@ class AuthController {
           tableName: constants.STORE.TABLE_NAMES.USER,
         };
 
-        return AuthController._handleRequest(state, res, DatabaseService,
-          updatePasswordStrategy);
+        return AuthController._handleRequest(state, res, DatabaseService, updatePasswordStrategy);
       })
       .then((result) => {
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: 'kingpong123321@gmail.com',
-            pass: 'kingpong123',
-          },
-        });
-
-        const mailOptions = {
-          from: '"Sugarpost Test" <kingkong@kingpong.com>',
-          to: state.email,
-          subject: '[Sugarpost] Reset Password',
-          html: `
-            <div>
-               <p>Dear customer,</p>
-               <h4>Here is your new password ${newPassword}</h4>
-               <p>Please follow the instruction below to change back to your preferred password.</p>
-               <br />
-               <p>Thank you,</p>
-               <p>Sugarpost Support</p>
-             </div>
-          `,
-        };
-
-        transporter.sendMail(mailOptions, (_err, info) => {
-          if (_err) {
-            const err = new StandardErrorWrapper(_err);
-
-            err.append({
-              code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-              name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
-              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
-            });
-
-            return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-              .json(err.format({
-                containerId: state.context.containerId,
-                requestCount: state.context.requestCount,
-              }));
-          }
-          // [TODO] Replace with logger module.
-          return console.log('Forgot-password email message %s sent: %s', info.messageId, info.response);
-        });
-
         const response = new StandardResponseWrapper({
           success: true,
           detail: result,

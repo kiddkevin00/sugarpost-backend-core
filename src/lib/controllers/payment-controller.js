@@ -142,13 +142,14 @@ class PaymentController {
           parts: 1,
           partLen: 5,
         });
+        const type = 'paid';
         const linkAccountStrategy = {
           storeType: constants.STORE.TYPES.MONGO_DB,
           operation: {
             type: constants.STORE.OPERATIONS.UPDATE,
             data: [
               { _id: userId },
-              { stripeCustomerId, myReferCode },
+              { stripeCustomerId, myReferCode, type },
             ],
           },
           tableName: constants.STORE.TABLE_NAMES.USER,
