@@ -9,8 +9,8 @@ const jwt = require('jsonwebtoken');
 const couponCode = require('coupon-code');
 const Mailchimp = require('mailchimp-api-v3');
 
-const mailchimp = new Mailchimp('f31c50146c261234d79265791a60aa2c-us15');
-const mailChimpListId = 'c298b7bb64';
+const mailchimp = new Mailchimp('f31c50146c261234d79265791a60aa2c-us15'); // [TODO]
+const mailChimpListId = 'c298b7bb64'; // [TODO]
 const jwtSecret = 'my-jwt-secret'; // [TODO]
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;
@@ -94,7 +94,7 @@ class AuthController {
         type: constants.STORE.OPERATIONS.INSERT,
         data: [
           {
-            type: 'unpaid', // @enum{"unpaid", "paid", "vendor", "admin"}
+            type: 'unpaid', // @enum {"unpaid", "paid", "vendor", "admin"}
             email: state.email,
             passwordHash: state.password, // [TODO] Should store hashed password instead.
             fullName: state.fullName,

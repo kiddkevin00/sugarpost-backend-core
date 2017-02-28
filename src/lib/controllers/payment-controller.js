@@ -4,11 +4,16 @@ const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
 const stripeApi = require('stripe');
+const Mailchimp = require('mailchimp-api-v3');
 const couponCode = require('coupon-code');
 const Promise = require('bluebird');
 
-const privateKey = 'sk_test_ccdvoeJH9W86JXhx85PEgkvi'; // TODO
+const privateKey = 'sk_test_ccdvoeJH9W86JXhx85PEgkvi'; // [TODO]
 const stripe = stripeApi(privateKey);
+const plan = '4-dessert-per-month'; // [TODO]
+const quantity = 1; // [TODO]
+const mailchimp = new Mailchimp('f31c50146c261234d79265791a60aa2c-us15'); // [TODO]
+const mailChimpListId = '9c30af1dca'; // [TODO]
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;
 
@@ -25,6 +30,7 @@ class PaymentController {
       partLen: 5,
     });
     let userId;
+    let userFullName;
     let account_balance; // eslint-disable-line camelcase
     let stripeCustomerId;
 
@@ -128,9 +134,10 @@ class PaymentController {
           throw err;
         } else {
           userId = result[0]._id;
+          userFullName = result[0].fullName;
         }
 
-        const description = `Customer for ${email}`;
+        const description = `Customer for ${userFullName} - ${userId}`;
 
         // eslint-disable-next-line camelcase
         return stripe.customers.create({ source, email, description, account_balance });
@@ -159,10 +166,7 @@ class PaymentController {
       })
       .then((result) => {
         const items = [
-          {
-            plan: '4-dessert-per-month',
-            quantity: 1,
-          },
+          { plan, quantity },
         ];
         const tax_percent = 8.875; // eslint-disable-line camelcase
         const prorate = false;
@@ -191,6 +195,16 @@ class PaymentController {
         // eslint-disable-next-line camelcase
         return stripe.subscriptions.update(id, { trial_end, prorate });
       })
+      .then(() => mailchimp.post({
+        path: `/lists/${mailChimpListId}/members/`,
+        body: {
+          email_address: email,
+          status: 'subscribed',
+          merge_fields: {
+            FNAME: userFullName,
+          },
+        },
+      }))
       .then(() => {
         const response = new StandardResponseWrapper([{ success: true }],
           constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
