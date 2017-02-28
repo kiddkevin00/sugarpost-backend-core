@@ -38,10 +38,10 @@
     }
   },
   "nyc": {
-    "statements": 0,
-    "branches": 0,
-    "functions": 0,
-    "lines": 0,
+    "statements": 65.09,
+    "branches": 21.33,
+    "functions": 59.02,
+    "lines": 65.07,
     "excludes": [],
     "report-dir": "./spec/coverage"
   },
