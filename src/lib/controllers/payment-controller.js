@@ -23,22 +23,23 @@ class PaymentController {
     requestCount += 1;
 
     const email = req.body.email;
+    const referCode = req.body.referCode;
     const source = req.body.tokenId;
-    const referCode = req.body.referCode && req.body.referCode.trim();
-    const validatedReferCode = referCode && couponCode.validate(referCode, {
-      parts: 1,
-      partLen: 5,
-    });
     let userId;
     let userFullName;
     let account_balance; // eslint-disable-line camelcase
     let stripeCustomerId;
 
     const context = { containerId, requestCount };
-    const state = ProcessSate.create({ email, referCode: validatedReferCode }, context);
+    const state = ProcessSate.create({ email, referCode, source }, context);
 
     return Promise
       .try(() => {
+        const validatedReferCode = state.referCode && couponCode.validate(state.referCode, {
+          parts: 1,
+          partLen: 5,
+        });
+
         if (validatedReferCode) {
           const referCodeStrategy = {
             storeType: constants.STORE.TYPES.MONGO_DB,
@@ -55,7 +56,7 @@ class PaymentController {
 
           return PaymentController._handleRequest(state, res, DatabaseService, referCodeStrategy);
         }
-        return { withoutReferCode: !referCode };
+        return { withoutReferCode: !state.referCode };
       })
       .then((result) => {
         if (result && result.length === 1 && result[0].stripeCustomerId) {
@@ -98,14 +99,13 @@ class PaymentController {
           operation: {
             type: constants.STORE.OPERATIONS.SELECT,
             data: [
-              { email },
+              { email: state.email },
             ],
           },
           tableName: constants.STORE.TABLE_NAMES.USER,
         };
 
-        return PaymentController._handleRequest(state, res, DatabaseService,
-          paymentCheckStrategy);
+        return PaymentController._handleRequest(state, res, DatabaseService, paymentCheckStrategy);
       })
       .then((result) => {
         let err;
@@ -140,7 +140,8 @@ class PaymentController {
         const description = `Customer for ${userFullName} - ${userId}`;
 
         // eslint-disable-next-line camelcase
-        return stripe.customers.create({ source, email, description, account_balance });
+        return stripe.customers
+          .create({ description, account_balance, email: state.email, source: state.source });
       })
       .then((customer) => {
         stripeCustomerId = customer.id;
@@ -184,12 +185,12 @@ class PaymentController {
         let trial_end; // eslint-disable-line camelcase
 
         // [TODO] Need to consider the variant of February.
-        if (day <= 28) {
+        if (day <= 25) {
           // eslint-disable-next-line camelcase
-          trial_end = new Date(year, month + 1, 15).getTime() / 1000;
+          trial_end = new Date(year, month + 1, 24).getTime() / 1000;
         } else {
           // eslint-disable-next-line camelcase
-          trial_end = new Date(year, month + 2, 15).getTime() / 1000;
+          trial_end = new Date(year, month + 2, 24).getTime() / 1000;
         }
 
         // eslint-disable-next-line camelcase
@@ -198,7 +199,7 @@ class PaymentController {
       .then(() => mailchimp.post({
         path: `/lists/${mailChimpListId}/members/`,
         body: {
-          email_address: email,
+          email_address: state.email,
           status: 'subscribed',
           merge_fields: {
             FNAME: userFullName,
