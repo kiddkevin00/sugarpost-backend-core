@@ -4,11 +4,16 @@ const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
 const stripeApi = require('stripe');
+const Mailchimp = require('mailchimp-api-v3');
 const couponCode = require('coupon-code');
 const Promise = require('bluebird');
 
-const privateKey = 'sk_test_ccdvoeJH9W86JXhx85PEgkvi'; // TODO
+const privateKey = 'sk_test_ccdvoeJH9W86JXhx85PEgkvi'; // [TODO]
 const stripe = stripeApi(privateKey);
+const plan = '4-desserts-per-month'; // [TODO]
+const quantity = 1; // [TODO]
+const mailchimp = new Mailchimp('f31c50146c261234d79265791a60aa2c-us15'); // [TODO]
+const mailChimpListId = '9c30af1dca'; // [TODO]
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;
 
@@ -18,21 +23,23 @@ class PaymentController {
     requestCount += 1;
 
     const email = req.body.email;
-    const source = req.body.tokenId;
     const referCode = req.body.referCode;
-    const validatedReferCode = referCode && couponCode.validate(referCode, {
-      parts: 1,
-      partLen: 5,
-    });
+    const source = req.body.tokenId;
     let userId;
+    let userFullName;
     let account_balance; // eslint-disable-line camelcase
     let stripeCustomerId;
 
     const context = { containerId, requestCount };
-    const state = ProcessSate.create({ email, referCode: validatedReferCode }, context);
+    const state = ProcessSate.create({ email, referCode, source }, context);
 
     return Promise
       .try(() => {
+        const validatedReferCode = state.referCode && couponCode.validate(state.referCode, {
+          parts: 1,
+          partLen: 5,
+        });
+
         if (validatedReferCode) {
           const referCodeStrategy = {
             storeType: constants.STORE.TYPES.MONGO_DB,
@@ -49,11 +56,11 @@ class PaymentController {
 
           return PaymentController._handleRequest(state, res, DatabaseService, referCodeStrategy);
         }
-        return { withReferCode: !!referCode };
+        return { withoutReferCode: !state.referCode };
       })
       .then((result) => {
         if (result && result.length === 1 && result[0].stripeCustomerId) {
-          account_balance = -200; // eslint-disable-line camelcase
+          account_balance = -206; // eslint-disable-line camelcase
 
           stripe.customers.update(result[0].stripeCustomerId, { account_balance: -250 })
             .catch((_err) => {
@@ -72,7 +79,7 @@ class PaymentController {
                   requestCount: state.context.requestCount,
                 }));
             });
-        } else if (!result.withReferCode) {
+        } else if (result.withoutReferCode) {
           account_balance = 0; // eslint-disable-line camelcase
         } else {
           const err = new StandardErrorWrapper([
@@ -92,14 +99,13 @@ class PaymentController {
           operation: {
             type: constants.STORE.OPERATIONS.SELECT,
             data: [
-              { email },
+              { email: state.email },
             ],
           },
           tableName: constants.STORE.TABLE_NAMES.USER,
         };
 
-        return PaymentController._handleRequest(state, res, DatabaseService,
-          paymentCheckStrategy);
+        return PaymentController._handleRequest(state, res, DatabaseService, paymentCheckStrategy);
       })
       .then((result) => {
         let err;
@@ -128,12 +134,14 @@ class PaymentController {
           throw err;
         } else {
           userId = result[0]._id;
+          userFullName = result[0].fullName;
         }
 
-        const description = `Customer for ${email}`;
+        const description = `Customer for ${userFullName} - ${userId}`;
 
         // eslint-disable-next-line camelcase
-        return stripe.customers.create({ source, email, description, account_balance });
+        return stripe.customers
+          .create({ description, account_balance, email: state.email, source: state.source });
       })
       .then((customer) => {
         stripeCustomerId = customer.id;
@@ -142,13 +150,14 @@ class PaymentController {
           parts: 1,
           partLen: 5,
         });
+        const type = 'paid';
         const linkAccountStrategy = {
           storeType: constants.STORE.TYPES.MONGO_DB,
           operation: {
             type: constants.STORE.OPERATIONS.UPDATE,
             data: [
               { _id: userId },
-              { stripeCustomerId, myReferCode },
+              { stripeCustomerId, type, referCode: myReferCode },
             ],
           },
           tableName: constants.STORE.TABLE_NAMES.USER,
@@ -158,13 +167,9 @@ class PaymentController {
       })
       .then((result) => {
         const items = [
-          {
-            plan: '4-desserts-per-month',
-            quantity: 1,
-          },
+          { plan, quantity },
         ];
-        // [TODO] Should also include 4.8% for Stripe fee.
-        const tax_percent = 8.875 + 4.8; // eslint-disable-line camelcase
+        const tax_percent = 8.875; // eslint-disable-line camelcase
         const prorate = false;
 
         return stripe.subscriptions
@@ -180,17 +185,27 @@ class PaymentController {
         let trial_end; // eslint-disable-line camelcase
 
         // [TODO] Need to consider the variant of February.
-        if (day <= 28) {
+        if (day <= 25) {
           // eslint-disable-next-line camelcase
-          trial_end = new Date(year, month + 1, 15).getTime() / 1000;
+          trial_end = new Date(year, month + 1, 24).getTime() / 1000;
         } else {
           // eslint-disable-next-line camelcase
-          trial_end = new Date(year, month + 2, 15).getTime() / 1000;
+          trial_end = new Date(year, month + 2, 24).getTime() / 1000;
         }
 
         // eslint-disable-next-line camelcase
         return stripe.subscriptions.update(id, { trial_end, prorate });
       })
+      .then(() => mailchimp.post({
+        path: `/lists/${mailChimpListId}/members/`,
+        body: {
+          email_address: state.email,
+          status: 'subscribed',
+          merge_fields: {
+            FNAME: userFullName,
+          },
+        },
+      }))
       .then(() => {
         const response = new StandardResponseWrapper([{ success: true }],
           constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
