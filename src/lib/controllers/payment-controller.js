@@ -10,7 +10,7 @@ const Promise = require('bluebird');
 
 const privateKey = 'sk_test_ccdvoeJH9W86JXhx85PEgkvi'; // [TODO]
 const stripe = stripeApi(privateKey);
-const plan = '4-dessert-per-month'; // [TODO]
+const plan = '4-desserts-per-month'; // [TODO]
 const quantity = 1; // [TODO]
 const mailchimp = new Mailchimp('f31c50146c261234d79265791a60aa2c-us15'); // [TODO]
 const mailChimpListId = '9c30af1dca'; // [TODO]
@@ -55,11 +55,11 @@ class PaymentController {
 
           return PaymentController._handleRequest(state, res, DatabaseService, referCodeStrategy);
         }
-        return { withReferCode: !!referCode };
+        return { withoutReferCode: !referCode };
       })
       .then((result) => {
         if (result && result.length === 1 && result[0].stripeCustomerId) {
-          account_balance = -200; // eslint-disable-line camelcase
+          account_balance = -206; // eslint-disable-line camelcase
 
           stripe.customers.update(result[0].stripeCustomerId, { account_balance: -250 })
             .catch((_err) => {
@@ -78,7 +78,7 @@ class PaymentController {
                   requestCount: state.context.requestCount,
                 }));
             });
-        } else if (!result.withReferCode) {
+        } else if (result.withoutReferCode) {
           account_balance = 0; // eslint-disable-line camelcase
         } else {
           const err = new StandardErrorWrapper([
@@ -156,7 +156,7 @@ class PaymentController {
             type: constants.STORE.OPERATIONS.UPDATE,
             data: [
               { _id: userId },
-              { stripeCustomerId, myReferCode, type },
+              { stripeCustomerId, type, referCode: myReferCode },
             ],
           },
           tableName: constants.STORE.TABLE_NAMES.USER,
