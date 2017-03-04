@@ -1,8 +1,3 @@
-exports.TYPES = {
-  MONGO_DB: 'mongo-store',
-  POSTGRES: 'postgres-store',
-};
-
 exports.ERROR_NAMES = {
   CAUGHT_ERROR_IN_DATABASE_SERVICE: 'CAUGHT_ERROR_IN_DATABASE_SERVICE',
   STORAGE_TYPE_NOT_FOUND: 'STORAGE_TYPE_NOT_FOUND',
@@ -15,6 +10,11 @@ exports.ERROR_MSG = {
   STORAGE_TYPE_NOT_FOUND: 'The requesting storage type is not found.',
   INTERFACE_NOT_IMPLEMENTED: 'The implementation for the requested interface is not found.',
   REQUIRED_FIELDS_NOT_UNIQUE: 'The required field(s) should be unique and not empty.',
+};
+
+exports.TYPES = {
+  MONGO_DB: 'mongo-store',
+  POSTGRES: 'postgres-store',
 };
 
 exports.OPERATIONS = {

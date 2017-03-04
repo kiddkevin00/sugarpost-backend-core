@@ -12,7 +12,7 @@ const { Router } = require('express');
 function setupRoutes(app) {
   // [TODO]
   app.get('/ping', (req, res) => res.json({
-    uptime: 123,
+    uptime: 100,
     hostname: 'host 1',
   }));
   app.get('/health', (req, res) => res.json({

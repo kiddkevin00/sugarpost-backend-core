@@ -2,7 +2,7 @@ const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const constants = require('../constants');
 const jwt = require('jsonwebtoken');
 
-const jwtSecret = 'my-jwt-secret'; // [TODO]
+const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
 
 function authMiddleware(req, res, next) {
   const jwtToken = req.cookies.jwt;

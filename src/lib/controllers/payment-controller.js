@@ -8,12 +8,14 @@ const Mailchimp = require('mailchimp-api-v3');
 const couponCode = require('coupon-code');
 const Promise = require('bluebird');
 
-const privateKey = 'sk_test_ccdvoeJH9W86JXhx85PEgkvi'; // [TODO]
-const stripe = stripeApi(privateKey);
-const plan = '4-desserts-per-month'; // [TODO]
-const quantity = 1; // [TODO]
-const mailchimp = new Mailchimp('f31c50146c261234d79265791a60aa2c-us15'); // [TODO]
-const mailChimpListId = '9c30af1dca'; // [TODO]
+const stripe = stripeApi(constants.CREDENTIAL.STRIPE.PRIVATE_KEY);
+const plan = constants.CREDENTIAL.STRIPE.PLAN_ID;
+const quantity = constants.CREDENTIAL.STRIPE.QUANTITY;
+const recurringBillingDate = constants.CREDENTIAL.STRIPE.RECURRING_BILLING_DATE;
+const referralCredit = constants.CREDENTIAL.STRIPE.REFERRAL_CREDIT;
+const refererCredit = constants.CREDENTIAL.STRIPE.REFERER_CREDIT;
+const mailchimp = new Mailchimp(constants.CREDENTIAL.MAIL_CHIMP.API_KEY);
+const mailChimpListId = constants.CREDENTIAL.MAIL_CHIMP.LIST_ID;
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;
 
@@ -60,9 +62,9 @@ class PaymentController {
       })
       .then((result) => {
         if (result && result.length === 1 && result[0].stripeCustomerId) {
-          account_balance = -206; // eslint-disable-line camelcase
+          account_balance = -referralCredit; // eslint-disable-line camelcase
 
-          stripe.customers.update(result[0].stripeCustomerId, { account_balance: -250 })
+          stripe.customers.update(result[0].stripeCustomerId, { account_balance: -refererCredit })
             .catch((_err) => {
               const err = new StandardErrorWrapper(_err);
 
@@ -150,7 +152,7 @@ class PaymentController {
           parts: 1,
           partLen: 5,
         });
-        const type = 'paid';
+        const type = constants.AUTH.USER_TYPES.PAID;
         const linkAccountStrategy = {
           storeType: constants.STORE.TYPES.MONGO_DB,
           operation: {
@@ -185,12 +187,12 @@ class PaymentController {
         let trial_end; // eslint-disable-line camelcase
 
         // [TODO] Need to consider the variant of February.
-        if (day <= 25) {
+        if (day <= recurringBillingDate + 1) {
           // eslint-disable-next-line camelcase
-          trial_end = new Date(year, month + 1, 24).getTime() / 1000;
+          trial_end = new Date(year, month + 1, recurringBillingDate).getTime() / 1000;
         } else {
           // eslint-disable-next-line camelcase
-          trial_end = new Date(year, month + 2, 24).getTime() / 1000;
+          trial_end = new Date(year, month + 2, recurringBillingDate).getTime() / 1000;
         }
 
         // eslint-disable-next-line camelcase

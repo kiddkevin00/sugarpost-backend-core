@@ -28,3 +28,10 @@ exports.CORS = {
     'http://localhost:8088',
   ],
 };
+
+exports.USER_TYPES = {
+  UNPAID: 'unpaid',
+  PAID: 'paid',
+  VENDOR: 'vendor',
+  ADMIN: 'admin',
+};
