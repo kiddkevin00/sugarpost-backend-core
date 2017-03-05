@@ -17,7 +17,7 @@ describe('Precondition validator', function () {
   });
 
   it('can validate if a value is a valid time :: shouldBeValidTime()', () => {
-    value = new Date().toISOString();
+    value = (new Date()).toISOString();
 
     expect(() => { PreconditionValidator.shouldBeValidTime(value); }).to.not.throw();
   });

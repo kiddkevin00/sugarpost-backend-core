@@ -7,14 +7,13 @@
  *     meta: { name: "INSERT" },
  *     data: [
  *       {
- *         field1: "value1",
- *         field2: "value2",
- *         field3: "value3"
+ *         success: true,
+ *         detail: [],
  *        },
  *        {
- *         field1: "value4",
- *         field2: "value5",
- *         field3: "value6"
+ *         success: false,
+ *         status: "ERROR_NAME_1",
+ *         detail: {},
  *       }
  *     ]
  *   }

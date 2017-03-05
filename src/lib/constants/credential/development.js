@@ -2,6 +2,8 @@ exports.JWT = {
   SECRET: 'my-jwt-secret',
   ISSUER: 'bulletin-board-system.herokuapp.com',
   AUDIENCE: '.sugarpost.com',
+  EXPIRES_IN: '365 days',
+  NOT_BEFORE: 0,
 };
 
 exports.STRIPE = {
