@@ -37,10 +37,8 @@ class PaymentController {
 
     return Promise
       .try(() => {
-        const validatedReferCode = state.referCode && couponCode.validate(state.referCode, {
-          parts: 1,
-          partLen: 5,
-        });
+        const validatedReferCode = state.referCode &&
+          couponCode.validate(state.referCode, { parts: 1, partLen: 5 });
 
         if (validatedReferCode) {
           const referCodeStrategy = {
@@ -58,7 +56,10 @@ class PaymentController {
 
           return PaymentController._handleRequest(state, res, DatabaseService, referCodeStrategy);
         }
-        return { withoutReferCode: !state.referCode };
+        return {
+          withoutReferCode: !state.referCode ||
+            (typeof state.referCode === 'string' && state.referCode.trim().length === 0),
+        };
       })
       .then((result) => {
         if (result && result.length === 1 && result[0].stripeCustomerId) {
