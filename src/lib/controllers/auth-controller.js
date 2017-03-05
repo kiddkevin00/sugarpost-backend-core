@@ -9,9 +9,13 @@ const jwt = require('jsonwebtoken');
 const couponCode = require('coupon-code');
 const Mailchimp = require('mailchimp-api-v3');
 
-const mailchimp = new Mailchimp('f31c50146c261234d79265791a60aa2c-us15'); // [TODO]
-const mailChimpListId = 'c298b7bb64'; // [TODO]
-const jwtSecret = 'my-jwt-secret'; // [TODO]
+const mailchimp = new Mailchimp(constants.CREDENTIAL.MAIL_CHIMP.API_KEY);
+const mailChimpListId = constants.CREDENTIAL.MAIL_CHIMP.LIST_ID;
+const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
+const jwtAudience = constants.CREDENTIAL.JWT.AUDIENCE;
+const jwtIssuer = constants.CREDENTIAL.JWT.ISSUER;
+const jwtExpiresIn = constants.CREDENTIAL.JWT.EXPIRES_IN;
+const jwtNotBefore = constants.CREDENTIAL.JWT.NOT_BEFORE;
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;
 
@@ -98,41 +102,51 @@ class AuthController {
             email: state.email,
             passwordHash: state.password, // [TODO] Should store hashed password instead.
             fullName: state.fullName,
-            emailValidated: false,
-            suspended: false,
+            isSuspended: false,
+            referralAmount: 0,
             version: 0,
-            dateCreated: new Date(),
-            lastModified: null,
+            systemData: {
+              dateCreated: new Date(),
+              createdBy: null,
+              lastModifiedDate: null,
+              lastModifiedBy: null,
+            },
           },
         ],
       },
       tableName: constants.STORE.TABLE_NAMES.USER,
       uniqueFields: ['email'],
     };
+    let dbResult;
 
     return AuthController._handleRequest(state, res, DatabaseService, signupStrategy)
-      .then(() => mailchimp.post({
-        path: `/lists/${mailChimpListId}/members/`,
-        body: {
-          email_address: state.email,
-          status: 'pending',
-          merge_fields: {
-            FNAME: state.fullName,
+      .then((result) => {
+        dbResult = result;
+
+        return mailchimp.post({
+          path: `/lists/${mailChimpListId}/members/`,
+          body: {
+            email_address: state.email,
+            status: 'pending',
+            merge_fields: {
+              FNAME: state.fullName,
+            },
           },
-        },
-      }))
+        });
+      })
       .then((result) => {
         const jwtToken = jwt.sign({
-          sub: 'test-type:test-email:test-id',
-          _id: 'test-id',
-          email: 'test-email',
-          type: 'test-type',
-          fullName: 'test-name',
+          sub: `${dbResult.type}:${dbResult.email}:${dbResult._id}`,
+          _id: dbResult._id,
+          type: dbResult.type,
+          email: dbResult.email,
+          fullName: dbResult.fullName,
+          referralAmount: dbResult.referralAmount,
         }, jwtSecret, {
-          expiresIn: '45 days',
-          notBefore: 0,
-          issuer: 'bulletin-board-system.herokuapp.com',
-          audience: '.sugarpost.com',
+          expiresIn: jwtExpiresIn,
+          notBefore: jwtNotBefore,
+          issuer: jwtIssuer,
+          audience: jwtAudience,
         });
 
         res.cookie('jwt', jwtToken, {
@@ -144,7 +158,7 @@ class AuthController {
 
         const response = new StandardResponseWrapper({
           success: true,
-          detail: result,
+          detail: dbResult, // [TODO] Filters unneeded fields.
         }, constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
@@ -197,6 +211,7 @@ class AuthController {
           {
             email: state.email,
             passwordHash: state.password, // [TODO] Should only verify hashed password.
+            isSuspended: false,
           },
         ],
       },
@@ -209,23 +224,26 @@ class AuthController {
         let response;
 
         if (result && (result.length === 1)) {
+          const user = result[0];
+
           statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
           response = {
             success: true,
-            detail: result[0],
+            detail: user, // [TODO] Filters unneeded fields.
           };
 
           const jwtToken = jwt.sign({
-            sub: 'test-type:test-email:test-id',
-            _id: 'test-id',
-            email: 'test-email',
-            type: 'test-type',
-            fullName: 'test-name',
+            sub: `${user.type}:${user.email}:${user._id}`,
+            _id: user._id,
+            type: user.type,
+            email: user.email,
+            fullName: user.fullName,
+            referralAmount: user.referralAmount,
           }, jwtSecret, {
-            expiresIn: '45 days',
-            notBefore: 0,
-            issuer: 'bulletin-board-system.herokuapp.com',
-            audience: '.sugarpost.com',
+            expiresIn: jwtExpiresIn,
+            notBefore: jwtNotBefore,
+            issuer: jwtIssuer,
+            audience: jwtAudience,
           });
 
           res.cookie('jwt', jwtToken, {
@@ -398,16 +416,16 @@ class AuthController {
 
     try {
       const jwtToken = jwt.sign({
-        sub: 'test-type:test-email:test-id',
+        sub: 'test-type:test@mysugarpost.com:test-id',
         _id: 'test-id',
-        email: 'test-email',
+        email: 'test@mysugarpost.com',
         type: 'test-type',
-        fullName: 'test-name',
+        fullName: 'test-full-name',
       }, jwtSecret, {
-        expiresIn: '2 days',
-        notBefore: 0,
-        issuer: 'bulletin-board-system.herokuapp.com',
-        audience: '.sugarpost.com',
+        expiresIn: jwtExpiresIn,
+        notBefore: jwtNotBefore,
+        issuer: jwtIssuer,
+        audience: jwtAudience,
       });
 
       res.cookie('jwt', jwtToken, {
@@ -438,8 +456,10 @@ class AuthController {
   static passAuthCheck(req, res) {
     requestCount += 1;
 
-    const response = new StandardResponseWrapper([{ success: true }],
-      constants.SYSTEM.RESPONSE_NAMES.AUTH_CHECK);
+    const response = new StandardResponseWrapper([{
+      success: true,
+      detail: req.user,
+    }], constants.SYSTEM.RESPONSE_NAMES.AUTH_CHECK);
 
     return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
       .json(response.format);

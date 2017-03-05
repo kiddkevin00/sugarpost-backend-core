@@ -2,23 +2,23 @@ const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const constants = require('../constants');
 const jwt = require('jsonwebtoken');
 
-const jwtSecret = 'my-jwt-secret'; // [TODO]
+const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
+const jwtIssuer = constants.CREDENTIAL.JWT.ISSUER;
+const jwtAudience = constants.CREDENTIAL.JWT.AUDIENCE;
 
 function authMiddleware(req, res, next) {
   const jwtToken = req.cookies.jwt;
 
   try {
-    const decodedJwt = jwt.verify(jwtToken, jwtSecret, {
-      issuer: 'bulletin-board-system.herokuapp.com',
-      audience: '.sugarpost.com',
-    });
+    const decodedJwt = jwt.verify(jwtToken, jwtSecret, { jwtIssuer, jwtAudience });
 
     /* eslint-disable no-param-reassign */
     req.user = {
       _id: decodedJwt._id,
-      email: decodedJwt.email,
       type: decodedJwt.type,
+      email: decodedJwt.email,
       fullName: decodedJwt.fullName,
+      referralAmount: decodedJwt.referralAmount,
     };
     /* eslint-enable */
 
