@@ -153,7 +153,7 @@ class PaymentController {
           parts: 1,
           partLen: 5,
         });
-        const type = 'paid';
+        const type = constants.AUTH.USER_TYPES.PAID;
         const linkAccountStrategy = {
           storeType: constants.STORE.TYPES.MONGO_DB,
           operation: {

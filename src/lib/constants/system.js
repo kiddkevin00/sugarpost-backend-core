@@ -1,7 +1,6 @@
 const sources = {
   BULLETIN_BOARD_SYSTEM: 'bulletin-board-system',
 };
-
 const httpStatusCodes = {
   OK: 200,
   BAD_REQUEST: 400,
@@ -16,6 +15,7 @@ exports.SOURCES = sources;
 
 exports.HTTP_STATUS_CODES = httpStatusCodes;
 
+// This is the only place aggregating all error codes.
 exports.ERROR_CODES = Object.assign({}, httpStatusCodes, {
   UNKNOWN_ERROR: 1000,
   CAUGHT_ERROR: 1001,

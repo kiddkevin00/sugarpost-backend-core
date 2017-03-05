@@ -1,5 +1,5 @@
-const devCredential = require('./development');
 const prodCredential = require('./production');
+const devCredential = require('./development');
 
 let credential;
 
