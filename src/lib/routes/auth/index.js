@@ -10,6 +10,6 @@ router.post('/login', Controller.login);
 router.get('/logout', Controller.logout);
 router.post('/forgot-password', Controller.forgotPassword);
 router.get('/token', Controller.getToken);
-router.get('/check', authCheckMiddleware, Controller.passAuthCheck);
+router.get('/check', [authCheckMiddleware], Controller.passAuthCheck);
 
 module.exports = exports = router;
