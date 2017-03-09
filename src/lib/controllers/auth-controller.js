@@ -10,7 +10,7 @@ const couponCode = require('coupon-code');
 const Mailchimp = require('mailchimp-api-v3');
 
 const mailchimp = new Mailchimp(constants.CREDENTIAL.MAIL_CHIMP.API_KEY);
-const mailChimpListId = constants.CREDENTIAL.MAIL_CHIMP.LIST_ID;
+const mailChimpListId = constants.CREDENTIAL.MAIL_CHIMP.SIGNUP_LIST_ID;
 const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
 const jwtAudience = constants.CREDENTIAL.JWT.AUDIENCE;
 const jwtIssuer = constants.CREDENTIAL.JWT.ISSUER;
