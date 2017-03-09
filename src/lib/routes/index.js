@@ -2,9 +2,9 @@
  * This is the place for exposing module(s) for route component.
  */
 
-const authRoute = require('./auth/');
-const subscriberRoute = require('./subscriber/');
-const paymentRoute = require('./payment/');
+const authRoutes = require('./auth/');
+const subscriberRoutes = require('./subscriber/');
+const paymentRoutes = require('./payment/');
 const authCheckMiddleware = require('../utility/auth-check-middleware');
 const constants = require('../constants/');
 const { Router } = require('express');
@@ -48,9 +48,9 @@ function setupRoutes(app) {
 function setupApiRoutes() {
   const router = Router();
 
-  router.use('/auth', authRoute);
-  router.use('/subscriber', [authCheckMiddleware], subscriberRoute);
-  router.use('/payment', [authCheckMiddleware], paymentRoute);
+  router.use('/auth', authRoutes);
+  router.use('/subscriber', [authCheckMiddleware], subscriberRoutes);
+  router.use('/payment', [authCheckMiddleware], paymentRoutes);
 
   return router;
 }

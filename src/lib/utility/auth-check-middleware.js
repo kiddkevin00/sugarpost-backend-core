@@ -19,6 +19,8 @@ function authMiddleware(req, res, next) {
       email: decodedJwt.email,
       fullName: decodedJwt.fullName,
       referralAmount: decodedJwt.referralAmount,
+      referCode: decodedJwt.referCode,
+      stripeCustomerId: decodedJwt.stripeCustomerId,
     };
     /* eslint-enable */
 

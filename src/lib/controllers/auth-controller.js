@@ -167,11 +167,11 @@ class AuthController {
       .catch((_err) => {
         const err = new StandardErrorWrapper(_err);
 
-        if (err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
+        if (err.getNthError(1).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
           const response = new StandardResponseWrapper([
             {
               success: false,
-              status: err.getNthError(0).name,
+              status: err.getNthError(1).name,
               detail: err.format({
                 containerId: state.context.containerId,
                 requestCount: state.context.requestCount,

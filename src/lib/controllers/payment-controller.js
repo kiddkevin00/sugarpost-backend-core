@@ -6,6 +6,7 @@ const constants = require('../constants/');
 const stripeApi = require('stripe');
 const Mailchimp = require('mailchimp-api-v3');
 const couponCode = require('coupon-code');
+const jwt = require('jsonwebtoken');
 const Promise = require('bluebird');
 
 const stripe = stripeApi(constants.CREDENTIAL.STRIPE.PRIVATE_KEY);
@@ -16,6 +17,11 @@ const stripeReferralCredit = constants.CREDENTIAL.STRIPE.REFERRAL_CREDIT;
 const stripeRefererCredit = constants.CREDENTIAL.STRIPE.REFERER_CREDIT;
 const mailchimp = new Mailchimp(constants.CREDENTIAL.MAIL_CHIMP.API_KEY);
 const mailChimpListId = constants.CREDENTIAL.MAIL_CHIMP.LIST_ID;
+const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
+const jwtAudience = constants.CREDENTIAL.JWT.AUDIENCE;
+const jwtIssuer = constants.CREDENTIAL.JWT.ISSUER;
+const jwtExpiresIn = constants.CREDENTIAL.JWT.EXPIRES_IN;
+const jwtNotBefore = constants.CREDENTIAL.JWT.NOT_BEFORE;
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;
 
@@ -31,16 +37,15 @@ class PaymentController {
     let userFullName;
     let account_balance; // eslint-disable-line camelcase
     let stripeCustomerId;
+    let partialNewUserInfo;
 
     const context = { containerId, requestCount };
     const state = ProcessSate.create({ email, referCode, source }, context);
 
     return Promise
       .try(() => {
-        const validatedReferCode = state.referCode && couponCode.validate(state.referCode, {
-          parts: 1,
-          partLen: 5,
-        });
+        const validatedReferCode = state.referCode &&
+          couponCode.validate(state.referCode, { parts: 1, partLen: 5 });
 
         if (validatedReferCode) {
           const referCodeStrategy = {
@@ -58,7 +63,10 @@ class PaymentController {
 
           return PaymentController._handleRequest(state, res, DatabaseService, referCodeStrategy);
         }
-        return { withoutReferCode: !state.referCode };
+        return {
+          withoutReferCode: !state.referCode ||
+            (typeof state.referCode === 'string' && state.referCode.trim().length === 0),
+        };
       })
       .then((result) => {
         if (result && result.length === 1 && result[0].stripeCustomerId) {
@@ -149,18 +157,22 @@ class PaymentController {
       .then((customer) => {
         stripeCustomerId = customer.id;
 
-        const myReferCode = couponCode.generate({
-          parts: 1,
-          partLen: 5,
-        });
-        const type = constants.AUTH.USER_TYPES.PAID;
+        partialNewUserInfo = {
+          stripeCustomerId,
+          type: constants.AUTH.USER_TYPES.PAID,
+          referCode: couponCode.generate({
+            parts: 1,
+            partLen: 5,
+          }),
+        };
+
         const linkAccountStrategy = {
           storeType: constants.STORE.TYPES.MONGO_DB,
           operation: {
             type: constants.STORE.OPERATIONS.UPDATE,
             data: [
               { _id: userId },
-              { stripeCustomerId, type, referCode: myReferCode },
+              partialNewUserInfo,
             ],
           },
           tableName: constants.STORE.TABLE_NAMES.USER,
@@ -170,7 +182,7 @@ class PaymentController {
       })
       .then((result) => {
         const items = [
-          { stripePlan, stripeQuantity },
+          { plan: stripePlan, quantity: stripeQuantity },
         ];
         const tax_percent = 8.875; // eslint-disable-line camelcase
         const prorate = false;
@@ -187,7 +199,6 @@ class PaymentController {
         const prorate = false;
         let trial_end; // eslint-disable-line camelcase
 
-        // [TODO] Need to consider the variant of February.
         if (day <= stripeRecurringBillingDate + 1) {
           // eslint-disable-next-line camelcase
           trial_end = new Date(year, month + 1, stripeRecurringBillingDate).getTime() / 1000;
@@ -210,8 +221,33 @@ class PaymentController {
         },
       }))
       .then(() => {
-        const response = new StandardResponseWrapper([{ success: true }],
-          constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
+        const jwtToken = jwt.sign({
+          sub: req.user.sub,
+          _id: req.user._id,
+          type: partialNewUserInfo.type,
+          email: req.user.email,
+          fullName: req.user.fullName,
+          referralAmount: req.user.referralAmount,
+          referCode: partialNewUserInfo.referCode,
+          stripeCustomerId: partialNewUserInfo.stripeCustomerId,
+        }, jwtSecret, {
+          expiresIn: jwtExpiresIn,
+          notBefore: jwtNotBefore,
+          issuer: jwtIssuer,
+          audience: jwtAudience,
+        });
+
+        res.cookie('jwt', jwtToken, {
+          httpOnly: true,
+          secure: false,
+          path: '/api',
+          signed: false,
+        });
+
+        const response = new StandardResponseWrapper([{
+          success: true,
+          detail: partialNewUserInfo,
+        }], constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
           .json(response.format);
