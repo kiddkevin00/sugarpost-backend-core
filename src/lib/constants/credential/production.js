@@ -17,5 +17,6 @@ exports.STRIPE = {
 
 exports.MAIL_CHIMP = {
   API_KEY: 'f31c50146c261234d79265791a60aa2c-us15',
-  LIST_ID: 'c298b7bb64',
+  SIGNUP_LIST_ID: 'bec7efbdcb',
+  SUBSCRIBED_LIST_ID: '67631ca231',
 };
