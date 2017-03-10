@@ -86,7 +86,7 @@ class AuthController {
 
     Object.assign(req.body, {
       fullName: req.body.fullName && req.body.fullName.trim(),
-      email: req.body.email && req.body.email.trim(),
+      email: req.body.email && req.body.email.trim() && req.body.email.toLowerCase(),
       password: req.body.password && req.body.password.trim(),
     });
 
@@ -200,6 +200,11 @@ class AuthController {
 
   static login(req, res) {
     requestCount += 1;
+
+    Object.assign(req.body, {
+      email: req.body.email && req.body.email.trim() && req.body.email.toLowerCase(),
+      password: req.body.password && req.body.password.trim(),
+    });
 
     const context = { containerId, requestCount };
     const state = ProcessSate.create(req.body, context);
