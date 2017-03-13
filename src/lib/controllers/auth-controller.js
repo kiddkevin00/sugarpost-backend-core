@@ -1,6 +1,7 @@
 const DatabaseService = require('../services/database-service');
 const ProcessSate = require('../process-state/');
 const EmailSender = require('../utility/email-sender');
+const PreconditionValidator = require('../utility/precondition-validator');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
@@ -84,64 +85,70 @@ class AuthController {
   static signup(req, res) {
     requestCount += 1;
 
-    Object.assign(req.body, {
-      fullName: req.body.fullName && req.body.fullName.trim(),
-      email: req.body.email && req.body.email.trim() && req.body.email.toLowerCase(),
-      password: req.body.password && req.body.password.trim(),
-    });
+    const fullName = req.body.fullName;
+    const email = req.body.email;
+    const password = req.body.password;
 
-    const context = { containerId, requestCount };
-    const state = ProcessSate.create(req.body, context);
-    const signupStrategy = {
-      storeType: constants.STORE.TYPES.MONGO_DB,
-      operation: {
-        type: constants.STORE.OPERATIONS.INSERT,
-        data: [
-          {
-            type: constants.AUTH.USER_TYPES.UNPAID,
-            email: state.email,
-            passwordHash: state.password, // [TODO] Should store hashed password instead.
-            fullName: state.fullName,
-            isSuspended: false,
-            referralAmount: 0,
-            version: 0,
-            systemData: {
-              dateCreated: new Date(),
-              createdBy: null,
-              lastModifiedDate: null,
-              lastModifiedBy: null,
-            },
-          },
-        ],
-      },
-      tableName: constants.STORE.TABLE_NAMES.USER,
-      uniqueFields: ['email'],
+    PreconditionValidator.shouldNotBeEmpty(fullName, constants.AUTH.FULL_NAME_FIELD_IS_EMPTY);
+    PreconditionValidator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
+    PreconditionValidator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
+
+    const options = {
+      fullName: fullName.trim(),
+      email: email.trim() && email.toLowerCase(),
+      password: password.trim(),
     };
-    let dbResult;
+    const context = { containerId, requestCount };
+    const state = ProcessSate.create(options, context);
 
-    return AuthController._handleRequest(state, res, DatabaseService, signupStrategy)
-      .then((result) => {
-        dbResult = result;
-
-        return mailchimp.post({
-          path: `/lists/${mailChimpListId}/members/`,
-          body: {
-            email_address: state.email,
-            status: 'pending',
-            merge_fields: {
-              FNAME: state.fullName,
-            },
+    return mailchimp
+      .post({
+        path: `/lists/${mailChimpListId}/members/`,
+        body: {
+          email_address: state.email,
+          status: 'pending',
+          merge_fields: {
+            FNAME: state.fullName,
           },
-        });
+        },
+      })
+      .then(() => {
+        const signupStrategy = {
+          storeType: constants.STORE.TYPES.MONGO_DB,
+          operation: {
+            type: constants.STORE.OPERATIONS.INSERT,
+            data: [
+              {
+                type: constants.AUTH.USER_TYPES.UNPAID,
+                email: state.email,
+                passwordHash: state.password, // [TODO] Should store hashed password instead.
+                fullName: state.fullName,
+                isSuspended: false,
+                referralAmount: 0,
+                version: 0,
+                systemData: {
+                  dateCreated: new Date(),
+                  createdBy: null,
+                  lastModifiedDate: null,
+                  lastModifiedBy: null,
+                },
+              },
+            ],
+          },
+          tableName: constants.STORE.TABLE_NAMES.USER,
+          uniqueFields: ['email'],
+        };
+
+        return AuthController._handleRequest(state, res, DatabaseService, signupStrategy);
       })
       .then((result) => {
         const jwtToken = jwt.sign({
-          sub: `${dbResult.type}:${dbResult.email}:${dbResult._id}`,
-          _id: dbResult._id,
-          type: dbResult.type,
-          email: dbResult.email,
-          fullName: dbResult.fullName,
-          referralAmount: dbResult.referralAmount,
+          sub: `${result.type}:${result.email}:${result._id}`,
+          _id: result._id,
+          type: result.type,
+          email: result.email,
+          fullName: result.fullName,
+          referralAmount: result.referralAmount,
         }, jwtSecret, {
           expiresIn: jwtExpiresIn,
           notBefore: jwtNotBefore,
@@ -158,7 +165,7 @@ class AuthController {
 
         const response = new StandardResponseWrapper({
           success: true,
-          detail: dbResult, // [TODO] Filters unneeded fields.
+          detail: result, // [TODO] Filters unneeded fields.
         }, constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
@@ -201,13 +208,18 @@ class AuthController {
   static login(req, res) {
     requestCount += 1;
 
-    Object.assign(req.body, {
-      email: req.body.email && req.body.email.trim() && req.body.email.toLowerCase(),
-      password: req.body.password && req.body.password.trim(),
-    });
+    const email = req.body.email;
+    const password = req.body.password;
 
+    PreconditionValidator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
+    PreconditionValidator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
+
+    const options = {
+      email: email.trim() && req.body.email.toLowerCase(),
+      password: password.trim(),
+    };
     const context = { containerId, requestCount };
-    const state = ProcessSate.create(req.body, context);
+    const state = ProcessSate.create(options, context);
     const loginStrategy = {
       storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
@@ -308,8 +320,15 @@ class AuthController {
   static forgotPassword(req, res) {
     requestCount += 1;
 
+    const email = req.body.email;
+
+    PreconditionValidator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
+
+    const options = {
+      email: email.trim() && email.toLowerCase(),
+    };
     const context = { containerId, requestCount };
-    const state = ProcessSate.create(req.body, context);
+    const state = ProcessSate.create(options, context);
     const forgotPasswordStrategy = {
       storeType: constants.STORE.TYPES.MONGO_DB,
       operation: {
