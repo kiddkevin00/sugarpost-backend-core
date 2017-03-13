@@ -1,70 +1,84 @@
+const StandardErrorWrapper = require('./standard-error-wrapper');
 const constants = require('../constants/');
 
 class PreconditionValidator {
 
-  static shouldNotBeEmpty(value, errCode) {
-    if (Object.is(value, undefined) || Object.is(value, null) || Object.is(value, '')) {
-      const err = {
-        status: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
-        code: errCode,
-        source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-      };
+  static shouldNotBeEmpty(value, errName) {
+    if (
+      Object.is(value, undefined) || Object.is(value, null) || Object.is(value, '') ||
+      (typeof value === 'string' && value.trim().length === 0)
+    ) {
+      const err = new StandardErrorWrapper([
+        {
+          code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
+          name: errName,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+        },
+      ]);
 
       throw err;
     }
     return PreconditionValidator;
   }
 
-  static shouldBeEnumType(value, options, errCode) {
+  static shouldBeEnumType(value, options, errName) {
     if (options.indexOf(value) < 0) {
-      const err = {
-        status: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
-        code: errCode,
-        source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-      };
+      const err = new StandardErrorWrapper([
+        {
+          code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
+          name: errName,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+        },
+      ]);
 
       throw err;
     }
     return PreconditionValidator;
   }
 
-  static shouldBeValidTime(value, errCode) {
+  static shouldBeValidTime(value, errName) {
     if (isNaN((new Date(value)).getTime())) {
-      const err = {
-        status: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
-        code: errCode,
-        source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-      };
+      const err = new StandardErrorWrapper([
+        {
+          code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
+          name: errName,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+        },
+      ]);
 
       throw err;
     }
     return PreconditionValidator;
   }
 
-  static shouldBeArrayOrArrayText(input, errCode) {
+  static shouldBeArrayOrArrayText(input, errName) {
     let array = input;
 
     if (typeof array === 'string') {
       try {
         array = JSON.parse(array);
       } catch (_err) {
-        const err = {
-          status: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
-          code: errCode,
-          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-          message: _err,
-        };
+        const err = new StandardErrorWrapper([
+          {
+            code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
+            name: errName,
+            source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+            message: _err,
+          },
+        ]);
 
         throw err;
       }
     }
 
     if (!Array.isArray(array)) {
-      const err = {
-        status: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
-        code: errCode,
-        source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-      };
+      const err = new StandardErrorWrapper([
+        {
+          code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
+          name: errName,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+        },
+      ]);
 
       throw err;
     }

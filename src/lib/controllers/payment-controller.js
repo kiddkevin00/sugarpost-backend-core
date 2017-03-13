@@ -1,5 +1,6 @@
 const DatabaseService = require('../services/database-service');
 const ProcessSate = require('../process-state/');
+const PreconditionValidator = require('../utility/precondition-validator');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
@@ -14,7 +15,6 @@ const stripePlan = constants.CREDENTIAL.STRIPE.PLAN_ID;
 const stripeQuantity = constants.CREDENTIAL.STRIPE.QUANTITY;
 const stripeRecurringBillingDate = constants.CREDENTIAL.STRIPE.RECURRING_BILLING_DATE;
 const stripeReferralCredit = constants.CREDENTIAL.STRIPE.REFERRAL_CREDIT;
-const stripeRefererCredit = constants.CREDENTIAL.STRIPE.REFERER_CREDIT;
 const mailchimp = new Mailchimp(constants.CREDENTIAL.MAIL_CHIMP.API_KEY);
 const mailChimpListId = constants.CREDENTIAL.MAIL_CHIMP.SUBSCRIBED_LIST_ID;
 const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
@@ -33,14 +33,23 @@ class PaymentController {
     const email = req.body.email;
     const referCode = req.body.referCode;
     const source = req.body.tokenId;
+
+    PreconditionValidator.shouldNotBeEmpty(email);
+    PreconditionValidator.shouldNotBeEmpty(source);
+
+    const options = {
+      referCode,
+      source,
+      email: email.trim() && email.toLowerCase(),
+    };
+    const context = { containerId, requestCount };
+    const state = ProcessSate.create(options, context);
+    let account_balance; // eslint-disable-line camelcase
     let userId;
     let userFullName;
-    let account_balance; // eslint-disable-line camelcase
     let stripeCustomerId;
     let partialNewUserInfo;
-
-    const context = { containerId, requestCount };
-    const state = ProcessSate.create({ email, referCode, source }, context);
+    let referralUserId;
 
     return Promise
       .try(() => {
@@ -53,9 +62,7 @@ class PaymentController {
             operation: {
               type: constants.STORE.OPERATIONS.SELECT,
               data: [
-                {
-                  referCode: validatedReferCode,
-                },
+                { referCode: validatedReferCode },
               ],
             },
             tableName: constants.STORE.TABLE_NAMES.USER,
@@ -69,27 +76,9 @@ class PaymentController {
         };
       })
       .then((result) => {
-        if (result && result.length === 1 && result[0].stripeCustomerId) {
+        if (result && result.length === 1) {
           account_balance = -stripeReferralCredit; // eslint-disable-line camelcase
-
-          stripe.customers
-            .update(result[0].stripeCustomerId, { account_balance: -stripeRefererCredit })
-            .catch((_err) => {
-              const err = new StandardErrorWrapper(_err);
-
-              err.append({
-                code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-                name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
-                source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-                message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
-              });
-
-              return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
-                .json(err.format({
-                  containerId: state.context.containerId,
-                  requestCount: state.context.requestCount,
-                }));
-            });
+          referralUserId = result[0]._id;
         } else if (result.withoutReferCode) {
           account_balance = 0; // eslint-disable-line camelcase
         } else {
@@ -157,30 +146,6 @@ class PaymentController {
       .then((customer) => {
         stripeCustomerId = customer.id;
 
-        partialNewUserInfo = {
-          stripeCustomerId,
-          type: constants.AUTH.USER_TYPES.PAID,
-          referCode: couponCode.generate({
-            parts: 1,
-            partLen: 5,
-          }),
-        };
-
-        const linkAccountStrategy = {
-          storeType: constants.STORE.TYPES.MONGO_DB,
-          operation: {
-            type: constants.STORE.OPERATIONS.UPDATE,
-            data: [
-              { _id: userId },
-              partialNewUserInfo,
-            ],
-          },
-          tableName: constants.STORE.TABLE_NAMES.USER,
-        };
-
-        return PaymentController._handleRequest(state, res, DatabaseService, linkAccountStrategy);
-      })
-      .then((result) => {
         const items = [
           { plan: stripePlan, quantity: stripeQuantity },
         ];
@@ -221,6 +186,61 @@ class PaymentController {
         },
       }))
       .then(() => {
+        partialNewUserInfo = {
+          stripeCustomerId,
+          type: constants.AUTH.USER_TYPES.PAID,
+          referCode: couponCode.generate({
+            parts: 1,
+            partLen: 5,
+          }),
+        };
+
+        const linkAccountStrategy = {
+          storeType: constants.STORE.TYPES.MONGO_DB,
+          operation: {
+            type: constants.STORE.OPERATIONS.UPDATE,
+            data: [
+              { _id: userId },
+              partialNewUserInfo,
+            ],
+          },
+          tableName: constants.STORE.TABLE_NAMES.USER,
+        };
+
+        return PaymentController._handleRequest(state, res, DatabaseService, linkAccountStrategy);
+      })
+      .then(() => {
+        const updateRefererStrategy = {
+          storeType: constants.STORE.TYPES.MONGO_DB,
+          operation: {
+            type: constants.STORE.OPERATIONS.UPDATE,
+            data: [
+              { _id: referralUserId },
+              { $inc: { referralAmount: 1 } },
+              true,
+            ],
+          },
+          tableName: constants.STORE.TABLE_NAMES.USER,
+        };
+
+        PaymentController._handleRequest(state, res, DatabaseService, updateRefererStrategy)
+          .catch((_err) => {
+            const err = new StandardErrorWrapper(_err);
+
+            err.append({
+              code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
+              name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
+              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+              message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
+            });
+
+            return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
+              .json(err.format({
+                containerId: state.context.containerId,
+                requestCount: state.context.requestCount,
+              }));
+          });
+
         const jwtToken = jwt.sign({
           sub: req.user.sub,
           _id: req.user._id,

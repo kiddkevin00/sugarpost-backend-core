@@ -14,10 +14,14 @@ class MongoStore extends BaseStore {
     return connection.client.collection(collectionName).findAsync(query);
   }
 
-  static update(connection, collectionName, query, newFieldValues) {
+  static update(connection, collectionName, query, newFieldValueMap, isSpecialUpdate = false) {
     // [TODO] Use `connection.client.findAndModifyAsync()` instead to return the updated documents.
-    return connection.client.collection(collectionName).updateAsync(query, { $set: newFieldValues },
-      { multi: true });
+    if (isSpecialUpdate) {
+      return connection.client.collection(collectionName).updateAsync(query, { newFieldValueMap },
+        { multi: true });
+    }
+    return connection.client.collection(collectionName).updateAsync(query,
+      { $set: newFieldValueMap }, { multi: true });
   }
 
   static delete(connection, collectionName, query) {
