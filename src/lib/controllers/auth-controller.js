@@ -136,7 +136,7 @@ class AuthController {
                 FNAME: state.fullName,
               },
             },
-          })
+          });
       })
       .then(() => {
         const signupStrategy = {
