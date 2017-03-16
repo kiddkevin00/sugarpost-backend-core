@@ -4,7 +4,9 @@
   "description": "A generic RESTful API backend with all major database connection/ops interfaces implemented.",
   "main": "./src/lib/app.js",
   "bin": {
-    "update-test-coverage": "./bin/update-test-coverage.js"
+    "update-test-coverage": "./bin/update-test-coverage.js",
+    "version-bump": "./bin/version-bump.js",
+    "restrict-branches-no-push": "./bin/restrict-branches-no-push.sh"
   },
   "config": {
     "ip": "0.0.0.0",
