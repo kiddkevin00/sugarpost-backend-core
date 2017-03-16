@@ -13,6 +13,7 @@ class PreconditionValidator {
           code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
           name: errName,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: `The provided value \`${value}\` should not be empty.`,
         },
       ]);
 
@@ -28,6 +29,8 @@ class PreconditionValidator {
           code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
           name: errName,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: `The provided value \`${value}\` should be one of the enumeration: ` +
+            `${options.join(' ,')}.`,
         },
       ]);
 
@@ -43,6 +46,7 @@ class PreconditionValidator {
           code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
           name: errName,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: `The provided value \`${value}\` should be a valid timestamp.`,
         },
       ]);
 
@@ -77,6 +81,7 @@ class PreconditionValidator {
           code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
           name: errName,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: `The provided value \`${input}\` should be an array or an array text.`,
         },
       ]);
 

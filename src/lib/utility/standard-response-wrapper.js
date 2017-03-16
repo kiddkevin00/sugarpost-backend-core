@@ -8,12 +8,24 @@
  *     data: [
  *       {
  *         success: true,
- *         detail: [],
- *        },
- *        {
+ *         detail: [
+ *           {
+ *             _id: "001",
+ *             email: "test1@test.com"
+ *           },
+ *           {
+ *             _id: "002",
+ *             email: "test2@test.com"
+ *           }
+ *         ]
+ *       },
+ *       {
  *         success: false,
  *         status: "ERROR_NAME_1",
- *         detail: {},
+ *         detail: {
+ *           _id: "003",
+ *           email: "test3@test.com"
+ *         }
  *       }
  *     ]
  *   }

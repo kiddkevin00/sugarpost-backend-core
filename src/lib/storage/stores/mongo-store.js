@@ -17,7 +17,7 @@ class MongoStore extends BaseStore {
   static update(connection, collectionName, query, newFieldValueMap, isSpecialUpdate = false) {
     // [TODO] Use `connection.client.findAndModifyAsync()` instead to return the updated documents.
     if (isSpecialUpdate) {
-      return connection.client.collection(collectionName).updateAsync(query, { newFieldValueMap },
+      return connection.client.collection(collectionName).updateAsync(query, newFieldValueMap,
         { multi: true });
     }
     return connection.client.collection(collectionName).updateAsync(query,

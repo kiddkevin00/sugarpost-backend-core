@@ -100,17 +100,43 @@ class AuthController {
     };
     const context = { containerId, requestCount };
     const state = ProcessSate.create(options, context);
+    const signupCheckStrategy = {
+      storeType: constants.STORE.TYPES.MONGO_DB,
+      operation: {
+        type: constants.STORE.OPERATIONS.SELECT,
+        data: [
+          { email: state.email },
+        ],
+      },
+      tableName: constants.STORE.TABLE_NAMES.USER,
+    };
 
-    return mailchimp
-      .post({
-        path: `/lists/${mailChimpListId}/members/`,
-        body: {
-          email_address: state.email,
-          status: 'pending',
-          merge_fields: {
-            FNAME: state.fullName,
-          },
-        },
+    return AuthController._handleRequest(state, res, DatabaseService, signupCheckStrategy)
+      .then((result) => {
+        if (Array.isArray(result) && result.length === 1) {
+          const err = new StandardErrorWrapper([
+            {
+              code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
+              name: constants.AUTH.ERROR_NAMES.EMAIL_ALREADY_SIGNUP,
+              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+              message: constants.AUTH.ERROR_MSG.EMAIL_ALREADY_SIGNUP,
+            },
+          ]);
+
+          throw err;
+        }
+
+        return mailchimp
+          .post({
+            path: `/lists/${mailChimpListId}/members/`,
+            body: {
+              email_address: state.email,
+              status: 'pending',
+              merge_fields: {
+                FNAME: state.fullName,
+              },
+            },
+          })
       })
       .then(() => {
         const signupStrategy = {
@@ -136,7 +162,6 @@ class AuthController {
             ],
           },
           tableName: constants.STORE.TABLE_NAMES.USER,
-          uniqueFields: ['email'],
         };
 
         return AuthController._handleRequest(state, res, DatabaseService, signupStrategy);
@@ -174,11 +199,11 @@ class AuthController {
       .catch((_err) => {
         const err = new StandardErrorWrapper(_err);
 
-        if (err.getNthError(1).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE) {
+        if (err.getNthError(0).name === constants.AUTH.ERROR_NAMES.EMAIL_ALREADY_SIGNUP) {
           const response = new StandardResponseWrapper([
             {
               success: false,
-              status: err.getNthError(1).name,
+              status: err.getNthError(0).name,
               detail: err.format({
                 containerId: state.context.containerId,
                 requestCount: state.context.requestCount,
@@ -240,7 +265,7 @@ class AuthController {
         let statusCode;
         let response;
 
-        if (result && (result.length === 1)) {
+        if (Array.isArray(result) && (result.length === 1)) {
           const user = result[0];
 
           statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
@@ -343,7 +368,7 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, forgotPasswordStrategy)
       .then((result) => {
-        if (!result || (result.length !== 1)) {
+        if (!Array.isArray(result) || (result.length !== 1)) {
           const err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
@@ -367,7 +392,7 @@ class AuthController {
         const subject = '[Sugarpost] Reset Password';
         const html = `
           <div>
-             <p>Dear customer,</p>
+             <p>Dear ${result[0].fullName},</p>
              <h4>Here is your new password ${newPassword}</h4>
              <p>Please follow the instruction below to change back to your preferred password.</p>
              <br />

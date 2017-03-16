@@ -44,6 +44,8 @@ class PaymentController {
     };
     const context = { containerId, requestCount };
     const state = ProcessSate.create(options, context);
+    const withoutReferCode = !state.referCode ||
+      (typeof state.referCode === 'string' && state.referCode.trim().length === 0);
     let account_balance; // eslint-disable-line camelcase
     let userId;
     let userFullName;
@@ -53,7 +55,7 @@ class PaymentController {
 
     return Promise
       .try(() => {
-        const validatedReferCode = state.referCode &&
+        const validatedReferCode = !withoutReferCode &&
           couponCode.validate(state.referCode, { parts: 1, partLen: 5 });
 
         if (validatedReferCode) {
@@ -70,16 +72,13 @@ class PaymentController {
 
           return PaymentController._handleRequest(state, res, DatabaseService, referCodeStrategy);
         }
-        return {
-          withoutReferCode: !state.referCode ||
-            (typeof state.referCode === 'string' && state.referCode.trim().length === 0),
-        };
+        return { withoutReferCode };
       })
       .then((result) => {
-        if (result && result.length === 1) {
+        if (Array.isArray(result) && result.length === 1) {
           account_balance = -stripeReferralCredit; // eslint-disable-line camelcase
           referralUserId = result[0]._id;
-        } else if (result.withoutReferCode) {
+        } else if (result && result.withoutReferCode) {
           account_balance = 0; // eslint-disable-line camelcase
         } else {
           const err = new StandardErrorWrapper([
@@ -110,7 +109,7 @@ class PaymentController {
       .then((result) => {
         let err;
 
-        if (!result || (result.length !== 1)) {
+        if (!Array.isArray(result) || (result.length !== 1)) {
           err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,
@@ -210,36 +209,38 @@ class PaymentController {
         return PaymentController._handleRequest(state, res, DatabaseService, linkAccountStrategy);
       })
       .then(() => {
-        const updateRefererStrategy = {
-          storeType: constants.STORE.TYPES.MONGO_DB,
-          operation: {
-            type: constants.STORE.OPERATIONS.UPDATE,
-            data: [
-              { _id: referralUserId },
-              { $inc: { referralAmount: 1 } },
-              true,
-            ],
-          },
-          tableName: constants.STORE.TABLE_NAMES.USER,
-        };
+        if (!withoutReferCode) {
+          const updateRefererStrategy = {
+            storeType: constants.STORE.TYPES.MONGO_DB,
+            operation: {
+              type: constants.STORE.OPERATIONS.UPDATE,
+              data: [
+                { _id: referralUserId },
+                { $inc: { referralAmount: 1 } },
+                true,
+              ],
+            },
+            tableName: constants.STORE.TABLE_NAMES.USER,
+          };
 
-        PaymentController._handleRequest(state, res, DatabaseService, updateRefererStrategy)
-          .catch((_err) => {
-            const err = new StandardErrorWrapper(_err);
+          PaymentController._handleRequest(state, res, DatabaseService, updateRefererStrategy)
+            .catch((_err) => {
+              const err = new StandardErrorWrapper(_err);
 
-            err.append({
-              code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-              name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
-              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
+              err.append({
+                code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
+                name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
+                source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+                message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
+              });
+
+              return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
+                .json(err.format({
+                  containerId: state.context.containerId,
+                  requestCount: state.context.requestCount,
+                }));
             });
-
-            return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
-              .json(err.format({
-                containerId: state.context.containerId,
-                requestCount: state.context.requestCount,
-              }));
-          });
+        }
 
         const jwtToken = jwt.sign({
           sub: req.user.sub,
@@ -264,10 +265,12 @@ class PaymentController {
           signed: false,
         });
 
-        const response = new StandardResponseWrapper([{
-          success: true,
-          detail: partialNewUserInfo,
-        }], constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
+        const response = new StandardResponseWrapper([
+          {
+            success: true,
+            detail: partialNewUserInfo,
+          },
+        ], constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
           .json(response.format);
