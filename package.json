@@ -1,10 +1,12 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.9.7",
+  "version": "1.9.8",
   "description": "A generic RESTful API backend with all major database connection/ops interfaces implemented.",
   "main": "./src/lib/app.js",
   "bin": {
-    "update-test-coverage": "./bin/update-test-coverage.js"
+    "update-test-coverage": "./bin/update-test-coverage.js",
+    "version-bump": "./bin/version-bump.js",
+    "restrict-branches-no-push": "./bin/restrict-branches-no-push.sh"
   },
   "config": {
     "ip": "0.0.0.0",
@@ -55,12 +57,13 @@
     "coverage:unit-test": "nyc --check-coverage --reporter cobertura --reporter html mocha --opts mocha.opts",
     "coverage:integration-test": "",
     "precommit": "npm run lint && npm run coverage:unit-test",
-    "prepush": "npm run lint && npm run coverage:unit-test && npm run coverage:update-thresholds",
+    "prepush": "npm run branch-check && npm run lint && npm run coverage:unit-test && npm run coverage:update-thresholds",
     "version:bump": "npm run version:instruction && ./bin/version-bump.js",
     "------------- INTERNAL ------------": "",
     "eslint": "eslint --format 'node_modules/eslint-friendly-formatter' src/ example/ bin/",
     "jasmine-unit-test": "node src/spec/support/jasmine-test-runner.js -- -t unit",
     "mocha-unit-test": "multi='tap=- xunit=spec/reports/xunit.xml' mocha --opts mocha.opts --reporter mocha-multi | faucet",
+    "branch-check": "./bin/restrict-branches-to-push.sh",
     "coverage:update-thresholds": "echo 'disable `coverage:update-thresholds` for now' || ./bin/update-test-coverage.js",
     "version:instruction": "echo 'Please specify full version number after `npm run version:bump`.  E.g. $ npm run version:bump 0.0.1'",
     "------------- LOCAL DEV -----------": "",
@@ -108,6 +111,7 @@
     "eslint": "^3.8.1",
     "eslint-config-airbnb": "^12.0.0",
     "eslint-friendly-formatter": "^2.0.6",
+    "eslint-plugin-chai-expect": "^1.1.1",
     "eslint-plugin-import": "^1.16.0",
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.4.1",
