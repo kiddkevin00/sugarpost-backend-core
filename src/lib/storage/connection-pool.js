@@ -47,7 +47,7 @@ class ConnectionPool {
           this.client = mongojs(`mongodb://${this.host}:${this.port}/${this.dbName}`, [],
             packageJsonDbConfig.options);
         }
-       
+
         break;
       case constants.STORE.TYPES.POSTGRES:
         if (this.dbUser && this.dbPassword) {
@@ -57,7 +57,7 @@ class ConnectionPool {
           this.client = new Sequelize(`postgres://${this.host}:${this.port}/${this.dbName}`,
             packageJsonDbConfig.options);
         }
-       
+
         break;
       default:
         throw(err);
