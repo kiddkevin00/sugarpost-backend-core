@@ -1,8 +1,8 @@
 const BaseStore = require('./base');
 const constants = require('../../constants/');
 
-/*
- * This class should only contains static members.
+/**
+ * This class implements the base store interface.  It should only contain static members.
  */
 class MongoStore extends BaseStore {
 
@@ -17,11 +17,11 @@ class MongoStore extends BaseStore {
   static update(connection, collectionName, query, newFieldValueMap, isSpecialUpdate = false) {
     // [TODO] Use `connection.client.findAndModifyAsync()` instead to return the updated documents.
     if (isSpecialUpdate) {
-      return connection.client.collection(collectionName).updateAsync(query, newFieldValueMap,
-        { multi: true });
+      return connection.client.collection(collectionName)
+        .updateAsync(query, newFieldValueMap, { multi: true });
     }
-    return connection.client.collection(collectionName).updateAsync(query,
-      { $set: newFieldValueMap }, { multi: true });
+    return connection.client.collection(collectionName)
+      .updateAsync(query, { $set: newFieldValueMap }, { multi: true });
   }
 
   static delete(connection, collectionName, query) {

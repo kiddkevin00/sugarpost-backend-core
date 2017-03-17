@@ -1,6 +1,6 @@
 const DatabaseService = require('../services/database-service');
 const ProcessSate = require('../process-state/');
-const PreconditionValidator = require('../utility/precondition-validator');
+const Validator = require('../utility/precondition-validator');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
@@ -34,8 +34,8 @@ class PaymentController {
     const referCode = req.body.referCode;
     const source = req.body.tokenId;
 
-    PreconditionValidator.shouldNotBeEmpty(email);
-    PreconditionValidator.shouldNotBeEmpty(source);
+    Validator.shouldNotBeEmpty(email);
+    Validator.shouldNotBeEmpty(source);
 
     const options = {
       referCode,
@@ -56,7 +56,7 @@ class PaymentController {
     return Promise
       .try(() => {
         const validatedReferCode = !withoutReferCode &&
-          couponCode.validate(state.referCode, { parts: 1, partLen: 5 });
+          couponCode.validate(state.referCode, { parts: 1, partLen: 6 });
 
         if (validatedReferCode) {
           const referCodeStrategy = {
@@ -190,7 +190,7 @@ class PaymentController {
           type: constants.AUTH.USER_TYPES.PAID,
           referCode: couponCode.generate({
             parts: 1,
-            partLen: 5,
+            partLen: 6,
           }),
         };
 

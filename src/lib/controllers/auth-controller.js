@@ -1,7 +1,7 @@
 const DatabaseService = require('../services/database-service');
 const ProcessSate = require('../process-state/');
 const EmailSender = require('../utility/email-sender');
-const PreconditionValidator = require('../utility/precondition-validator');
+const Validator = require('../utility/precondition-validator');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
@@ -89,9 +89,9 @@ class AuthController {
     const email = req.body.email;
     const password = req.body.password;
 
-    PreconditionValidator.shouldNotBeEmpty(fullName, constants.AUTH.FULL_NAME_FIELD_IS_EMPTY);
-    PreconditionValidator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
-    PreconditionValidator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(fullName, constants.AUTH.FULL_NAME_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
 
     const options = {
       fullName: fullName.trim(),
@@ -236,8 +236,8 @@ class AuthController {
     const email = req.body.email;
     const password = req.body.password;
 
-    PreconditionValidator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
-    PreconditionValidator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
 
     const options = {
       email: email.trim() && req.body.email.toLowerCase(),
@@ -347,7 +347,7 @@ class AuthController {
 
     const email = req.body.email;
 
-    PreconditionValidator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
 
     const options = {
       email: email.trim() && email.toLowerCase(),

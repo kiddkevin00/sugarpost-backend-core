@@ -53,7 +53,7 @@ class StandardErrorWrapper {
       this[errorContext].errorStack = [{
         code: constants.SYSTEM.ERROR_CODES.UNKNOWN_ERROR,
         name: constants.SYSTEM.ERROR_NAMES.UNKNOWN_ERROR,
-        source: constants.SYSTEM.CURRENT_SOURCE,
+        source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
         message: errMsg,
         detail: initialErr,
       }];
