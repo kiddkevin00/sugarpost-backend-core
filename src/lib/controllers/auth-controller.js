@@ -401,19 +401,7 @@ class AuthController {
            </div>
         `;
 
-        return emailSender.sendMail(from, to, subject, html)
-          .catch((_err) => {
-            const err = new StandardErrorWrapper(_err);
-
-            err.append({
-              code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-              name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
-              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
-            });
-
-            throw err;
-          });
+        return emailSender.sendMail(from, to, subject, html);
       })
       .then((info) => {
         // [TODO] Replace with logger module.
