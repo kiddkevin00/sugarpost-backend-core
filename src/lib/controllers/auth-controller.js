@@ -389,8 +389,8 @@ class AuthController {
           partLen: 8,
         });
 
-        const emailSender = new EmailSender('gmail', 'kingpong123321@gmail.com', 'kingpong123');
-        const from = '"Sugarpost Test" <kingkong@kingpong.com>';
+        const emailSender = new EmailSender('Gmail', 'administrator@mysugarpost.com');
+        const from = '"Sugarpost Team" <administrator@mysugarpost.com>';
         const to = state.email;
         const subject = '[Sugarpost] Reset Password';
         const html = `
