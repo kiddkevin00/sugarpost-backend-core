@@ -1,17 +1,15 @@
 const nodemailer = require('nodemailer');
 
-var smtpTransport = require('nodemailer-smtp-transport');
-
 class EmailSender {
 
   constructor(senderService, senderEmail, senderPassword) {
-    this.transporter = nodemailer.createTransport(smtpTransport({
+    this.transporter = nodemailer.createTransport({
       service: senderService,
       auth: {
         user: senderEmail,
         pass: senderPassword,
       },
-    }));
+    });
   }
 
   sendMail(from, to, subject, html) {
