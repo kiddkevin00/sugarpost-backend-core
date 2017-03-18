@@ -199,11 +199,14 @@ class AuthController {
       .catch((_err) => {
         const err = new StandardErrorWrapper(_err);
 
-        if (err.getNthError(0).name === constants.AUTH.ERROR_NAMES.EMAIL_ALREADY_SIGNUP) {
+        if (
+          (err.getNthError(0).detail && err.getNthError(0).detail.title === 'Member Exists') ||
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.EMAIL_ALREADY_SIGNUP
+        ) {
           const response = new StandardResponseWrapper([
             {
               success: false,
-              status: err.getNthError(0).name,
+              status: constants.AUTH.ERROR_NAMES.EMAIL_ALREADY_SIGNUP,
               detail: err.format({
                 containerId: state.context.containerId,
                 requestCount: state.context.requestCount,
