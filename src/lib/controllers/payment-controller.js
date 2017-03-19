@@ -84,9 +84,9 @@ class PaymentController {
           const err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
-              name: constants.AUTH.ERROR_NAMES.REFER_CODE_NOT_FOUND,
+              name: constants.AUTH.ERROR_NAMES.REFERRAL_CODE_NOT_FOUND,
               source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.AUTH.ERROR_MSG.REFER_CODE_NOT_FOUND,
+              message: constants.AUTH.ERROR_MSG.REFERRAL_CODE_NOT_FOUND,
             },
           ]);
 
@@ -279,7 +279,7 @@ class PaymentController {
         const err = new StandardErrorWrapper(_err);
 
         if (
-          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.REFER_CODE_NOT_FOUND ||
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.REFERRAL_CODE_NOT_FOUND ||
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.PAYER_EMAIL_NOT_FOUND ||
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.ALREADY_LINK_TO_STRIPE_ACC
         ) {
