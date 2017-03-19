@@ -436,6 +436,22 @@ class AuthController {
       .catch((_err) => {
         const err = new StandardErrorWrapper(_err);
 
+        if (err.getNthError(0).name === constants.AUTH.ERROR_NAMES.USER_EMAIL_NOT_FOUND) {
+          const response = new StandardResponseWrapper([
+            {
+              success: false,
+              status: err.getNthError(0).name,
+              detail: err.format({
+                containerId: state.context.containerId,
+                requestCount: state.context.requestCount,
+              }),
+            },
+          ], constants.SYSTEM.RESPONSE_NAMES.FORGOT_PASSWORD);
+
+          return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
+            .json(response.format);
+        }
+
         err.append({
           code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
           name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
