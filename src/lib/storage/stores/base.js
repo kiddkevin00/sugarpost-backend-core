@@ -1,5 +1,6 @@
-/*
- * This class should only contains static members.
+/**
+ * This class implements the advanced store interface, which only uses the  methods from the
+ * defined base store interface.  It should only contain static members.
  */
 class BaseStore {
 

@@ -2,14 +2,18 @@ const nodemailer = require('nodemailer');
 
 class EmailSender {
 
-  constructor(senderService, senderEmail, senderPassword) {
-    this.transporter = nodemailer.createTransport({
+  constructor(senderService, senderEmail) {
+    this.transporter = nodemailer.createTransport('SMTP', ({
       service: senderService,
       auth: {
-        user: senderEmail,
-        pass: senderPassword,
+        XOAuth2: {
+          user: senderEmail,
+          clientId: '572537695908-o1iucehpbk5kn5cqndtlocrq24amti1u.apps.googleusercontent.com',
+          clientSecret: 'KOYpGrs16BnuFgyJCvsv7iDz',
+          refreshToken: '1/VluYqdGtLCMUppQJI6C9qxgLkmgKCv5L6_eTXPp3ETk',
+        },
       },
-    });
+    }));
   }
 
   sendMail(from, to, subject, html) {

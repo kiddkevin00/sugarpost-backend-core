@@ -1,7 +1,7 @@
 const DatabaseService = require('../services/database-service');
 const ProcessSate = require('../process-state/');
 const EmailSender = require('../utility/email-sender');
-const PreconditionValidator = require('../utility/precondition-validator');
+const Validator = require('../utility/precondition-validator');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
@@ -89,9 +89,9 @@ class AuthController {
     const email = req.body.email;
     const password = req.body.password;
 
-    PreconditionValidator.shouldNotBeEmpty(fullName, constants.AUTH.FULL_NAME_FIELD_IS_EMPTY);
-    PreconditionValidator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
-    PreconditionValidator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(fullName, constants.AUTH.FULL_NAME_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
 
     const options = {
       fullName: fullName.trim(),
@@ -199,11 +199,14 @@ class AuthController {
       .catch((_err) => {
         const err = new StandardErrorWrapper(_err);
 
-        if (err.getNthError(0).name === constants.AUTH.ERROR_NAMES.EMAIL_ALREADY_SIGNUP) {
+        if (
+          (err.getNthError(0).detail && err.getNthError(0).detail.title === 'Member Exists') ||
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.EMAIL_ALREADY_SIGNUP
+        ) {
           const response = new StandardResponseWrapper([
             {
               success: false,
-              status: err.getNthError(0).name,
+              status: constants.AUTH.ERROR_NAMES.EMAIL_ALREADY_SIGNUP,
               detail: err.format({
                 containerId: state.context.containerId,
                 requestCount: state.context.requestCount,
@@ -236,8 +239,8 @@ class AuthController {
     const email = req.body.email;
     const password = req.body.password;
 
-    PreconditionValidator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
-    PreconditionValidator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
 
     const options = {
       email: email.trim() && req.body.email.toLowerCase(),
@@ -347,7 +350,7 @@ class AuthController {
 
     const email = req.body.email;
 
-    PreconditionValidator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
 
     const options = {
       email: email.trim() && email.toLowerCase(),
@@ -386,8 +389,8 @@ class AuthController {
           partLen: 8,
         });
 
-        const emailSender = new EmailSender('gmail', 'kingpong123321@gmail.com', 'kingpong123');
-        const from = '"Sugarpost Test" <kingkong@kingpong.com>';
+        const emailSender = new EmailSender('Gmail', 'administrator@mysugarpost.com');
+        const from = '"Sugarpost Team" <administrator@mysugarpost.com>';
         const to = state.email;
         const subject = '[Sugarpost] Reset Password';
         const html = `
@@ -401,19 +404,7 @@ class AuthController {
            </div>
         `;
 
-        return emailSender.sendMail(from, to, subject, html)
-          .catch((_err) => {
-            const err = new StandardErrorWrapper(_err);
-
-            err.append({
-              code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-              name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
-              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
-            });
-
-            throw err;
-          });
+        return emailSender.sendMail(from, to, subject, html);
       })
       .then((info) => {
         // [TODO] Replace with logger module.
@@ -444,6 +435,22 @@ class AuthController {
       })
       .catch((_err) => {
         const err = new StandardErrorWrapper(_err);
+
+        if (err.getNthError(0).name === constants.AUTH.ERROR_NAMES.USER_EMAIL_NOT_FOUND) {
+          const response = new StandardResponseWrapper([
+            {
+              success: false,
+              status: err.getNthError(0).name,
+              detail: err.format({
+                containerId: state.context.containerId,
+                requestCount: state.context.requestCount,
+              }),
+            },
+          ], constants.SYSTEM.RESPONSE_NAMES.FORGOT_PASSWORD);
+
+          return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
+            .json(response.format);
+        }
 
         err.append({
           code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,

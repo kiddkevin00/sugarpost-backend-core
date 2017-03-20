@@ -18,24 +18,27 @@ exports.HTTP_STATUS_CODES = httpStatusCodes;
 // This is the only place aggregating all error codes.
 exports.ERROR_CODES = Object.assign({}, httpStatusCodes, {
   UNKNOWN_ERROR: 1000,
-  CAUGHT_ERROR: 1001,
-  DATABASE_OPERATION_ERROR: 1002,
-  INVALID_RESPONSE_INTERFACE: 1003,
-  TABLE_CONSTRAINT_VIOLATION: 1004,
-  PAYMENT_CHECK_FAILURE: 1005,
+  INVALID_RESPONSE_INTERFACE: 1001,
+  INVALID_ERROR_INTERFACE: 1002,
+  CAUGHT_ERROR: 1003,
+  DATABASE_OPERATION_ERROR: 1004,
+  TABLE_CONSTRAINT_VIOLATION: 1005,
+  PAYMENT_CHECK_FAILURE: 1006,
 });
 
 exports.ERROR_NAMES = {
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
+  RESPONSE_OBJ_PARSE_ERROR: 'RESPONSE_OBJ_PARSE_ERROR',
+  ERROR_OBJ_PARSE_ERROR: 'RESPONSE_OBJ_PARSE_ERROR',
   CAUGHT_ERROR_IN_AUTH_CONTROLLER: 'CAUGHT_ERROR_IN_AUTH_CONTROLLER',
   CAUGHT_ERROR_IN_PAYMENT_CONTROLLER: 'CAUGHT_ERROR_IN_PAYMENT_CONTROLLER',
-  RESPONSE_OBJ_PARSE_ERROR: 'RESPONSE_OBJ_PARSE_ERROR',
 };
 
 exports.ERROR_MSG = {
+  RESPONSE_OBJ_PARSE_ERROR: 'The response object is not able to deserialize back to an instance of Standard Response Wrapper.',
+  ERROR_OBJ_PARSE_ERROR: 'The error object is not able to deserialize back to an instance of Standard Error Wrapper.',
   CAUGHT_ERROR_IN_AUTH_CONTROLLER: 'There is an error being caught in Auth Controller.',
   CAUGHT_ERROR_IN_PAYMENT_CONTROLLER: 'There is an error being caught in Payment Controller.',
-  RESPONSE_OBJ_PARSE_ERROR: 'The response object is not able to deserialize back to an instance of Standard Response Wrapper.',
 };
 
 exports.RESPONSE_NAMES = {

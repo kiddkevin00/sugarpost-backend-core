@@ -22,14 +22,6 @@ class ConnectionPool {
 
   constructor(storeType = constants.STORE.TYPES.MONGO_DB, host, port, dbName, dbUser, dbPassword) {
     const packageJsonDbConfig = packageJson.config.databases[storeType];
-
-    this.client = null;
-    this.host = host || packageJsonDbConfig.host;
-    this.port = port || packageJsonDbConfig.port;
-    this.dbName = dbName || packageJsonDbConfig.dbName;
-    this.dbUser = dbUser;
-    this.dbPassword = dbPassword;
-
     const err = new StandardErrorWrapper([
       {
         code: constants.SYSTEM.ERROR_CODES.NOT_FOUND,
@@ -38,6 +30,13 @@ class ConnectionPool {
         message: constants.STORE.ERROR_MSG.STORAGE_TYPE_NOT_FOUND,
       },
     ]);
+
+    this.client = null;
+    this.host = host || packageJsonDbConfig.host;
+    this.port = port || packageJsonDbConfig.port;
+    this.dbName = dbName || packageJsonDbConfig.dbName;
+    this.dbUser = dbUser;
+    this.dbPassword = dbPassword;
 
     switch (storeType) {
       case constants.STORE.TYPES.MONGO_DB:
@@ -48,6 +47,7 @@ class ConnectionPool {
           this.client = mongojs(`mongodb://${this.host}:${this.port}/${this.dbName}`, [],
             packageJsonDbConfig.options);
         }
+
         break;
       case constants.STORE.TYPES.POSTGRES:
         if (this.dbUser && this.dbPassword) {
@@ -57,6 +57,7 @@ class ConnectionPool {
           this.client = new Sequelize(`postgres://${this.host}:${this.port}/${this.dbName}`,
             packageJsonDbConfig.options);
         }
+
         break;
       default:
         throw(err);

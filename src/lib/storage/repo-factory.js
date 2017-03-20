@@ -10,7 +10,7 @@ const stores = {
 };
 
 /**
- * A factory to manufacture a repository, which implement basic and advanced store interface
+ * A factory to manufacture a repository, which implements basic and advanced store interface
  * for supported store type.
  */
 class RepoFactory {

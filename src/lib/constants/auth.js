@@ -6,7 +6,7 @@ exports.ERROR_NAMES = {
   PAYER_EMAIL_NOT_FOUND: 'PAYER_EMAIL_NOT_EXISTED',
   USER_EMAIL_NOT_FOUND: 'EMAIL_NOT_EXISTED',
   ALREADY_LINK_TO_STRIPE_ACC: 'ALREADY_LINK_TO_STRIPE_ACC',
-  REFER_CODE_NOT_FOUND: 'REFER_CODE_NOT_FOUND',
+  REFERRAL_CODE_NOT_FOUND: 'REFERRAL_CODE_NOT_FOUND',
   FULL_NAME_FIELD_IS_EMPTY: 'FULL_NAME_FIELD_IS_EMPTY',
   EMAIL_FIELD_IS_EMPTY: 'EMAIL_FIELD_IS_EMPTY',
   PASSWORD_FIELD_IS_EMPTY: 'PASSWORD_FIELD_IS_EMPTY',
@@ -20,7 +20,7 @@ exports.ERROR_MSG = {
   PAYER_EMAIL_NOT_FOUND: 'The email associated with the payment is not found.',
   USER_EMAIL_NOT_FOUND: 'The provided email is not found in database.',
   ALREADY_LINK_TO_STRIPE_ACC: 'The provided user has already linked to Stripe account.',
-  REFER_CODE_NOT_FOUND: 'The provided refer code is not found in database.',
+  REFERRAL_CODE_NOT_FOUND: 'The provided refer code is not found in database.',
 };
 
 exports.CORS = {

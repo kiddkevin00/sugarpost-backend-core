@@ -7,8 +7,8 @@ const packageJson = require('../../../../package.json');
 const storeType = constants.STORE.TYPES.POSTGRES;
 const packageJsonDbConfig = packageJson.config.databases[storeType];
 
-/*
- * This class should only contains static members.
+/**
+ * This class implements of the base store interface.  It should only contain static members.
  */
 class PostgresStore extends BaseStore {
 
@@ -62,9 +62,11 @@ class PostgresStore extends BaseStore {
     return connection.client.sync({ force: true });
   }
 
-  static createDb(host = packageJsonDbConfig.host,
-                  port = packageJsonDbConfig.port,
-                  dbName = packageJsonDbConfig.dbName) {
+  static createDb(
+    host = packageJsonDbConfig.host,
+    port = packageJsonDbConfig.port,
+    dbName = packageJsonDbConfig.dbName
+  ) {
     const sequelize = new Sequelize(`postgres://${host}:${port}`, packageJsonDbConfig.options);
 
     return sequelize.query(`CREATE DATABASE "${dbName}"`);
