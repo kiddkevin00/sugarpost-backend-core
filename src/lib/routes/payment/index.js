@@ -1,4 +1,4 @@
-const Controller = require('../../controllers/payment-controller');
+const Controller = require('../../controllers/payment.controller');
 const { Router } = require('express');
 
 const router = Router();

@@ -12,18 +12,14 @@ function authMiddleware(req, res, next) {
   try {
     const decodedJwt = jwt.verify(jwtToken, jwtSecret, { jwtIssuer, jwtAudience });
 
-    /* eslint-disable no-param-reassign */
-    req.user = {
-      sub: decodedJwt.sub,
-      _id: decodedJwt._id,
-      type: decodedJwt.type,
-      email: decodedJwt.email,
-      fullName: decodedJwt.fullName,
-      referralAmount: decodedJwt.referralAmount,
-      referCode: decodedJwt.referCode,
-      stripeCustomerId: decodedJwt.stripeCustomerId,
-    };
-    /* eslint-enable */
+    delete decodedJwt.iat;
+    delete decodedJwt.nbf;
+    delete decodedJwt.exp;
+    delete decodedJwt.aud;
+    delete decodedJwt.iss;
+    delete decodedJwt.sub;
+
+    req.user = decodedJwt; // eslint-disable-line no-param-reassign
 
     return next();
   } catch (_err) {

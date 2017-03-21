@@ -1,4 +1,4 @@
-const DatabaseService = require('../services/database-service');
+const DatabaseService = require('../services/database.service');
 const ProcessSate = require('../process-state/');
 const Validator = require('../utility/precondition-validator');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
@@ -20,7 +20,7 @@ class UserController {
   static updateUserInfo(req, res) {
     requestCount += 1;
 
-    const email = req.query.email;
+    const email = req.user.email;
     const fullName = req.body.fullName;
     const password = req.body.password;
 
@@ -51,16 +51,8 @@ class UserController {
 
     return UserController._handleRequest(state, res, DatabaseService, updateProfileStrategy)
       .then((result) => {
-        const jwtToken = jwt.sign({
-          sub: req.user.sub,
-          _id: req.user._id,
-          type: req.user.type,
-          email: req.user.email,
-          fullName: state.fullName,
-          referralAmount: req.user.referralAmount,
-          referCode: req.user.referCode,
-          stripeCustomerId: req.user.stripeCustomerId,
-        }, jwtSecret, {
+        const newJwtPayload = Object.assign({}, req.user, { fullName: state.fullName });
+        const jwtToken = jwt.sign(newJwtPayload, jwtSecret, {
           expiresIn: jwtExpiresIn,
           notBefore: jwtNotBefore,
           issuer: jwtIssuer,

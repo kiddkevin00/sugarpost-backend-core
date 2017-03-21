@@ -1,4 +1,4 @@
-const DatabaseService = require('../services/database-service');
+const DatabaseService = require('../services/database.service');
 const ProcessSate = require('../process-state/');
 const Validator = require('../utility/precondition-validator');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
@@ -50,6 +50,7 @@ class PaymentController {
     let userId;
     let userFullName;
     let stripeCustomerId;
+    let stripeSubscriptionId;
     let partialNewUserInfo;
     let referralUserId;
 
@@ -155,7 +156,8 @@ class PaymentController {
           .create({ items, tax_percent, prorate, customer: stripeCustomerId });
       })
       .then((subscription) => {
-        const id = subscription.id;
+        stripeSubscriptionId = subscription.id;
+
         const date = new Date(subscription.current_period_start * 1000);
         const day = date.getDate();
         const month = date.getMonth();
@@ -172,10 +174,11 @@ class PaymentController {
         }
 
         // eslint-disable-next-line camelcase
-        return stripe.subscriptions.update(id, { trial_end, prorate });
+        return stripe.subscriptions.update(stripeSubscriptionId, { trial_end, prorate });
       })
       .then(() => mailchimp.post({
-        path: `/lists/${mailChimpListId}/members/`,
+        path: '/lists/{mailChimpListId}/members/',
+        path_params: { mailChimpListId },
         body: {
           email_address: state.email,
           status: 'subscribed',
@@ -187,6 +190,7 @@ class PaymentController {
       .then(() => {
         partialNewUserInfo = {
           stripeCustomerId,
+          stripeSubscriptionId,
           type: constants.AUTH.USER_TYPES.PAID,
           referCode: couponCode.generate({
             parts: 1,
@@ -242,16 +246,10 @@ class PaymentController {
             });
         }
 
-        const jwtToken = jwt.sign({
+        const newJwtPayload = Object.assign({}, req.user, partialNewUserInfo, {
           sub: `${partialNewUserInfo.type}:${req.user.email}:${req.user._id}`,
-          _id: req.user._id,
-          type: partialNewUserInfo.type,
-          email: req.user.email,
-          fullName: req.user.fullName,
-          referralAmount: req.user.referralAmount,
-          referCode: partialNewUserInfo.referCode,
-          stripeCustomerId: partialNewUserInfo.stripeCustomerId,
-        }, jwtSecret, {
+        });
+        const jwtToken = jwt.sign(newJwtPayload, jwtSecret, {
           expiresIn: jwtExpiresIn,
           notBefore: jwtNotBefore,
           issuer: jwtIssuer,
