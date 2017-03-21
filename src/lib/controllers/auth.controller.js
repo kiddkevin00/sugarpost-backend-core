@@ -167,14 +167,15 @@ class AuthController {
         return AuthController._handleRequest(state, res, DatabaseService, signupStrategy);
       })
       .then((result) => {
-        const jwtToken = jwt.sign({
+        const jwtPayload = {
           sub: `${result.type}:${result.email}:${result._id}`,
           _id: result._id,
           type: result.type,
           email: result.email,
           fullName: result.fullName,
           referralAmount: result.referralAmount,
-        }, jwtSecret, {
+        };
+        const jwtToken = jwt.sign(jwtPayload, jwtSecret, {
           expiresIn: jwtExpiresIn,
           notBefore: jwtNotBefore,
           issuer: jwtIssuer,

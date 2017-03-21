@@ -30,18 +30,14 @@ class PaymentController {
   static proceed(req, res) {
     requestCount += 1;
 
-    const email = req.body.email;
+    const _id = req.user._id;
+    const email = req.user.email;
     const referCode = req.body.referCode;
     const source = req.body.tokenId;
 
-    Validator.shouldNotBeEmpty(email);
     Validator.shouldNotBeEmpty(source);
 
-    const options = {
-      referCode,
-      source,
-      email: email.trim() && email.toLowerCase(),
-    };
+    const options = { _id, email, referCode, source };
     const context = { containerId, requestCount };
     const state = ProcessSate.create(options, context);
     const withoutReferCode = !state.referCode ||
@@ -99,7 +95,7 @@ class PaymentController {
           operation: {
             type: constants.STORE.OPERATIONS.SELECT,
             data: [
-              { email: state.email },
+              { _id: state._id },
             ],
           },
           tableName: constants.STORE.TABLE_NAMES.USER,

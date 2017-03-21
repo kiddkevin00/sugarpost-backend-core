@@ -6,6 +6,7 @@ class ProcessState {
     this[stateContext] = {};
 
     this[stateContext].context = { containerId, requestCount };
+    this[stateContext]._id = options._id;
     this[stateContext].email = options.email;
     this[stateContext].password = options.password;
     this[stateContext].fullName = options.fullName;
@@ -15,6 +16,10 @@ class ProcessState {
 
   get context() {
     return this[stateContext].context;
+  }
+
+  get _id() {
+    return this[stateContext]._id;
   }
 
   get email() {

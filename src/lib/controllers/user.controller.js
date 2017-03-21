@@ -20,16 +20,15 @@ class UserController {
   static updateUserInfo(req, res) {
     requestCount += 1;
 
-    const email = req.user.email;
+    const _id = req.user._id;
     const fullName = req.body.fullName;
     const password = req.body.password;
 
-    Validator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
     Validator.shouldNotBeEmpty(fullName, constants.AUTH.FULL_NAME_FIELD_IS_EMPTY);
     Validator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
 
     const options = {
-      email: email.trim() && email.toLowerCase(),
+      _id,
       fullName: fullName && fullName.trim(),
       password: password && password.trim(),
     };
@@ -40,7 +39,7 @@ class UserController {
       operation: {
         type: constants.STORE.OPERATIONS.UPDATE,
         data: [
-          { email: state.email },
+          { _id: state._id },
           {
             fullName: state.fullName,
             passwordHash: state.password },
