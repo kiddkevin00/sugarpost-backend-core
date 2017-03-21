@@ -56,10 +56,12 @@ class SubscriptionController {
           tableName: constants.STORE.TABLE_NAMES.USER,
         };
 
-        return SubscriptionController._handleRequest(state, res, DatabaseService, updateProfileStrategy);
+        return SubscriptionController
+          ._handleRequest(state, res, DatabaseService, updateProfileStrategy);
       })
       .then(() => {
-        const response = new StandardResponseWrapper([{ success: true }], constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
+        const response = new StandardResponseWrapper([{ success: true }],
+          constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
           .json(response.format);
