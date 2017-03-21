@@ -243,7 +243,7 @@ class PaymentController {
         }
 
         const jwtToken = jwt.sign({
-          sub: req.user.sub,
+          sub: `${partialNewUserInfo.type}:${req.user.email}:${req.user._id}`,
           _id: req.user._id,
           type: partialNewUserInfo.type,
           email: req.user.email,

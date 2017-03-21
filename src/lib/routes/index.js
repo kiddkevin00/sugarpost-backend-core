@@ -4,6 +4,7 @@
 
 const authRoutes = require('./auth/');
 const subscriberRoutes = require('./subscriber/');
+const userRoutes = require('./user/');
 const paymentRoutes = require('./payment/');
 const authCheckMiddleware = require('../utility/auth-check-middleware');
 const constants = require('../constants/');
@@ -50,6 +51,7 @@ function setupApiRoutes() {
 
   router.use('/auth', authRoutes);
   router.use('/subscriber', [authCheckMiddleware], subscriberRoutes);
+  router.use('/user', [authCheckMiddleware], userRoutes);
   router.use('/payment', [authCheckMiddleware], paymentRoutes);
 
   return router;

@@ -14,6 +14,7 @@ function authMiddleware(req, res, next) {
 
     /* eslint-disable no-param-reassign */
     req.user = {
+      sub: decodedJwt.sub,
       _id: decodedJwt._id,
       type: decodedJwt.type,
       email: decodedJwt.email,
