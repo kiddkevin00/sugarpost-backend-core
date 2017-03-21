@@ -12,6 +12,7 @@ class ProcessState {
     this[stateContext].fullName = options.fullName;
     this[stateContext].referCode = options.referCode;
     this[stateContext].source = options.source;
+    this[stateContext].stripeSubscriptionId = options.stripeSubscriptionId;
   }
 
   get context() {
@@ -40,6 +41,10 @@ class ProcessState {
 
   get source() {
     return this[stateContext].source;
+  }
+
+  get stripeSubscriptionId() {
+    return this[stateContext].stripeSubscriptionId;
   }
 
   static create(options, context) {

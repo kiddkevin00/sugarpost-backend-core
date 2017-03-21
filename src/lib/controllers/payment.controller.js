@@ -8,6 +8,7 @@ const stripeApi = require('stripe');
 const Mailchimp = require('mailchimp-api-v3');
 const couponCode = require('coupon-code');
 const jwt = require('jsonwebtoken');
+const mongojs = require('mongojs');
 const Promise = require('bluebird');
 
 const stripe = stripeApi(constants.CREDENTIAL.STRIPE.PRIVATE_KEY);
@@ -95,7 +96,7 @@ class PaymentController {
           operation: {
             type: constants.STORE.OPERATIONS.SELECT,
             data: [
-              { _id: state._id },
+              { _id: mongojs.ObjectId(state._id) },
             ],
           },
           tableName: constants.STORE.TABLE_NAMES.USER,
@@ -199,7 +200,7 @@ class PaymentController {
           operation: {
             type: constants.STORE.OPERATIONS.UPDATE,
             data: [
-              { _id: userId },
+              { _id: mongojs.ObjectId(userId) },
               partialNewUserInfo,
             ],
           },
@@ -215,7 +216,7 @@ class PaymentController {
             operation: {
               type: constants.STORE.OPERATIONS.UPDATE,
               data: [
-                { _id: referralUserId },
+                { _id: mongojs.ObjectId(referralUserId) },
                 { $inc: { referralAmount: 1 } },
                 true,
               ],

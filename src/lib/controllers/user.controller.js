@@ -5,6 +5,7 @@ const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
 const jwt = require('jsonwebtoken');
+const mongojs = require('mongojs');
 const Promise = require('bluebird');
 
 const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
@@ -39,7 +40,7 @@ class UserController {
       operation: {
         type: constants.STORE.OPERATIONS.UPDATE,
         data: [
-          { _id: state._id },
+          { _id: mongojs.ObjectId(state._id) },
           {
             fullName: state.fullName,
             passwordHash: state.password },
