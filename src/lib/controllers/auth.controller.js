@@ -1,4 +1,4 @@
-const DatabaseService = require('../services/database-service');
+const DatabaseService = require('../services/database.service');
 const ProcessSate = require('../process-state/');
 const EmailSender = require('../utility/email-sender');
 const Validator = require('../utility/precondition-validator');
@@ -167,14 +167,15 @@ class AuthController {
         return AuthController._handleRequest(state, res, DatabaseService, signupStrategy);
       })
       .then((result) => {
-        const jwtToken = jwt.sign({
+        const jwtPayload = {
           sub: `${result.type}:${result.email}:${result._id}`,
           _id: result._id,
           type: result.type,
           email: result.email,
           fullName: result.fullName,
           referralAmount: result.referralAmount,
-        }, jwtSecret, {
+        };
+        const jwtToken = jwt.sign(jwtPayload, jwtSecret, {
           expiresIn: jwtExpiresIn,
           notBefore: jwtNotBefore,
           issuer: jwtIssuer,
@@ -265,26 +266,27 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, loginStrategy)
       .then((result) => {
-        let statusCode;
         let response;
+        let statusCode;
 
         if (Array.isArray(result) && (result.length === 1)) {
           const user = result[0];
 
-          statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
+          delete user.passwordHash;
+          delete user.isSuspended;
+          delete user.version;
+          delete user.systemData;
+
           response = {
             success: true,
-            detail: user, // [TODO] Filters unneeded fields.
+            detail: user,
           };
+          statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
 
-          const jwtToken = jwt.sign({
+          const jwtPayload = Object.assign({}, user, {
             sub: `${user.type}:${user.email}:${user._id}`,
-            _id: user._id,
-            type: user.type,
-            email: user.email,
-            fullName: user.fullName,
-            referralAmount: user.referralAmount,
-          }, jwtSecret, {
+          });
+          const jwtToken = jwt.sign(jwtPayload, jwtSecret, {
             expiresIn: jwtExpiresIn,
             notBefore: jwtNotBefore,
             issuer: jwtIssuer,
@@ -298,11 +300,11 @@ class AuthController {
             signed: false,
           });
         } else {
-          statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
           response = {
             success: false,
             detail: result,
           };
+          statusCode = constants.SYSTEM.HTTP_STATUS_CODES.OK;
         }
         const standardResponse = new StandardResponseWrapper([response],
           constants.SYSTEM.RESPONSE_NAMES.LOGIN);

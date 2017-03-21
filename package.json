@@ -1,6 +1,6 @@
 {
   "name": "bulletin-board-system-backend",
-  "version": "1.9.9",
+  "version": "1.10.0",
   "description": "A generic RESTful API backend with all major database connection/ops interfaces implemented.",
   "main": "./src/lib/app.js",
   "bin": {
@@ -82,6 +82,7 @@
   },
   "dependencies": {
     "bluebird": "^3.4.6",
+    "blueimp-md5": "^2.7.0",
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",

@@ -11,7 +11,7 @@ exports.STRIPE = {
   PLAN_ID: '4-desserts-per-month',
   QUANTITY: 1,
   RECURRING_BILLING_DATE: 24,
-  REFERRAL_CREDIT: 206,
+  REFERRAL_CREDIT: 272,
 };
 
 exports.MAIL_CHIMP = {

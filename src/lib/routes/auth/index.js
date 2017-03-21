@@ -1,4 +1,4 @@
-const Controller = require('../../controllers/auth-controller');
+const Controller = require('../../controllers/auth.controller');
 const authCheckMiddleware = require('../../utility/auth-check-middleware');
 const { Router } = require('express');
 

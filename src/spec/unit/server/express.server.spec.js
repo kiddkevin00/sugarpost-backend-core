@@ -1,4 +1,4 @@
-const setupExpressServer = require('../../../lib/servers/express-server');
+const setupExpressServer = require('../../../lib/servers/express.server');
 
 describe('Express server', function () {
   let expressApp;

@@ -1,4 +1,4 @@
-const MongoStore = require('../../../../lib/storage/stores/mongo-store');
+const MongoStore = require('../../../../lib/storage/stores/mongo.store');
 
 describe('Mongo (low-level) store', function () {
   let conn;
