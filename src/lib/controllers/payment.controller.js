@@ -118,7 +118,10 @@ class PaymentController {
           ]);
 
           throw err;
-        } else if (result[0].stripeCustomerId) {
+        } else if (
+          result[0].type === constants.AUTH.USER_TYPES.PAID ||
+          result[0].type === constants.AUTH.USER_TYPES.CANCELLED
+        ) {
           err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,

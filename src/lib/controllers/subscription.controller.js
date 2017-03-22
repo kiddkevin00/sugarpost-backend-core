@@ -7,12 +7,18 @@ const constants = require('../constants/');
 const stripeApi = require('stripe');
 const Mailchimp = require('mailchimp-api-v3');
 const md5 = require('blueimp-md5');
+const jwt = require('jsonwebtoken');
 const mongojs = require('mongojs');
 const Promise = require('bluebird');
 
 const stripe = stripeApi(constants.CREDENTIAL.STRIPE.PRIVATE_KEY);
 const mailchimp = new Mailchimp(constants.CREDENTIAL.MAIL_CHIMP.API_KEY);
 const mailChimpListId = constants.CREDENTIAL.MAIL_CHIMP.SUBSCRIBED_LIST_ID;
+const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
+const jwtAudience = constants.CREDENTIAL.JWT.AUDIENCE;
+const jwtIssuer = constants.CREDENTIAL.JWT.ISSUER;
+const jwtExpiresIn = constants.CREDENTIAL.JWT.EXPIRES_IN;
+const jwtNotBefore = constants.CREDENTIAL.JWT.NOT_BEFORE;
 const containerId = process.env.HOSTNAME;
 let requestCount = 0;
 
@@ -60,6 +66,24 @@ class SubscriptionController {
           ._handleRequest(state, res, DatabaseService, updateProfileStrategy);
       })
       .then(() => {
+        const newJwtPayload = Object.assign({}, req.user,  {
+          sub: `${constants.AUTH.USER_TYPES.CANCELLED}:${req.user.email}:${req.user._id}`,
+          type: constants.AUTH.USER_TYPES.CANCELLED,
+        });
+        const jwtToken = jwt.sign(newJwtPayload, jwtSecret, {
+          expiresIn: jwtExpiresIn,
+          notBefore: jwtNotBefore,
+          issuer: jwtIssuer,
+          audience: jwtAudience,
+        });
+
+        res.cookie('jwt', jwtToken, {
+          httpOnly: true,
+          secure: false,
+          path: '/api',
+          signed: false,
+        });
+
         const response = new StandardResponseWrapper([{ success: true }],
           constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
 

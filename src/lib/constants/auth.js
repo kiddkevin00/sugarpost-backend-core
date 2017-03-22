@@ -40,4 +40,5 @@ exports.USER_TYPES = {
   CANCELLED: 'cancelled',
   VENDOR: 'vendor',
   ADMIN: 'admin',
+  INFLUENCER: 'influencer',
 };
