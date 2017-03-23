@@ -401,9 +401,16 @@ class AuthController {
               <h4>Here is your new password ${newPassword}</h4>
               <p>Please follow the instruction below to change back to your preferred password.</p>
               <ol>
-                  <li>Visit https://www.mysugarpost.com/register/login</li>
-                  <li>Input the new password that you received in this e-mail above and log in.</li>
-                  <li>Under Account tab, Change Your Password to what you would like your new password to be.</li>
+                  <li>
+                    Visit https://www.mysugarpost.com/register/login
+                  </li>
+                  <li>
+                    Input the new password that you received in this e-mail above and log in.
+                  </li>
+                  <li>
+                    Under Account tab, Change Your Password to what you would like your new 
+                    password to be.
+                  </li>
               </ol>
               <br />
               <p>Thank you,</p>
