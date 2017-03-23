@@ -1,6 +1,5 @@
 const DatabaseService = require('../services/database.service');
 const ProcessSate = require('../process-state/');
-const Validator = require('../utility/precondition-validator');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
@@ -55,7 +54,7 @@ class SubscriptionController {
             data: [
               { _id: mongojs.ObjectId(state._id) },
               {
-                type: constants.AUTH.USER_TYPES.CANCELLED,
+                type: constants.SYSTEM.USER_TYPES.CANCELLED,
               },
             ],
           },
@@ -67,8 +66,8 @@ class SubscriptionController {
       })
       .then(() => {
         const newJwtPayload = Object.assign({}, req.user,  {
-          sub: `${constants.AUTH.USER_TYPES.CANCELLED}:${req.user.email}:${req.user._id}`,
-          type: constants.AUTH.USER_TYPES.CANCELLED,
+          sub: `${constants.SYSTEM.USER_TYPES.CANCELLED}:${req.user.email}:${req.user._id}`,
+          type: constants.SYSTEM.USER_TYPES.CANCELLED,
         });
         const jwtToken = jwt.sign(newJwtPayload, jwtSecret, {
           expiresIn: jwtExpiresIn,

@@ -145,7 +145,7 @@ class AuthController {
             type: constants.STORE.OPERATIONS.INSERT,
             data: [
               {
-                type: constants.AUTH.USER_TYPES.UNPAID,
+                type: constants.SYSTEM.USER_TYPES.UNPAID,
                 email: state.email,
                 passwordHash: state.password, // [TODO] Should store hashed password instead.
                 fullName: state.fullName,

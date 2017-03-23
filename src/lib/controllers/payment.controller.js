@@ -119,8 +119,8 @@ class PaymentController {
 
           throw err;
         } else if (
-          result[0].type === constants.AUTH.USER_TYPES.PAID ||
-          result[0].type === constants.AUTH.USER_TYPES.CANCELLED
+          result[0].type === constants.SYSTEM.USER_TYPES.PAID ||
+          result[0].type === constants.SYSTEM.USER_TYPES.CANCELLED
         ) {
           err = new StandardErrorWrapper([
             {
@@ -165,7 +165,7 @@ class PaymentController {
         const prorate = false;
         let trial_end; // eslint-disable-line camelcase
 
-        if (day <= stripeRecurringBillingDate + 1) {
+        if (day <= stripeRecurringBillingDate) {
           // eslint-disable-next-line camelcase
           trial_end = new Date(year, month + 1, stripeRecurringBillingDate).getTime() / 1000;
         } else {
@@ -191,7 +191,7 @@ class PaymentController {
         partialNewUserInfo = {
           stripeCustomerId,
           stripeSubscriptionId,
-          type: constants.AUTH.USER_TYPES.PAID,
+          type: constants.SYSTEM.USER_TYPES.PAID,
           referCode: couponCode.generate({
             parts: 1,
             partLen: 6,
