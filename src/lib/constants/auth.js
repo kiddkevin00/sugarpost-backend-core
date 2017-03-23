@@ -34,10 +34,3 @@ exports.CORS = {
   ],
 };
 
-exports.USER_TYPES = {
-  UNPAID: 'unpaid',
-  PAID: 'paid',
-  CANCELLED: 'cancelled',
-  VENDOR: 'vendor',
-  ADMIN: 'admin',
-};

@@ -1,5 +1,8 @@
+// BEGIN - THIS PART SHOULD BE CONSISTENT WITH FRONTEND
+
 const sources = {
   BULLETIN_BOARD_SYSTEM: 'bulletin-board-system',
+  SUGARPOST_WEB_FRONTEND: 'sugarpost-web-frontend',
 };
 const httpStatusCodes = {
   OK: 200,
@@ -14,6 +17,23 @@ const httpStatusCodes = {
 exports.SOURCES = sources;
 
 exports.HTTP_STATUS_CODES = httpStatusCodes;
+
+exports.USER_TYPES = {
+  UNPAID: 'Not Subscribed',
+  PAID: 'Paid',
+  CANCELLED: 'Cancelled',
+  VENDOR: 'Vendor',
+  ADMIN: 'Admin',
+  INFLUENCER: 'Influencer',
+};
+
+// END - THIS PART SHOULD BE CONSISTENT WITH FRONTEND
+
+exports.COMMON = {
+  CURRENT_SOURCE: sources.BULLETIN_BOARD_SYSTEM,
+};
+
+exports.DEFAULT_CONFIG = {};
 
 // This is the only place aggregating all error codes.
 exports.ERROR_CODES = Object.assign({}, httpStatusCodes, {
@@ -50,12 +70,4 @@ exports.RESPONSE_NAMES = {
   UPDATE_PROFILE: 'UPDATE_PROFILE',
   AUTH_CHECK: 'AUTH_CHECK',
   PAYMENT: 'PAYMENT',
-};
-
-exports.COMMON = {
-  CURRENT_SOURCE: sources.BULLETIN_BOARD_SYSTEM,
-};
-
-exports.DEFAULT_CONFIG = {
-
 };
