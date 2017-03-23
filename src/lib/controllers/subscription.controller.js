@@ -65,7 +65,7 @@ class SubscriptionController {
           ._handleRequest(state, res, DatabaseService, updateProfileStrategy);
       })
       .then(() => {
-        const newJwtPayload = Object.assign({}, req.user,  {
+        const newJwtPayload = Object.assign({}, req.user, {
           sub: `${constants.SYSTEM.USER_TYPES.CANCELLED}:${req.user.email}:${req.user._id}`,
           type: constants.SYSTEM.USER_TYPES.CANCELLED,
         });
