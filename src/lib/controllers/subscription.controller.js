@@ -12,7 +12,8 @@ const Promise = require('bluebird');
 
 const stripe = stripeApi(constants.CREDENTIAL.STRIPE.PRIVATE_KEY);
 const mailchimp = new Mailchimp(constants.CREDENTIAL.MAIL_CHIMP.API_KEY);
-const mailChimpListId = constants.CREDENTIAL.MAIL_CHIMP.SUBSCRIBED_LIST_ID;
+const mailChimpSubscribedListId = constants.CREDENTIAL.MAIL_CHIMP.SUBSCRIBED_LIST_ID;
+const mailChimpCancelledListId = constants.CREDENTIAL.MAIL_CHIMP.CANCELLED_LIST_ID;
 const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
 const jwtAudience = constants.CREDENTIAL.JWT.AUDIENCE;
 const jwtIssuer = constants.CREDENTIAL.JWT.ISSUER;
@@ -29,6 +30,7 @@ class SubscriptionController {
     const options = {
       _id: req.user._id,
       email: req.user.email,
+      fullName: req.user.fullName,
       stripeSubscriptionId: req.user.stripeSubscriptionId,
     };
     const context = { containerId, requestCount };
@@ -36,15 +38,28 @@ class SubscriptionController {
 
     return mailchimp
       .patch({
-        path: '/lists/{mailChimpListId}/members/{hashedEmail}',
+        path: '/lists/{mailChimpSubscribedListId}/members/{hashedEmail}',
         path_params: {
-          mailChimpListId,
+          mailChimpSubscribedListId,
           hashedEmail: md5(state.email),
         },
         body: {
           status: 'unsubscribed',
         },
       })
+      .then(() => mailchimp.post({
+        path: '/lists/{mailChimpCancelledListId}/members/',
+        path_params: {
+          mailChimpCancelledListId,
+        },
+        body: {
+          email_address: state.email,
+          status: 'subscribed',
+          merge_fields: {
+            FNAME: state.fullName,
+          },
+        },
+      }))
       .then(() => stripe.subscriptions.del(state.stripeSubscriptionId, { at_period_end: true }))
       .then(() => {
         const updateProfileStrategy = {
