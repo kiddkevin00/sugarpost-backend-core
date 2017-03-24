@@ -1,5 +1,7 @@
-const ConnectionPool = require('../../../lib/storage/connection-pool');
+const storage = require('../../../lib/storage/');
 const constants = require('../../../lib/constants/');
+
+const ConnectionPool = storage.ConnectionPool;
 
 describe('Connection pool', function () {
   let connection;

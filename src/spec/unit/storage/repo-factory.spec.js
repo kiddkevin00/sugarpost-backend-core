@@ -1,6 +1,8 @@
-const RepoFactory = require('../../../lib/storage/repo-factory');
+const storage = require('../../../lib/storage/');
 const MongoStore = require('../../../lib/storage/stores/mongo.store');
 const constants = require('../../../lib/constants/');
+
+const RepoFactory = storage.RepoFactory;
 
 describe('Repo factory', function () {
   let repo;

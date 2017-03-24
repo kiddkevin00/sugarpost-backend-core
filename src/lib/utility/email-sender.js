@@ -4,7 +4,7 @@ class EmailSender {
 
   constructor(senderService, senderEmail) {
     // eslint-disable-next-line max-len
-    // https://developers.google.com/oauthplayground/?code=4/H5QyIJiiYzgLO2HKMMN54dMtDG8WW-zrWigW87uWKtI#
+    // Google API Setup URL: https://developers.google.com/oauthplayground/?code=4/H5QyIJiiYzgLO2HKMMN54dMtDG8WW-zrWigW87uWKtI#
     this.transporter = nodemailer.createTransport('SMTP', ({
       service: senderService,
       auth: {

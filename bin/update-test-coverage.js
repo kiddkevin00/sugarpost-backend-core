@@ -17,7 +17,7 @@ const order = [
 
 console.log('[Coverage Update] Updating threshold(s) for test coverage.');
 
-// eslint-disable-next-line  consistent-return
+// eslint-disable-next-line consistent-return
 exec('npm run-script coverage:report', (error, stdOut, stdErr) => {
   if (error) {
     console.error(`[Coverage Update Error] ${stdErr}.`);

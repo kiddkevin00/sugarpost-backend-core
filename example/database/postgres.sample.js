@@ -1,11 +1,15 @@
-const ConnectionPool = require('../../src/lib/storage/connection-pool');
-const RepoFactory = require('../../src/lib/storage/repo-factory');
+#!/usr/bin/env node
+
+'use strict'; // eslint-disable-line strict, lines-around-directive
+
+const storage = require('../../src/lib/storage/');
 const constants = require('../../src/lib/constants/index');
 const Sequelize = require('sequelize'); // [TODO] Should not have to require `Sequelize` npm.
 const Chance = require('chance');
 const Promise = require('bluebird');
 
-let conn;
+const ConnectionPool = storage.ConnectionPool;
+const RepoFactory = storage.RepoFactory;
 const repo = RepoFactory.manufacture(constants.STORE.TYPES.POSTGRES);
 const tableName = 'testPerson';
 const schema = {
@@ -34,8 +38,7 @@ const schema = {
 };
 const seedDataLength = 5;
 const chance = new Chance();
-
-conn = new ConnectionPool(constants.STORE.TYPES.POSTGRES);
+let conn;
 
 repo.createDb()
   .then(() => {
@@ -74,7 +77,6 @@ repo.createDb()
 function validateResult(type, rows) {
   console.log(`Validate ${type} result - ${JSON.stringify(rows, null, 2)}.`);
 }
-
 function printErrorMsg(err) {
   console.log(`Something breaks - ${JSON.stringify(err, null, 2)}.`);
 }
