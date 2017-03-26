@@ -45,6 +45,8 @@ class PaymentController {
     const state = ProcessSate.create(options, context);
     const withoutReferCode = !state.referCode ||
       (typeof state.referCode === 'string' && state.referCode.trim().length === 0);
+    const validatedReferCode = !withoutReferCode &&
+      couponCode.validate(state.referCode, { parts: 1, partLen: 6 });
     let account_balance; // eslint-disable-line camelcase
     let userId;
     let userFullName;
@@ -55,9 +57,6 @@ class PaymentController {
 
     return Promise
       .try(() => {
-        const validatedReferCode = !withoutReferCode &&
-          couponCode.validate(state.referCode, { parts: 1, partLen: 6 });
-
         if (validatedReferCode) {
           const referCodeStrategy = {
             storeType: constants.STORE.TYPES.MONGO_DB,
@@ -198,6 +197,7 @@ class PaymentController {
             parts: 1,
             partLen: 6,
           }),
+          usedReferCode: validatedReferCode,
         };
 
         const linkAccountStrategy = {
@@ -214,6 +214,13 @@ class PaymentController {
 
         return PaymentController._handleRequest(state, res, DatabaseService, linkAccountStrategy);
       })
+      .then(() => mailchimp.delete({
+        path: '/lists/{mailChimpSignupListId}/members/{hashedEmail}',
+        path_params: {
+          mailChimpSignupListId,
+          hashedEmail: md5(state.email),
+        },
+      }))
       .then(() => {
         if (!withoutReferCode) {
           const updateRefererStrategy = {
@@ -229,50 +236,12 @@ class PaymentController {
             tableName: constants.STORE.TABLE_NAMES.USER,
           };
 
-          PaymentController._handleRequest(state, res, DatabaseService, updateRefererStrategy)
-            .catch((_err) => {
-              const err = new StandardErrorWrapper(_err);
-
-              err.append({
-                code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-                name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
-                source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-                message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
-              });
-
-              return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
-                .json(err.format({
-                  containerId: state.context.containerId,
-                  requestCount: state.context.requestCount,
-                }));
-            });
+          return PaymentController._handleRequest(state, res, DatabaseService,
+            updateRefererStrategy);
         }
-
-        mailchimp
-          .delete({
-            path: '/lists/{mailChimpSignupListId}/members/{hashedEmail}',
-            path_params: {
-              mailChimpSignupListId,
-              hashedEmail: md5(state.email),
-            },
-          })
-          .catch((_err) => {
-            const err = new StandardErrorWrapper(_err);
-
-            err.append({
-              code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-              name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
-              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
-            });
-
-            return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
-              .json(err.format({
-                containerId: state.context.containerId,
-                requestCount: state.context.requestCount,
-              }));
-          });
-
+        return Promise.resolve();
+      })
+      .then(() => {
         const newJwtPayload = Object.assign({}, req.user, partialNewUserInfo, {
           sub: `${partialNewUserInfo.type}:${req.user.email}:${req.user._id}`,
         });
