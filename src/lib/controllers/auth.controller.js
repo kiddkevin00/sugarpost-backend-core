@@ -89,9 +89,9 @@ class AuthController {
     const email = req.body.email;
     const password = req.body.password;
 
-    Validator.shouldNotBeEmpty(fullName, constants.AUTH.FULL_NAME_FIELD_IS_EMPTY);
-    Validator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
-    Validator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(fullName, constants.AUTH.ERROR_NAMES.FULL_NAME_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(email, constants.AUTH.ERROR_NAMES.EMAIL_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(password, constants.AUTH.ERROR_NAMES.PASSWORD_FIELD_IS_EMPTY);
 
     const options = {
       fullName: fullName.trim(),
@@ -240,8 +240,8 @@ class AuthController {
     const email = req.body.email;
     const password = req.body.password;
 
-    Validator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
-    Validator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(email, constants.AUTH.ERROR_NAMES.EMAIL_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(password, constants.AUTH.ERROR_NAMES.PASSWORD_FIELD_IS_EMPTY);
 
     const options = {
       email: email.trim() && req.body.email.toLowerCase(),
@@ -333,15 +333,15 @@ class AuthController {
   static logout(req, res) {
     requestCount += 1;
 
-    const response = new StandardResponseWrapper([{ success: true }],
-      constants.SYSTEM.RESPONSE_NAMES.LOGOUT);
-
     res.cookie('jwt', '', {
       httpOnly: true,
       secure: false,
       path: '/api',
       signed: false,
     });
+
+    const response = new StandardResponseWrapper([{ success: true }],
+      constants.SYSTEM.RESPONSE_NAMES.LOGOUT);
 
     return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
       .json(response.format);
@@ -352,7 +352,7 @@ class AuthController {
 
     const email = req.body.email;
 
-    Validator.shouldNotBeEmpty(email, constants.AUTH.EMAIL_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(email, constants.AUTH.ERROR_NAMES.EMAIL_FIELD_IS_EMPTY);
 
     const options = {
       email: email.trim() && email.toLowerCase(),
@@ -394,22 +394,22 @@ class AuthController {
         const emailSender = new EmailSender('Gmail', 'administrator@mysugarpost.com');
         const from = '"Sugarpost Team" <administrator@mysugarpost.com>';
         const to = state.email;
-        const subject = '[Sugarpost] Reset Password';
+        const subject = 'How to reset your Sugarpost account\'s Password';
         const html = `
           <div>
               <p>Dear ${result[0].fullName},</p>
               <h4>Here is your new password ${newPassword}</h4>
-              <p>Please follow the instruction below to change back to your preferred password.</p>
+              <p>Please follow the instructions below to change back to your preferred password.</p>
               <ol>
                   <li>
                     Visit https://www.mysugarpost.com/register/login
                   </li>
                   <li>
-                    Input the new password that you received in this e-mail above and log in.
+                    Enter the new password that you received in this email above and log in.
                   </li>
                   <li>
-                    Under Account tab, Change Your Password to what you would like your new 
-                    password to be.
+                    Under Account tab in Profile section, change your password to what you would 
+                    like your new password to be.
                   </li>
               </ol>
               <br />
@@ -439,10 +439,8 @@ class AuthController {
         return AuthController._handleRequest(state, res, DatabaseService, updatePasswordStrategy);
       })
       .then((result) => {
-        const response = new StandardResponseWrapper({
-          success: true,
-          detail: result,
-        }, constants.SYSTEM.RESPONSE_NAMES.FORGOT_PASSWORD);
+        const response = new StandardResponseWrapper([{ success: true, detail: result }],
+          constants.SYSTEM.RESPONSE_NAMES.FORGOT_PASSWORD);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
           .json(response.format);
