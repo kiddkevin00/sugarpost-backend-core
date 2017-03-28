@@ -18,8 +18,9 @@ const stripeQuantity = constants.CREDENTIAL.STRIPE.QUANTITY;
 const stripeRecurringBillingDate = constants.CREDENTIAL.STRIPE.RECURRING_BILLING_DATE;
 const stripeReferralCredit = constants.CREDENTIAL.STRIPE.REFERRAL_CREDIT;
 const mailchimp = new Mailchimp(constants.CREDENTIAL.MAIL_CHIMP.API_KEY);
-const mailChimpSubscribedListId = constants.CREDENTIAL.MAIL_CHIMP.SUBSCRIBED_LIST_ID;
 const mailChimpSignupListId = constants.CREDENTIAL.MAIL_CHIMP.SIGNUP_LIST_ID;
+const mailChimpSubscribedListId = constants.CREDENTIAL.MAIL_CHIMP.SUBSCRIBED_LIST_ID;
+const mailChimpCancelledListId = constants.CREDENTIAL.MAIL_CHIMP.CANCELLED_LIST_ID;
 const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
 const jwtAudience = constants.CREDENTIAL.JWT.AUDIENCE;
 const jwtIssuer = constants.CREDENTIAL.JWT.ISSUER;
@@ -35,19 +36,20 @@ class PaymentController {
 
     const _id = req.user._id;
     const email = req.user.email;
-    const referCode = req.body.referCode;
+    const fullName = req.user.fullName;
+    const referralCode = req.body.referralCode;
     const source = req.body.tokenId;
 
     Validator.shouldNotBeEmpty(source);
 
-    const options = { _id, email, referCode, source };
+    const options = { _id, email, fullName, referralCode, source };
     const context = { containerId, requestCount };
     const state = ProcessSate.create(options, context);
-    const withoutReferCode = !state.referCode ||
-      (typeof state.referCode === 'string' && state.referCode.trim().length === 0);
+    const withoutReferralCode = !state.referralCode ||
+      (typeof state.referralCode === 'string' && state.referralCode.trim().length === 0);
+    const validatedReferralCode = !withoutReferralCode &&
+      couponCode.validate(state.referralCode, { parts: 1, partLen: 6 });
     let account_balance; // eslint-disable-line camelcase
-    let userId;
-    let userFullName;
     let stripeCustomerId;
     let stripeSubscriptionId;
     let partialNewUserInfo;
@@ -55,30 +57,54 @@ class PaymentController {
 
     return Promise
       .try(() => {
-        const validatedReferCode = !withoutReferCode &&
-          couponCode.validate(state.referCode, { parts: 1, partLen: 6 });
+        if (req.user.type === constants.SYSTEM.USER_TYPES.PAID) {
+          const err = new StandardErrorWrapper([
+            {
+              code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,
+              name: constants.AUTH.ERROR_NAMES.ALREADY_PAID,
+              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+              message: constants.AUTH.ERROR_MSG.ALREADY_PAID,
+            },
+          ]);
 
-        if (validatedReferCode) {
-          const referCodeStrategy = {
+          throw err;
+        } else if (!withoutReferralCode && req.user.usedReferralCode) {
+          const err = new StandardErrorWrapper([
+            {
+              code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,
+              name: constants.AUTH.ERROR_NAMES.ALREADY_USED_REFERRAL_CODE,
+              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+              message: constants.AUTH.ERROR_MSG.ALREADY_USED_REFERRAL_CODE,
+            },
+          ]);
+
+          throw err;
+        }
+
+        if (validatedReferralCode) {
+          const referralCodeStrategy = {
             storeType: constants.STORE.TYPES.MONGO_DB,
             operation: {
               type: constants.STORE.OPERATIONS.SELECT,
               data: [
-                { referCode: validatedReferCode },
+                {
+                  referralCode: validatedReferralCode,
+                },
               ],
             },
             tableName: constants.STORE.TABLE_NAMES.USER,
           };
 
-          return PaymentController._handleRequest(state, res, DatabaseService, referCodeStrategy);
+          return PaymentController._handleRequest(state, res, DatabaseService,
+            referralCodeStrategy);
         }
-        return { withoutReferCode };
+        return { withoutReferralCode };
       })
       .then((result) => {
         if (Array.isArray(result) && result.length === 1) {
           account_balance = -stripeReferralCredit; // eslint-disable-line camelcase
           referralUserId = result[0]._id;
-        } else if (result && result.withoutReferCode) {
+        } else if (result && result.withoutReferralCode) {
           account_balance = 0; // eslint-disable-line camelcase
         } else {
           const err = new StandardErrorWrapper([
@@ -93,53 +119,7 @@ class PaymentController {
           throw err;
         }
 
-        const paymentCheckStrategy = {
-          storeType: constants.STORE.TYPES.MONGO_DB,
-          operation: {
-            type: constants.STORE.OPERATIONS.SELECT,
-            data: [
-              { _id: mongojs.ObjectId(state._id) },
-            ],
-          },
-          tableName: constants.STORE.TABLE_NAMES.USER,
-        };
-
-        return PaymentController._handleRequest(state, res, DatabaseService, paymentCheckStrategy);
-      })
-      .then((result) => {
-        let err;
-
-        if (!Array.isArray(result) || (result.length !== 1)) {
-          err = new StandardErrorWrapper([
-            {
-              code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,
-              name: constants.AUTH.ERROR_NAMES.PAYER_EMAIL_NOT_FOUND,
-              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.AUTH.ERROR_MSG.PAYER_EMAIL_NOT_FOUND,
-            },
-          ]);
-
-          throw err;
-        } else if (
-          result[0].type === constants.SYSTEM.USER_TYPES.PAID ||
-          result[0].type === constants.SYSTEM.USER_TYPES.CANCELLED
-        ) {
-          err = new StandardErrorWrapper([
-            {
-              code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,
-              name: constants.AUTH.ERROR_NAMES.ALREADY_LINK_TO_STRIPE_ACC,
-              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.AUTH.ERROR_MSG.ALREADY_LINK_TO_STRIPE_ACC,
-            },
-          ]);
-
-          throw err;
-        } else {
-          userId = result[0]._id;
-          userFullName = result[0].fullName;
-        }
-
-        const description = `Customer for ${userFullName} - ${userId}`;
+        const description = `Customer for ${state.fullName} - ${state._id}`;
 
         // eslint-disable-next-line camelcase
         return stripe.customers
@@ -185,37 +165,33 @@ class PaymentController {
           email_address: state.email,
           status: 'subscribed',
           merge_fields: {
-            FNAME: userFullName,
+            FNAME: state.fullName,
           },
         },
       }))
       .then(() => {
-        partialNewUserInfo = {
-          stripeCustomerId,
-          stripeSubscriptionId,
-          type: constants.SYSTEM.USER_TYPES.PAID,
-          referCode: couponCode.generate({
-            parts: 1,
-            partLen: 6,
-          }),
-        };
+        if (req.user.type === constants.SYSTEM.USER_TYPES.UNPAID) {
+          return mailchimp.delete({
+            path: '/lists/{mailChimpSignupListId}/members/{hashedEmail}',
+            path_params: {
+              mailChimpSignupListId,
+              hashedEmail: md5(state.email),
+            },
+          });
+        } else if (req.user.type === constants.SYSTEM.USER_TYPES.CANCELLED) {
 
-        const linkAccountStrategy = {
-          storeType: constants.STORE.TYPES.MONGO_DB,
-          operation: {
-            type: constants.STORE.OPERATIONS.UPDATE,
-            data: [
-              { _id: mongojs.ObjectId(userId) },
-              partialNewUserInfo,
-            ],
-          },
-          tableName: constants.STORE.TABLE_NAMES.USER,
-        };
-
-        return PaymentController._handleRequest(state, res, DatabaseService, linkAccountStrategy);
+          return mailchimp.delete({
+            path: '/lists/{mailChimpCancelledListId}/members/{hashedEmail}',
+            path_params: {
+              mailChimpCancelledListId,
+              hashedEmail: md5(state.email),
+            },
+          });
+        }
+        return Promise.resolve();
       })
       .then(() => {
-        if (!withoutReferCode) {
+        if (!withoutReferralCode) {
           const updateRefererStrategy = {
             storeType: constants.STORE.TYPES.MONGO_DB,
             operation: {
@@ -229,50 +205,41 @@ class PaymentController {
             tableName: constants.STORE.TABLE_NAMES.USER,
           };
 
-          PaymentController._handleRequest(state, res, DatabaseService, updateRefererStrategy)
-            .catch((_err) => {
-              const err = new StandardErrorWrapper(_err);
-
-              err.append({
-                code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-                name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
-                source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-                message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
-              });
-
-              return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
-                .json(err.format({
-                  containerId: state.context.containerId,
-                  requestCount: state.context.requestCount,
-                }));
-            });
+          return PaymentController._handleRequest(state, res, DatabaseService,
+            updateRefererStrategy);
+        }
+        return Promise.resolve();
+      })
+      .then(() => {
+        partialNewUserInfo = {
+          stripeCustomerId,
+          stripeSubscriptionId,
+          type: constants.SYSTEM.USER_TYPES.PAID,
+          referralCode: couponCode.generate({
+            parts: 1,
+            partLen: 6,
+          }),
+        };
+        if (validatedReferralCode) {
+          Object.assign(partialNewUserInfo, { usedReferralCode: validatedReferralCode });
         }
 
-        mailchimp
-          .delete({
-            path: '/lists/{mailChimpSignupListId}/members/{hashedEmail}',
-            path_params: {
-              mailChimpSignupListId,
-              hashedEmail: md5(state.email),
-            },
-          })
-          .catch((_err) => {
-            const err = new StandardErrorWrapper(_err);
+        const linkAccountStrategy = {
+          storeType: constants.STORE.TYPES.MONGO_DB,
+          operation: {
+            type: constants.STORE.OPERATIONS.UPDATE,
+            data: [
+              { _id: mongojs.ObjectId(state._id) },
+              partialNewUserInfo,
+            ],
+          },
+          tableName: constants.STORE.TABLE_NAMES.USER,
+        };
 
-            err.append({
-              code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-              name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
-              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_PAYMENT_CONTROLLER,
-            });
+        return PaymentController._handleRequest(state, res, DatabaseService, linkAccountStrategy);
+      })
 
-            return res.status(constants.SYSTEM.HTTP_STATUS_CODES.BAD_REQUEST)
-              .json(err.format({
-                containerId: state.context.containerId,
-                requestCount: state.context.requestCount,
-              }));
-          });
-
+      .then(() => {
         const newJwtPayload = Object.assign({}, req.user, partialNewUserInfo, {
           sub: `${partialNewUserInfo.type}:${req.user.email}:${req.user._id}`,
         });
@@ -304,9 +271,9 @@ class PaymentController {
         const err = new StandardErrorWrapper(_err);
 
         if (
-          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.REFERRAL_CODE_NOT_FOUND ||
-          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.PAYER_EMAIL_NOT_FOUND ||
-          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.ALREADY_LINK_TO_STRIPE_ACC
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.ALREADY_PAID ||
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.ALREADY_USED_REFERRAL_CODE ||
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.REFERRAL_CODE_NOT_FOUND
         ) {
           const response = new StandardResponseWrapper([
             {

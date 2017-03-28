@@ -1,8 +1,10 @@
-const ConnectionPool = require('../storage/connection-pool');
-const RepoFactory = require('../storage/repo-factory');
+const storage = require('../storage/');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const packageJson = require('../../../package.json');
 const constants = require('../constants/');
+
+const ConnectionPool = storage.ConnectionPool;
+const RepoFactory = storage.RepoFactory;
 
 class DatabaseService {
 

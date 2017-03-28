@@ -3,6 +3,7 @@
  */
 
 const authRoutes = require('./auth/');
+const referralRoutes = require('./referral/');
 const subscriberRoutes = require('./subscriber/');
 const userRoutes = require('./user/');
 const paymentRoutes = require('./payment/');
@@ -55,6 +56,7 @@ function setupApiRoutes() {
   router.use('/user', [authCheckMiddleware], userRoutes);
   router.use('/payment', [authCheckMiddleware], paymentRoutes);
   router.use('/subscription', [authCheckMiddleware], subscriptionRoutes);
+  router.use('/referral', [authCheckMiddleware], referralRoutes);
 
   return router;
 }

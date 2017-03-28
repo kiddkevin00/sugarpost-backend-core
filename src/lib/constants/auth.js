@@ -3,13 +3,15 @@ exports.ERROR_NAMES = {
   JWT_NOT_AUTHORIZED: 'JWT_NOT_AUTHORIZED',
   JWT_GENERATION_ERROR: 'JWT_GENERATION_ERROR',
   EMAIL_ALREADY_SIGNUP: 'EMAIL_ALREADY_SIGNUP',
-  PAYER_EMAIL_NOT_FOUND: 'PAYER_EMAIL_NOT_EXISTED',
   USER_EMAIL_NOT_FOUND: 'EMAIL_NOT_EXISTED',
-  ALREADY_LINK_TO_STRIPE_ACC: 'ALREADY_LINK_TO_STRIPE_ACC',
+  ALREADY_PAID: 'ALREADY_PAID',
+  ALREADY_USED_REFERRAL_CODE: 'ALREADY_USED_REFERRAL_CODE',
   REFERRAL_CODE_NOT_FOUND: 'REFERRAL_CODE_NOT_FOUND',
   FULL_NAME_FIELD_IS_EMPTY: 'FULL_NAME_FIELD_IS_EMPTY',
   EMAIL_FIELD_IS_EMPTY: 'EMAIL_FIELD_IS_EMPTY',
   PASSWORD_FIELD_IS_EMPTY: 'PASSWORD_FIELD_IS_EMPTY',
+  EMAIL_TO_IS_EMPTY: 'EMAIL_TO_IS_EMPTY',
+  EMAIL_FROM_NAME_IS_EMPTY: 'EMAIL_FROM_NAME_IS_EMPTY',
 };
 
 exports.ERROR_MSG = {
@@ -17,9 +19,9 @@ exports.ERROR_MSG = {
   JWT_NOT_AUTHORIZED: 'The provided JWT identity is not authorized to access the resource.',
   JWT_GENERATION_ERROR: 'Something went wrong while generating JWT token.',
   EMAIL_ALREADY_SIGNUP: 'The provided email is already signed up.',
-  PAYER_EMAIL_NOT_FOUND: 'The email associated with the payment is not found.',
   USER_EMAIL_NOT_FOUND: 'The provided email is not found in database.',
-  ALREADY_LINK_TO_STRIPE_ACC: 'The provided user has already linked to Stripe account.',
+  ALREADY_PAID: 'The provided user has already paid for the subscription.',
+  ALREADY_USED_REFERRAL_CODE: 'The provided user has already used a referral code to pay for the subscription.',
   REFERRAL_CODE_NOT_FOUND: 'The provided refer code is not found in database.',
 };
 

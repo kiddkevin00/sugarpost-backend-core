@@ -1,9 +1,14 @@
-const ConnectionPool = require('../../src/lib/storage/connection-pool');
-const RepoFactory = require('../../src/lib/storage/repo-factory');
+#!/usr/bin/env node
+
+'use strict'; // eslint-disable-line strict, lines-around-directive
+
+const storage = require('../../src/lib/storage/');
 const constants = require('../../src/lib/constants/index');
 const Chance = require('chance');
 const Promise = require('bluebird');
 
+const ConnectionPool = storage.ConnectionPool;
+const RepoFactory = storage.RepoFactory;
 const conn = new ConnectionPool(constants.STORE.TYPES.MONGO_DB);
 const repo = RepoFactory.manufacture(constants.STORE.TYPES.MONGO_DB);
 const tableName = 'testPerson';
@@ -51,7 +56,6 @@ Promise.try(
 function validateResult(type, rows) {
   console.log(`Validate ${type} result - ${JSON.stringify(rows, null, 2)}.`);
 }
-
 function printErrorMsg(err) {
   console.log(`Something breaks - ${JSON.stringify(err, null, 2)}.`);
 }

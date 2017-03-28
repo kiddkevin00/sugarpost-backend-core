@@ -36,18 +36,16 @@ class SubscriptionController {
     const context = { containerId, requestCount };
     const state = ProcessSate.create(options, context);
 
+    if (req.user.type !== constants.SYSTEM.USER_TYPES.PAID) {
+      const standardResponse = new StandardResponseWrapper([{ success: false }],
+        constants.SYSTEM.RESPONSE_NAMES.LOGIN);
+
+      return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
+        .json(standardResponse.format);
+    }
+
     return mailchimp
-      .patch({
-        path: '/lists/{mailChimpSubscribedListId}/members/{hashedEmail}',
-        path_params: {
-          mailChimpSubscribedListId,
-          hashedEmail: md5(state.email),
-        },
-        body: {
-          status: 'unsubscribed',
-        },
-      })
-      .then(() => mailchimp.post({
+      .post({
         path: '/lists/{mailChimpCancelledListId}/members/',
         path_params: {
           mailChimpCancelledListId,
@@ -58,6 +56,13 @@ class SubscriptionController {
           merge_fields: {
             FNAME: state.fullName,
           },
+        },
+      })
+      .then(() => mailchimp.delete({
+        path: '/lists/{mailChimpSubscribedListId}/members/{hashedEmail}',
+        path_params: {
+          mailChimpSubscribedListId,
+          hashedEmail: md5(state.email),
         },
       }))
       .then(() => stripe.subscriptions.del(state.stripeSubscriptionId, { at_period_end: true }))
