@@ -27,11 +27,12 @@ exports.ERROR_MSG = {
 
 exports.CORS = {
   WHITELIST: [
+    'https://mysugarpost.com',
     'https://www.mysugarpost.com',
     'https://mysugarpost.herokuapp.com',
     'https://mysugarpost-staging.herokuapp.com',
-    'http://127.0.0.1:8088',
     'http://0.0.0.0:8088',
+    'http://127.0.0.1:8088',
     'http://localhost:8088',
   ],
 };

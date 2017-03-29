@@ -22,66 +22,6 @@ let requestCount = 0;
 
 class AuthController {
 
-  // Will be deprecated.
-  static subscribe(req, res) {
-    requestCount += 1;
-
-    const context = { containerId, requestCount };
-    const state = ProcessSate.create(req.body, context);
-    const subscribeStrategy = {
-      storeType: constants.STORE.TYPES.MONGO_DB,
-      operation: {
-        type: constants.STORE.OPERATIONS.INSERT,
-        data: [
-          {
-            email: state.email,
-            emailValidated: false,
-            dateCreated: new Date(),
-            lastModified: null,
-          },
-        ],
-      },
-      tableName: constants.STORE.TABLE_NAMES.SUBSCRIBER,
-      uniqueFields: ['email'],
-    };
-
-    return AuthController._handleRequest(state, res, DatabaseService, subscribeStrategy)
-      .then((result) => {
-        const response = new StandardResponseWrapper(result,
-          constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
-
-        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
-          .json(response.format);
-      })
-      .catch((_err) => {
-        if (
-          _err instanceof StandardErrorWrapper &&
-          _err.getNthError(0).name === constants.STORE.ERROR_NAMES.REQUIRED_FIELDS_NOT_UNIQUE
-        ) {
-          const response = new StandardResponseWrapper([{ isSubscribed: true }],
-            constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
-
-          return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
-            .json(response.format);
-        }
-
-        const err = new StandardErrorWrapper(_err);
-
-        err.append({
-          code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
-          name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
-          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-          message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
-        });
-
-        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
-          .json(err.format({
-            containerId: state.context.containerId,
-            requestCount: state.context.requestCount,
-          }));
-      });
-  }
-
   static signup(req, res) {
     requestCount += 1;
 
