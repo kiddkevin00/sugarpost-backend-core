@@ -9,6 +9,7 @@ class ProcessState {
     this[stateContext]._id = options._id;
     this[stateContext].email = options.email;
     this[stateContext].password = options.password;
+    this[stateContext].newPassword = options.newPassword;
     this[stateContext].fullName = options.fullName;
     this[stateContext].referralCode = options.referralCode;
     this[stateContext].source = options.source;
@@ -29,6 +30,10 @@ class ProcessState {
 
   get password() {
     return this[stateContext].password;
+  }
+
+  get newPassword() {
+    return this[stateContext].newPassword;
   }
 
   get fullName() {

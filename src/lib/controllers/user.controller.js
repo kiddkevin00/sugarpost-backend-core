@@ -24,14 +24,17 @@ class UserController {
     const _id = req.user._id;
     const fullName = req.body.fullName;
     const password = req.body.password;
+    const newPassword = req.body.newPassword;
 
     Validator.shouldNotBeEmpty(fullName, constants.AUTH.FULL_NAME_FIELD_IS_EMPTY);
     Validator.shouldNotBeEmpty(password, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
+    Validator.shouldNotBeEmpty(newPassword, constants.AUTH.PASSWORD_FIELD_IS_EMPTY);
 
     const options = {
       _id,
       fullName: fullName && fullName.trim(),
       password: password && password.trim(),
+      newPassword: newPassword && newPassword.trim(),
     };
     const context = { containerId, requestCount };
     const state = ProcessSate.create(options, context);
@@ -40,10 +43,14 @@ class UserController {
       operation: {
         type: constants.STORE.OPERATIONS.UPDATE,
         data: [
-          { _id: mongojs.ObjectId(state._id) },
+          {
+            _id: mongojs.ObjectId(state._id),
+            passwordHash: state.password,
+          },
           {
             fullName: state.fullName,
-            passwordHash: state.password },
+            passwordHash: state.newPassword,
+          },
         ],
       },
       tableName: constants.STORE.TABLE_NAMES.USER,
@@ -51,25 +58,34 @@ class UserController {
 
     return UserController._handleRequest(state, res, DatabaseService, updateProfileStrategy)
       .then((result) => {
-        const newJwtPayload = Object.assign({}, req.user, { fullName: state.fullName });
-        const jwtToken = jwt.sign(newJwtPayload, jwtSecret, {
-          expiresIn: jwtExpiresIn,
-          notBefore: jwtNotBefore,
-          issuer: jwtIssuer,
-          audience: jwtAudience,
-        });
+        let response;
 
-        res.cookie('jwt', jwtToken, {
-          httpOnly: true,
-          secure: false,
-          path: '/api',
-          signed: false,
-        });
+        if (result.n === 1) {
+          response = new StandardResponseWrapper({
+            success: true,
+            detail: result,
+          }, constants.SYSTEM.RESPONSE_NAMES.UPDATE_PROFILE);
 
-        const response = new StandardResponseWrapper({
-          success: true,
-          detail: result,
-        }, constants.SYSTEM.RESPONSE_NAMES.UPDATE_PROFILE);
+          const newJwtPayload = Object.assign({}, req.user, { fullName: state.fullName });
+          const jwtToken = jwt.sign(newJwtPayload, jwtSecret, {
+            expiresIn: jwtExpiresIn,
+            notBefore: jwtNotBefore,
+            issuer: jwtIssuer,
+            audience: jwtAudience,
+          });
+
+          res.cookie('jwt', jwtToken, {
+            httpOnly: true,
+            secure: false,
+            path: '/api',
+            signed: false,
+          });
+        } else {
+          response = new StandardResponseWrapper({
+            success: false,
+            detail: result,
+          }, constants.SYSTEM.RESPONSE_NAMES.UPDATE_PROFILE);
+        }
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
           .json(response.format);
