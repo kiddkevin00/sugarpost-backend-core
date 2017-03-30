@@ -16,16 +16,17 @@ class UtilityController {
     const from = `"${emailFromName}" <administrator@mysugarpost.com>`;
     const to = emailTo;
     const subject = 'Enjoy Sugarpost with 10% Off Your First Month\'s Subscription';
+    const referralCodeStr = req.user.referralCode || 'UNKNOWN';
     const html = `
           <div>
               <p>Hi,</p>
               <p>
                 Here is a 10% discount off your first month of Sugarpost’s premium dessert 
                 subscription service! To claim your discount, sign up now and enter the 
-                following referral code in the payment page: ${req.user.referralCode} or 
+                following referral code in the payment page: ${referralCodeStr} or 
                 click the link below:
               </p>
-              <p>https://www.mysugarpost.com/register/signup?refer_code=${req.user.referralCode}</p>
+              <p>https://www.mysugarpost.com/register/signup?refer_code=${referralCodeStr}</p>
               <br />
               <p>Enjoy your dessert,</p>
               <p>${emailFromName}</p>
