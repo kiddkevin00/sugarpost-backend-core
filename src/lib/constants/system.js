@@ -2,7 +2,7 @@
 
 const sources = {
   BULLETIN_BOARD_SYSTEM: 'bulletin-board-system',
-  SUGARPOST_WEB_FRONTEND: 'sugarpost-web-frontend',
+  SUGARPOST_FRONTEND_WEB: 'sugarpost-frontend-web',
 };
 const httpStatusCodes = {
   OK: 200,
