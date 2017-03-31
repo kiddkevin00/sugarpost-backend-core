@@ -12,6 +12,7 @@ class ProcessState {
     this[stateContext].newPassword = options.newPassword;
     this[stateContext].fullName = options.fullName;
     this[stateContext].referralCode = options.referralCode;
+    this[stateContext].referralCodeToUse = options.referralCodeToUse;
     this[stateContext].source = options.source;
     this[stateContext].stripeSubscriptionId = options.stripeSubscriptionId;
   }
@@ -42,6 +43,10 @@ class ProcessState {
 
   get referralCode() {
     return this[stateContext].referralCode;
+  }
+
+  get referralCodeToUse() {
+    return this[stateContext].referralCodeToUse;
   }
 
   get source() {

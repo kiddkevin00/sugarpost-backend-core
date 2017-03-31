@@ -5,10 +5,11 @@ const Validator = require('../utility/precondition-validator');
 const StandardErrorWrapper = require('../utility/standard-error-wrapper');
 const StandardResponseWrapper = require('../utility/standard-response-wrapper');
 const constants = require('../constants/');
-const Promise = require('bluebird');
 const jwt = require('jsonwebtoken');
 const couponCode = require('coupon-code');
 const Mailchimp = require('mailchimp-api-v3');
+const mongojs = require('mongojs');
+const Promise = require('bluebird');
 const fs = require('fs');
 const path = require('path');
 
@@ -498,16 +499,64 @@ class AuthController {
     }
   }
 
-  static passAuthCheck(req, res) {
+  static getUserInfo(req, res) {
     requestCount += 1;
 
-    const response = new StandardResponseWrapper([{
-      success: true,
-      detail: req.user,
-    }], constants.SYSTEM.RESPONSE_NAMES.AUTH_CHECK);
+    const options = { _id: req.user._id };
+    const context = { containerId, requestCount };
+    const state = ProcessSate.create(options, context);
+    const getUserInfoStrategy = {
+      storeType: constants.STORE.TYPES.MONGO_DB,
+      operation: {
+        type: constants.STORE.OPERATIONS.SELECT,
+        data: [
+          { _id: mongojs.ObjectId(state._id) },
+        ],
+      },
+      tableName: constants.STORE.TABLE_NAMES.USER,
+    };
 
-    return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
-      .json(response.format);
+    return AuthController._handleRequest(state, res, DatabaseService, getUserInfoStrategy)
+      .then((result) => {
+        const user = Array.isArray(result) ? result[0] : {};
+        const jwtToken = jwt.sign(user, jwtSecret, {
+          expiresIn: jwtExpiresIn,
+          notBefore: jwtNotBefore,
+          issuer: jwtIssuer,
+          audience: jwtAudience,
+        });
+
+        res.cookie('jwt', jwtToken, {
+          httpOnly: true,
+          secure: false,
+          path: '/api',
+          signed: false,
+        });
+
+        const response = new StandardResponseWrapper([{
+          success: true,
+          detail: user,
+        }], constants.SYSTEM.RESPONSE_NAMES.AUTH_CHECK);
+
+        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
+          .json(response.format);
+      })
+      .catch((_err) => {
+        const err = new StandardErrorWrapper(_err);
+
+        err.append({
+          code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
+          name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
+          source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+          message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
+        });
+
+        return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+          .json(err.format({
+            containerId: state.context.containerId,
+            requestCount: state.context.requestCount,
+          }));
+      });
   }
 
   static _handleRequest(state, res, Svc, strategy) {
