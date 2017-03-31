@@ -1,14 +1,14 @@
 const constants = require('../constants/');
-const compression = require('compression');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 const favicon = require('serve-favicon');
 const morgan = require('morgan');
 const errorHandler = require('errorhandler');
 const fs = require('fs');
 const path = require('path');
-const cors = require('cors');
 const express = require('express');
 
 function setupExpressServer(app) {

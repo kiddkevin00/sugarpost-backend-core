@@ -37,18 +37,19 @@ class PaymentController {
     const _id = req.user._id;
     const email = req.user.email;
     const fullName = req.user.fullName;
-    const referralCode = req.body.referralCode;
+    const referralCode = req.user.referralCode;
+    const referralCodeToUse = req.body.referralCode;
     const source = req.body.tokenId;
 
     Validator.shouldNotBeEmpty(source);
 
-    const options = { _id, email, fullName, referralCode, source };
+    const options = { _id, email, fullName, referralCode, referralCodeToUse, source };
     const context = { containerId, requestCount };
     const state = ProcessSate.create(options, context);
-    const withoutReferralCode = !state.referralCode ||
-      (typeof state.referralCode === 'string' && state.referralCode.trim().length === 0);
+    const withoutReferralCode = !state.referralCodeToUse ||
+      (typeof state.referralCodeToUse === 'string' && state.referralCodeToUse.trim().length === 0);
     const validatedReferralCode = !withoutReferralCode &&
-      couponCode.validate(state.referralCode, { parts: 1, partLen: 6 });
+      couponCode.validate(state.referralCodeToUse, { parts: 1, partLen: 6 });
     let account_balance; // eslint-disable-line camelcase
     let stripeCustomerId;
     let stripeSubscriptionId;
@@ -88,6 +89,7 @@ class PaymentController {
               type: constants.STORE.OPERATIONS.SELECT,
               data: [
                 {
+                  _id: { $ne: mongojs.ObjectId(state._id) },
                   referralCode: validatedReferralCode,
                 },
               ],
@@ -215,7 +217,7 @@ class PaymentController {
           stripeCustomerId,
           stripeSubscriptionId,
           type: constants.SYSTEM.USER_TYPES.PAID,
-          referralCode: couponCode.generate({
+          referralCode: state.referralCode || couponCode.generate({
             parts: 1,
             partLen: 6,
           }),
