@@ -115,7 +115,7 @@ class AuthController {
         const emailSender = new EmailSender('Gmail', 'administrator@mysugarpost.com');
         const from = '"Sugarpost Team" <administrator@mysugarpost.com>';
         const to = state.email;
-        const subject = 'Welcome to Sugarpost Newsletter';
+        const subject = 'Welcome to Sugarpost';
         const html = fs.readFileSync(path.resolve(__dirname, '../views/welcome-email.html'),
           'utf8');
 
