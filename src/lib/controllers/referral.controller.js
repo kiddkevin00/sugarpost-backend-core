@@ -36,7 +36,7 @@ class UtilityController {
     return emailSender.sendMail(from, to, subject, html)
       .then((info) => {
         // [TODO] Replace with logger module.
-        console.log('Forgot-password email message %s sent: %s', info.messageId, info.response);
+        console.log('Referral email message %s sent: %s', info.messageId, info.response);
 
         const response = new StandardResponseWrapper([{ success: true }],
           constants.SYSTEM.RESPONSE_NAMES.EMAIL_REFERRAL);
