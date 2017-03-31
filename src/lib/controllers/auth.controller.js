@@ -9,6 +9,8 @@ const Promise = require('bluebird');
 const jwt = require('jsonwebtoken');
 const couponCode = require('coupon-code');
 const Mailchimp = require('mailchimp-api-v3');
+const fs = require('fs');
+const path = require('path');
 
 const mailchimp = new Mailchimp(constants.CREDENTIAL.MAIL_CHIMP.API_KEY);
 const mailChimpListId = constants.CREDENTIAL.MAIL_CHIMP.SIGNUP_LIST_ID;
@@ -109,6 +111,32 @@ class AuthController {
         return AuthController._handleRequest(state, res, DatabaseService, signupStrategy);
       })
       .then((result) => {
+        const emailSender = new EmailSender('Gmail', 'administrator@mysugarpost.com');
+        const from = '"Sugarpost Team" <administrator@mysugarpost.com>';
+        const to = state.email;
+        const subject = 'Welcome to Sugarpost Newsletter';
+        const html = fs.readFileSync(path.resolve(__dirname, '../views/welcome-email.html'),
+          'utf8');
+
+        emailSender.sendMail(from, to, subject, html)
+          .then((info) => {
+            // [TODO] Replace with logger module.
+            console.log('Welcome email message %s sent: %s', info.messageId, info.response);
+          })
+          .catch((_err) => {
+            const err = new StandardErrorWrapper(_err);
+
+            err.append({
+              code: constants.SYSTEM.ERROR_CODES.INTERNAL_SERVER_ERROR,
+              name: constants.SYSTEM.ERROR_NAMES.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
+              source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
+              message: constants.SYSTEM.ERROR_MSG.CAUGHT_ERROR_IN_AUTH_CONTROLLER,
+            });
+
+            // [TODO] Replace with logger module.
+            console.log('ERROR...', err);
+          });
+
         const jwtPayload = {
           sub: `${result.type}:${result.email}:${result._id}`,
           _id: result._id,
@@ -131,9 +159,16 @@ class AuthController {
           signed: false,
         });
 
+        Object.assign(result, {
+          passwordHash: undefined,
+          isSuspended: undefined,
+          version: undefined,
+          systemData: undefined,
+        });
+
         const response = new StandardResponseWrapper({
           success: true,
-          detail: result, // [TODO] Filters unneeded fields.
+          detail: result,
         }, constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
