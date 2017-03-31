@@ -66,17 +66,19 @@ class AuthController {
           throw err;
         }
 
-        return mailchimp
-          .post({
-            path: `/lists/${mailChimpListId}/members/`,
-            body: {
-              email_address: state.email,
-              status: 'pending',
-              merge_fields: {
-                FNAME: state.fullName,
-              },
+        return mailchimp.post({
+          path: `/lists/${mailChimpListId}/members/`,
+          body: {
+            email_address: state.email,
+            path_params: {
+              mailChimpListId,
             },
-          });
+            status: 'subscribed',
+            merge_fields: {
+              FNAME: state.fullName,
+            },
+          },
+        });
       })
       .then(() => {
         const signupStrategy = {
