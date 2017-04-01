@@ -7,8 +7,8 @@ exports.JWT = {
 };
 
 exports.STRIPE = {
-  PRIVATE_KEY: 'sk_live_ypetQeGEadd6Qq5L6QIGkUn1',
-  PLAN_ID: 'test-01',
+  PRIVATE_KEY: 'sk_test_ccdvoeJH9W86JXhx85PEgkvi',
+  PLAN_ID: '4-desserts-per-month',
   QUANTITY: 1,
   RECURRING_BILLING_DATE: 25,
   REFERRAL_CREDIT: 272,
