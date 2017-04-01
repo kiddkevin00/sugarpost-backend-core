@@ -483,8 +483,9 @@ class AuthController {
         detail: jwtPayload,
       }], constants.SYSTEM.RESPONSE_NAMES.GET_TOKEN);
 
-      return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
-        .json(response.format);
+      res.redirect('https://www.mysugarpost.com/register/payment?email=abc@aaaa.aa');
+      //return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
+      //  .json(response.format);
     } catch (_err) {
       const err = new StandardErrorWrapper([
         {
