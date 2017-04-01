@@ -478,32 +478,7 @@ class AuthController {
         signed: false,
       });
 
-      let origin;
-
-      if (req.get('origin')) {
-        origin = `https://${req.get('origin')}`;
-      } else {
-        origin = `http://${req.get('host').replace('8087', '8088')}`;
-      }
-
-      let urlPath;
-
-      switch (req.query.type) {
-        case constants.SYSTEM.USER_TYPES.PAID:
-          urlPath = '/account';
-          break;
-        case constants.SYSTEM.USER_TYPES.INFLUENCER:
-          urlPath = '/register/referral';
-          break;
-        case constants.SYSTEM.USER_TYPES.VENDOR:
-          urlPath = '/account';
-          break;
-        default:
-          urlPath = '/register/payment';
-          break;
-      }
-
-      return res.redirect(`${origin}${urlPath}?email=${req.query.email}`);
+      return res.redirect(`${req.query.callback_url}?email=${req.query.email}`);
     } catch (_err) {
       const err = new StandardErrorWrapper([
         {
