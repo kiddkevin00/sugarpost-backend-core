@@ -40,8 +40,10 @@ class PaymentController {
     const referralCode = req.user.referralCode;
     const referralCodeToUse = req.body.referralCode;
     const source = req.body.tokenId;
+    const ccLast4 = req.body.ccLast4;
 
     Validator.shouldNotBeEmpty(source);
+    Validator.shouldNotBeEmpty(ccLast4);
 
     const options = { _id, email, fullName, referralCode, referralCodeToUse, source };
     const context = { containerId, requestCount };
@@ -221,6 +223,7 @@ class PaymentController {
             parts: 1,
             partLen: 6,
           }),
+          creditCardLast4: ccLast4,
         };
         if (validatedReferralCode) {
           Object.assign(partialNewUserInfo, { usedReferralCode: validatedReferralCode });
