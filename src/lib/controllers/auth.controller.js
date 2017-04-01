@@ -461,13 +461,10 @@ class AuthController {
     requestCount += 1;
 
     try {
-      const jwtToken = jwt.sign({
-        sub: 'test-type:test@mysugarpost.com:test-id',
-        _id: 'test-id',
-        email: 'test@mysugarpost.com',
-        type: 'test-type',
-        fullName: 'test-full-name',
-      }, jwtSecret, {
+      const jwtPayload = Object.assign({}, req.query, {
+        sub: `${req.query.type}:${req.query.email}:${req.query._id}`,
+      });
+      const jwtToken = jwt.sign(jwtPayload, jwtSecret, {
         expiresIn: jwtExpiresIn,
         notBefore: jwtNotBefore,
         issuer: jwtIssuer,
@@ -481,20 +478,25 @@ class AuthController {
         signed: false,
       });
 
+      const response = new StandardResponseWrapper([{
+        success: true,
+        detail: jwtPayload,
+      }], constants.SYSTEM.RESPONSE_NAMES.GET_TOKEN);
+
       return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
-        .json(jwtToken);
+        .json(response.format);
     } catch (_err) {
       const err = new StandardErrorWrapper([
         {
           code: constants.SYSTEM.ERROR_CODES.UNAUTHENTICATED,
-          name: constants.AUTH.ERROR_NAMES.JWT_GENERATION_ERROR,
+          name: (_err && _err.name) || constants.AUTH.ERROR_NAMES.JWT_GENERATION_ERROR,
           source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-          message: constants.AUTH.ERROR_MSG.JWT_GENERATION_ERROR,
+          message: (_err && _err.message) || constants.AUTH.ERROR_MSG.JWT_GENERATION_ERROR,
           detail: _err,
         },
       ]);
 
-      return res.status(constants.SYSTEM.HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+      return res.status(constants.SYSTEM.HTTP_STATUS_CODES.UNAUTHENTICATED)
         .json(err.format({ containerId, requestCount }));
     }
   }
