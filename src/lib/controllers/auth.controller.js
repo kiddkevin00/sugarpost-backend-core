@@ -478,14 +478,15 @@ class AuthController {
         signed: false,
       });
 
-      const response = new StandardResponseWrapper([{
-        success: true,
-        detail: jwtPayload,
-      }], constants.SYSTEM.RESPONSE_NAMES.GET_TOKEN);
+      let origin;
 
-      res.redirect('https://www.mysugarpost.com/register/payment?email=abc@aaaa.aa');
-      //return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
-      //  .json(response.format);
+      if (req.get('origin')) {
+        origin = `https://${req.get('origin')}`;
+      } else {
+        origin = `http://${req.get('host').replace('8087', '8088')}`;
+      }
+
+      return res.redirect(`${origin}/register/payment?email=${req.query.email}`);
     } catch (_err) {
       const err = new StandardErrorWrapper([
         {
