@@ -486,7 +486,24 @@ class AuthController {
         origin = `http://${req.get('host').replace('8087', '8088')}`;
       }
 
-      return res.redirect(`${origin}/register/payment?email=${req.query.email}`);
+      let urlPath;
+
+      switch (req.query.type) {
+        case constants.SYSTEM.USER_TYPES.PAID:
+          urlPath = '/account';
+          break;
+        case constants.SYSTEM.USER_TYPES.INFLUENCER:
+          urlPath = '/register/referral';
+          break;
+        case constants.SYSTEM.USER_TYPES.VENDOR:
+          urlPath = '/account';
+          break;
+        default:
+          urlPath = '/register/payment';
+          break;
+      }
+
+      return res.redirect(`${origin}${urlPath}?email=${req.query.email}`);
     } catch (_err) {
       const err = new StandardErrorWrapper([
         {
