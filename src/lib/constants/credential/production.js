@@ -1,9 +1,15 @@
 exports.JWT = {
-  SECRET: 'my-jwt-secret',
+  SECRET: '80026A186D8328ADF0D929DE1F5C060E5A4A217080E749722883C0366049FEEA',
   ISSUER: 'bulletin-board-system.herokuapp.com',
   AUDIENCE: '.sugarpost.com',
   EXPIRES_IN: '31 days',
   NOT_BEFORE: 0,
+
+  COOKIE_NAME: 'jwt',
+  COOKIE_HTTP_ONLY: true,
+  COOKIE_SECURE: true,
+  COOKIE_PATH: '/api',
+  COOKIE_SIGNED: false,
 };
 
 exports.STRIPE = {

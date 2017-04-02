@@ -94,11 +94,11 @@ class ReferralController {
             audience: jwtAudience,
           });
 
-          res.cookie('jwt', jwtToken, {
-            httpOnly: true,
-            secure: false,
-            path: '/api',
-            signed: false,
+          res.cookie(constants.CREDENTIAL.JWT.COOKIE_NAME, jwtToken, {
+            httpOnly: constants.CREDENTIAL.JWT.COOKIE_HTTP_ONLY,
+            secure: constants.CREDENTIAL.JWT.COOKIE_SECURE,
+            path: constants.CREDENTIAL.JWT.COOKIE_PATH,
+            signed: constants.CREDENTIAL.JWT.COOKIE_SIGNED,
           });
         } else {
           response = new StandardResponseWrapper({
