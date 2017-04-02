@@ -9,19 +9,23 @@ const paymentRoutes = require('./payment/');
 const subscriptionRoutes = require('./subscription/');
 const authCheckMiddleware = require('../utility/auth-check-middleware');
 const constants = require('../constants/');
+const packageJson = require('../../../package.json');
 const { Router } = require('express');
 
+const serverStartTimestamp = new Date();
+const containerId = process.env.HOSTNAME;
+
 function setupRoutes(app) {
-  // [TODO]
   app.get('/ping', (req, res) => res.json({
-    uptime: 100,
-    hostname: 'host 1',
+    uptimeInSec: ((new Date()).getTime() - serverStartTimestamp.getTime()) / 1000,
+    hostname: containerId || 'N/A',
   }));
+  // [TODO]
   app.get('/health', (req, res) => res.json({
-    version: 0,
+    version: packageJson.version,
     self: {
       name: 'bulletin-board-system-backend',
-      version: 1,
+      version: packageJson.version,
       status: 200,
       dateStamp: (new Date()).toString(),
       hostname: 'host 1',

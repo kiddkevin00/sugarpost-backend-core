@@ -479,7 +479,8 @@ class AuthController {
         signed: constants.CREDENTIAL.JWT.COOKIE_SIGNED,
       });
 
-      return res.redirect(`${req.query.callback_url}`);
+      return res.redirect(constants.SYSTEM.HTTP_STATUS_CODES.PERMANENT_REDIRECT,
+        `${req.query.callback_url}`);
     } catch (_err) {
       const err = new StandardErrorWrapper([
         {

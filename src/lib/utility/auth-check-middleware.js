@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
 const jwtIssuer = constants.CREDENTIAL.JWT.ISSUER;
 const jwtAudience = constants.CREDENTIAL.JWT.AUDIENCE;
+const containerId = process.env.HOSTNAME;
 
 function authMiddleware(req, res, next) {
   const jwtToken = req.cookies.jwt;
@@ -34,7 +35,10 @@ function authMiddleware(req, res, next) {
     ]);
 
     return res.status(constants.SYSTEM.HTTP_STATUS_CODES.UNAUTHENTICATED)
-      .json(err.format());
+      .json(err.format({
+        containerId,
+        requestCount: 0,
+      }));
   }
 }
 

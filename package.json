@@ -1,5 +1,5 @@
 {
-  "name": "bulletin-board-system-backend",
+  "name": "sugarpost-backend-core",
   "version": "1.13.1",
   "description": "A generic RESTful API backend with all major database connection/ops interfaces implemented.",
   "main": "./src/lib/app.js",
