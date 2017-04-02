@@ -478,7 +478,7 @@ class AuthController {
         signed: false,
       });
 
-      return res.redirect(`${req.query.callback_url}?email=${req.query.email}`);
+      return res.redirect(`${req.query.callback_url}`);
     } catch (_err) {
       const err = new StandardErrorWrapper([
         {
