@@ -20,15 +20,14 @@ function setupRoutes(app) {
     uptimeInSec: ((new Date()).getTime() - serverStartTimestamp.getTime()) / 1000,
     hostname: containerId || 'N/A',
   }));
-  // [TODO]
   app.get('/health', (req, res) => res.json({
     version: packageJson.version,
     self: {
-      name: 'bulletin-board-system-backend',
+      name: packageJson.name,
       version: packageJson.version,
-      status: 200,
-      dateStamp: (new Date()).toString(),
-      hostname: 'host 1',
+      status: constants.SYSTEM.HTTP_STATUS_CODES.OK,
+      serverDateStamp: (new Date()).toString(),
+      hostname: containerId,
     },
     dependencies: {
       http: [],
