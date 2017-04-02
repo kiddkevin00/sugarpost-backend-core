@@ -122,7 +122,7 @@ class AuthController {
         emailSender.sendMail(from, to, subject, html)
           .then((info) => {
             // [TODO] Replace with logger module.
-            console.log('Welcome email message %s sent: %s', info.messageId, info.response);
+            console.log('Welcome email message ID - %s sent: %s', info.messageId, info.response);
           })
           .catch((_err) => {
             const err = new StandardErrorWrapper(_err);
@@ -400,7 +400,7 @@ class AuthController {
       })
       .then((info) => {
         // [TODO] Replace with logger module.
-        console.log('Forgot-password email message %s sent: %s', info.messageId, info.response);
+        console.log('Forgot-password email message ID - %s sent: %s', info.messageId, info.response);
 
         const updatePasswordStrategy = {
           storeType: constants.STORE.TYPES.MONGO_DB,
@@ -461,6 +461,7 @@ class AuthController {
     requestCount += 1;
 
     try {
+      // [TODO] Should not being case sensitive for both key and value.
       const jwtPayload = Object.assign({}, req.query, {
         sub: `${req.query.type}:${req.query.email}:${req.query._id}`,
       });
