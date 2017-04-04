@@ -1,7 +1,7 @@
 /**
  * The process of the web application begins here - cluster mode.
  *
- * Usage: Run `$ NODE_DEBUG=cluster node src/lib/cluster-app.js`
+ * Usage: Run `$ NODE_DEBUG=cluster node src/lib/cluster-app.js`.
  */
 
 const packageJson = require('../../package.json');
