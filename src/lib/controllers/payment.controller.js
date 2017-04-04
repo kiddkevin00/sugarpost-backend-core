@@ -71,13 +71,13 @@ class PaymentController {
           ]);
 
           throw err;
-        } else if (!withoutReferralCode && req.user.usedReferralCode) {
+        } else if (!withoutReferralCode && req.user.type === constants.SYSTEM.USER_TYPES.CANCELLED) {
           const err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,
-              name: constants.AUTH.ERROR_NAMES.ALREADY_USED_REFERRAL_CODE,
+              name: constants.AUTH.ERROR_NAMES.NOT_ELIGIBLE_FOR_REFERRAL_DISCOUNT,
               source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.AUTH.ERROR_MSG.ALREADY_USED_REFERRAL_CODE,
+              message: constants.AUTH.ERROR_MSG.NOT_ELIGIBLE_FOR_REFERRAL_DISCOUNT,
             },
           ]);
 
@@ -277,7 +277,7 @@ class PaymentController {
 
         if (
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.ALREADY_PAID ||
-          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.ALREADY_USED_REFERRAL_CODE ||
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.NOT_ELIGIBLE_FOR_REFERRAL_DISCOUNT ||
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.REFERRAL_CODE_NOT_FOUND
         ) {
           const response = new StandardResponseWrapper([

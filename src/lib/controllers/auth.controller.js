@@ -386,7 +386,7 @@ class AuthController {
                     Enter the new password that you received in this email above and log in.
                   </li>
                   <li>
-                    Under Account tab in Profile section, change your password to what you would 
+                    Under Account tab in Profile section, change your password to what you would
                     like your new password to be.
                   </li>
               </ol>
@@ -460,8 +460,8 @@ class AuthController {
   static getToken(req, res) {
     requestCount += 1;
 
+    // [TODO] HTTP request's query string should not be case sensitive for both key and value.
     try {
-      // [TODO] Should not being case sensitive for both key and value.
       const jwtPayload = Object.assign({}, req.query, {
         sub: `${req.query.type}:${req.query.email}:${req.query._id}`,
       });
