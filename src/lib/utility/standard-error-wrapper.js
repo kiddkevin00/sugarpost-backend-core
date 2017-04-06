@@ -73,7 +73,7 @@ class StandardErrorWrapper {
       errElement = newError;
     }
 
-    this[errorContext].errorStack.unshift(errElement);
+    this[errorContext].errorStack.push(errElement);
   }
 
   getNthError(nth) {

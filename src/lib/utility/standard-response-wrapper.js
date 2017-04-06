@@ -21,8 +21,8 @@
  *       },
  *       {
  *         success: false,
- *         status: "ERROR_NAME_1",
- *         detail: {
+ *         status: "ERROR_NAME_1", // optional
+ *         detail: { // should be an object (standard error wrapper) or array (database result)
  *           _id: "003",
  *           email: "test3@test.com"
  *         }

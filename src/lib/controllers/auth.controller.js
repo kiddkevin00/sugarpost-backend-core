@@ -56,7 +56,7 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, signupCheckStrategy)
       .then((result) => {
-        if (Array.isArray(result) && result.length === 1) {
+        if (Array.isArray(result) && result.length >= 1) {
           const err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
@@ -179,7 +179,7 @@ class AuthController {
         const err = new StandardErrorWrapper(_err);
 
         if (
-          (err.getNthError(0).detail && err.getNthError(0).detail.title === 'Member Exists') ||
+          (err.getNthError(0).detail && err.getNthError(0).detail.title) === 'Member Exists' ||
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.EMAIL_ALREADY_SIGNUP
         ) {
           const response = new StandardResponseWrapper([

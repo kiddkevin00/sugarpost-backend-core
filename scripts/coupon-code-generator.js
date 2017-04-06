@@ -19,4 +19,4 @@ for (let i = 0; i < 20; i++) {
   }
 }
 
-console.log(codesStr);
+console.log('Here is 20 valid codes with comma separation:\n', codesStr);
