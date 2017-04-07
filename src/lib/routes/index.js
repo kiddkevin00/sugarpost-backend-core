@@ -10,6 +10,7 @@ const subscriptionRoutes = require('./subscription/');
 const authCheckMiddleware = require('../utility/auth-check-middleware');
 const constants = require('../constants/');
 const packageJson = require('../../../package.json');
+const errorHandler = require('errorhandler');
 const { Router } = require('express');
 
 const serverStartTimestamp = new Date();
@@ -47,7 +48,9 @@ function setupRoutes(app) {
         .render('404');
     }));
 
-  return app;
+  if (app.get('env') !== 'production') {
+    app.use(errorHandler()); // Error handler - has to be the last
+  }
 }
 
 function setupApiRoutes() {

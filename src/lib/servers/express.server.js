@@ -11,6 +11,9 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 
+// Set Node environment default to "development".
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
 function setupExpressServer(app) {
   app.use(cors({
     optionsSuccessStatus: 200, // [Note] Some legacy browsers (IE 11, some SmartTVs) choke on 204.
@@ -35,9 +38,7 @@ function setupExpressServer(app) {
   app.set('views', path.resolve(__dirname, '../views'));
   app.set('view engine', 'jade');
 
-  const env = app.get('env'); // Same as `process.env.NODE_ENV`.
-
-  if (env === 'production') {
+  if (app.get('env') === 'production') {
     const accessLogStream = fs.createWriteStream(path.resolve(__dirname, '../../../morgan.log'),
       { flags: 'a' });
 
@@ -45,7 +46,6 @@ function setupExpressServer(app) {
   } else {
     // The Node environment should be either "test" or "development".
     app.use(morgan('dev'));
-    app.use(errorHandler()); // Error handler - has to be the last
   }
 
   return app;
