@@ -18,7 +18,7 @@ const containerId = process.env.HOSTNAME;
 
 function setupRoutes(app) {
   const version = packageJson.version;
-  const majorVersion = packageJson.version.slice(0, version.index('.'));
+  const majorVersion = packageJson.version.slice(0, version.indexOf('.'));
 
   app.get('/ping', (req, res) => res.json({
     uptimeInSec: ((new Date()).getTime() - serverStartTimestamp.getTime()) / 1000,
@@ -38,7 +38,7 @@ function setupRoutes(app) {
     },
   }));
 
-  app.use(`/api/${majorVersion}`, setupApiRoutes());
+  app.use(`/api/v${majorVersion}`, setupApiRoutes());
 
   // All not-found API endpoints should return a custom 404 page.
   app.route('/:url(api)/*')
@@ -54,6 +54,8 @@ function setupRoutes(app) {
   if (app.get('env') !== 'production') {
     app.use(errorHandler()); // Error handler - has to be the last
   }
+
+  return app;
 }
 
 function setupApiRoutes() {
