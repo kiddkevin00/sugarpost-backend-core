@@ -17,6 +17,9 @@ const serverStartTimestamp = new Date();
 const containerId = process.env.HOSTNAME;
 
 function setupRoutes(app) {
+  const version = packageJson.version;
+  const majorVersion = packageJson.version.slice(0, version.index('.'));
+
   app.get('/ping', (req, res) => res.json({
     uptimeInSec: ((new Date()).getTime() - serverStartTimestamp.getTime()) / 1000,
     hostname: containerId || 'N/A',
@@ -35,7 +38,7 @@ function setupRoutes(app) {
     },
   }));
 
-  app.use('/api', setupApiRoutes());
+  app.use(`/api/${majorVersion}`, setupApiRoutes());
 
   // All not-found API endpoints should return a custom 404 page.
   app.route('/:url(api)/*')
