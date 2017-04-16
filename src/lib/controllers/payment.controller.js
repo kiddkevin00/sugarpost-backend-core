@@ -135,11 +135,10 @@ class PaymentController {
         const items = [
           { plan: stripePlan, quantity: stripeQuantity },
         ];
-        const tax_percent = 8.875; // eslint-disable-line camelcase
         const prorate = false;
 
         return stripe.subscriptions
-          .create({ items, tax_percent, prorate, customer: stripeCustomerId });
+          .create({ items, prorate, customer: stripeCustomerId });
       })
       .then((subscription) => {
         stripeSubscriptionId = subscription.id;
@@ -243,7 +242,6 @@ class PaymentController {
 
         return PaymentController._handleRequest(state, res, DatabaseService, linkAccountStrategy);
       })
-
       .then(() => {
         const newJwtPayload = Object.assign({}, req.user, partialNewUserInfo, {
           sub: `${partialNewUserInfo.type}:${req.user.email}:${req.user._id}`,

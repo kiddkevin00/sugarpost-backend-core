@@ -52,7 +52,7 @@ function setupRoutes(app) {
     }));
 
   if (app.get('env') !== 'production') {
-    app.use(errorHandler()); // Error handler - has to be the last
+    app.use(errorHandler()); // Error handler - has to be the last.
   }
 
   return app;
