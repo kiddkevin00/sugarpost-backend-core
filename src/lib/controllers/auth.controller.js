@@ -112,6 +112,7 @@ class AuthController {
         return AuthController._handleRequest(state, res, DatabaseService, signupStrategy);
       })
       .then((result) => {
+        const user = result;
         const emailSender = new EmailSender('Gmail', 'administrator@mysugarpost.com');
         const from = '"Sugarpost Team" <administrator@mysugarpost.com>';
         const to = state.email;
@@ -138,14 +139,14 @@ class AuthController {
             console.log('ERROR...', err);
           });
 
-        const jwtPayload = {
-          sub: `${result.type}:${result.email}:${result._id}`,
-          _id: result._id,
-          type: result.type,
-          email: result.email,
-          fullName: result.fullName,
-          referralAmount: result.referralAmount,
-        };
+        delete user.passwordHash;
+        delete user.isSuspended;
+        delete user.version;
+        delete user.systemData;
+
+        const jwtPayload = Object.assign({}, user, {
+          sub: `${user.type}:${user.email}:${user._id}`,
+        });
         const jwtToken = jwt.sign(jwtPayload, jwtSecret, {
           expiresIn: jwtExpiresIn,
           notBefore: jwtNotBefore,
@@ -160,16 +161,9 @@ class AuthController {
           signed: constants.CREDENTIAL.JWT.COOKIE_SIGNED,
         });
 
-        Object.assign(result, {
-          passwordHash: undefined,
-          isSuspended: undefined,
-          version: undefined,
-          systemData: undefined,
-        });
-
         const response = new StandardResponseWrapper({
           success: true,
-          detail: result,
+          detail: user,
         }, constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
