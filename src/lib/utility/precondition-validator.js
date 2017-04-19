@@ -39,7 +39,7 @@ class PreconditionValidator {
     return PreconditionValidator;
   }
 
-  static shouldBeValidTime(value, errName) {
+  static shouldBeValidDateString(value, errName) {
     if (isNaN((new Date(value)).getTime())) {
       const err = new StandardErrorWrapper([
         {

@@ -6,7 +6,7 @@ const cc = require('coupon-code');
 
 let codesStr = '';
 
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 20; i += 1) {
   const code = cc.generate({
     parts: 1,
     partLen: 6,

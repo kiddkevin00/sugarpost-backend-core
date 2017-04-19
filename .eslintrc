@@ -1,5 +1,8 @@
 {
   "extends": "airbnb",
+  "env": {
+    "node": true
+  },
   "rules": {
     "max-len": [2, {"code": 100, "ignoreStrings": true }],
     "keyword-spacing": [2, {
@@ -13,6 +16,8 @@
     "no-unused-expressions": 1,
     "no-unused-vars": 1,
     "no-use-before-define": [2, { "functions": false, "classes": true }],
+    "no-restricted-syntax": [2, "WithStatement"],
+    "no-prototype-builtins": 1,
     "new-cap": [2, { "capIsNew": false }],
     "import/no-extraneous-dependencies": [2, {"devDependencies": true, "optionalDependencies": false}],
     "arrow-parens": [2, "always"]

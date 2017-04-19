@@ -140,13 +140,13 @@ class ReferralController {
     const emailSender = new EmailSender('Gmail', 'administrator@mysugarpost.com');
     const from = `"${emailFromName}" <administrator@mysugarpost.com>`;
     const to = emailTo;
-    const subject = 'Enjoy Sugarpost with 10% Off Your First Month\'s Subscription';
+    const subject = 'Enjoy Sugarpost with 50% Off Your First Month\'s Subscription';
     const referralCodeStr = req.user.referralCode || 'UNKNOWN';
     const html = `
       <div>
           <p>Hi,</p>
           <p>
-            Here is a 10% discount off your first month of Sugarpost’s premium dessert 
+            Here is a 50% discount off your first month of Sugarpost’s premium dessert 
             subscription service! To claim your discount, sign up now and enter the 
             following referral code in the payment page: ${referralCodeStr} or 
             click the link below:

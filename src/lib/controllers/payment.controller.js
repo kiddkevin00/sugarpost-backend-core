@@ -71,7 +71,10 @@ class PaymentController {
           ]);
 
           throw err;
-        } else if (!withoutReferralCode && req.user.type === constants.SYSTEM.USER_TYPES.CANCELLED) {
+        } else if (
+          !withoutReferralCode &&
+          req.user.type === constants.SYSTEM.USER_TYPES.CANCELLED
+        ) {
           const err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,
@@ -275,7 +278,7 @@ class PaymentController {
 
         if (
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.ALREADY_PAID ||
-          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.NOT_ELIGIBLE_FOR_REFERRAL_DISCOUNT ||
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.NOT_ELIGIBLE_FOR_REFERRAL_DISCOUNT || // eslint-disable-line max-len
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.REFERRAL_CODE_NOT_FOUND
         ) {
           const response = new StandardResponseWrapper([
