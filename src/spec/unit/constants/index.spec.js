@@ -2,7 +2,7 @@ const constants = require('../../../lib/constants/');
 
 describe('Constants root', function () {
 
-  describe('should contain all the exposed constant object(s) within constants component', function () {
+  describe('should contain all object that will be exposed to public within constants component', function () {
 
     it('including a `SYSTEM` constant object', function () {
       expect(constants.SYSTEM).to.exist;

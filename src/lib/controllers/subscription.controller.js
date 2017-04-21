@@ -38,7 +38,7 @@ class SubscriptionController {
 
     if (req.user.type !== constants.SYSTEM.USER_TYPES.PAID) {
       const standardResponse = new StandardResponseWrapper([{ success: false }],
-        constants.SYSTEM.RESPONSE_NAMES.LOGIN);
+        constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
       return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
         .json(standardResponse.format);
@@ -104,7 +104,7 @@ class SubscriptionController {
         });
 
         const response = new StandardResponseWrapper([{ success: true }],
-          constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
+          constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
           .json(response.format);
