@@ -160,6 +160,8 @@ class PaymentController {
           // eslint-disable-next-line camelcase
           trial_end = new Date(year, month + 2, stripeRecurringBillingDate).getTime() / 1000;
         }
+        // [TODO] Removes this line after 4/26.
+        trial_end = new Date(year, 6, stripeRecurringBillingDate).getTime() / 1000;
 
         // eslint-disable-next-line camelcase
         return stripe.subscriptions.update(stripeSubscriptionId, { trial_end, prorate });
