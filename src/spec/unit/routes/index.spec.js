@@ -19,7 +19,7 @@ describe('Route component', function () {
   });
 
   it('attaches core routes', function () {
-    expect(expressApp.use).to.have.been.calledWith('/api', match.func);
+    expect(expressApp.use).to.have.been.calledWith('/api/v1', match.func);
   });
 
   it('will handle the case when any API endpoint is not found', function () {

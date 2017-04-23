@@ -94,11 +94,11 @@ class ReferralController {
             audience: jwtAudience,
           });
 
-          res.cookie('jwt', jwtToken, {
-            httpOnly: true,
-            secure: false,
-            path: '/api',
-            signed: false,
+          res.cookie(constants.CREDENTIAL.JWT.COOKIE_NAME, jwtToken, {
+            httpOnly: constants.CREDENTIAL.JWT.COOKIE_HTTP_ONLY,
+            secure: constants.CREDENTIAL.JWT.COOKIE_SECURE,
+            path: constants.CREDENTIAL.JWT.COOKIE_PATH,
+            signed: constants.CREDENTIAL.JWT.COOKIE_SIGNED,
           });
         } else {
           response = new StandardResponseWrapper({
@@ -140,13 +140,13 @@ class ReferralController {
     const emailSender = new EmailSender('Gmail', 'administrator@mysugarpost.com');
     const from = `"${emailFromName}" <administrator@mysugarpost.com>`;
     const to = emailTo;
-    const subject = 'Enjoy Sugarpost with 10% Off Your First Month\'s Subscription';
+    const subject = 'Enjoy Sugarpost with 50% Off Your First Month\'s Subscription';
     const referralCodeStr = req.user.referralCode || 'UNKNOWN';
     const html = `
       <div>
           <p>Hi,</p>
           <p>
-            Here is a 10% discount off your first month of Sugarpost’s premium dessert 
+            Here is a 50% discount off your first month of Sugarpost’s premium dessert 
             subscription service! To claim your discount, sign up now and enter the 
             following referral code in the payment page: ${referralCodeStr} or 
             click the link below:

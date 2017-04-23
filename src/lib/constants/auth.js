@@ -5,7 +5,7 @@ exports.ERROR_NAMES = {
   EMAIL_ALREADY_SIGNUP: 'EMAIL_ALREADY_SIGNUP',
   USER_EMAIL_NOT_FOUND: 'EMAIL_NOT_EXISTED',
   ALREADY_PAID: 'ALREADY_PAID',
-  ALREADY_USED_REFERRAL_CODE: 'ALREADY_USED_REFERRAL_CODE',
+  NOT_ELIGIBLE_FOR_REFERRAL_DISCOUNT: 'NOT_ELIGIBLE_FOR_REFERRAL_DISCOUNT',
   REFERRAL_CODE_NOT_FOUND: 'REFERRAL_CODE_NOT_FOUND',
   FULL_NAME_FIELD_IS_EMPTY: 'FULL_NAME_FIELD_IS_EMPTY',
   EMAIL_FIELD_IS_EMPTY: 'EMAIL_FIELD_IS_EMPTY',
@@ -21,7 +21,7 @@ exports.ERROR_MSG = {
   EMAIL_ALREADY_SIGNUP: 'The provided email is already signed up.',
   USER_EMAIL_NOT_FOUND: 'The provided email is not found in database.',
   ALREADY_PAID: 'The provided user has already paid for the subscription.',
-  ALREADY_USED_REFERRAL_CODE: 'The provided user has already used a referral code to pay for the subscription.',
+  NOT_ELIGIBLE_FOR_REFERRAL_DISCOUNT: 'The provided user had already paid for the subscription once.',
   REFERRAL_CODE_NOT_FOUND: 'The provided refer code is not found in database.',
 };
 

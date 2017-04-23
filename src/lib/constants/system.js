@@ -1,11 +1,12 @@
 // BEGIN - THIS PART SHOULD BE CONSISTENT WITH FRONTEND
 
 const sources = {
-  BULLETIN_BOARD_SYSTEM: 'bulletin-board-system',
-  SUGARPOST_FRONTEND_WEB: 'sugarpost-frontend-web',
+  SUGARPOST_BACKEND_CORE: 'sugarpost-backend-core',
+  SUGARPOST_FRONTEND_WEB_CORE: 'sugarpost-frontend-web-core',
 };
 const httpStatusCodes = {
   OK: 200,
+  PERMANENT_REDIRECT: 308,
   BAD_REQUEST: 400,
   UNAUTHENTICATED: 401,
   FORBIDDEN: 403,
@@ -30,7 +31,7 @@ exports.USER_TYPES = {
 // END - THIS PART SHOULD BE CONSISTENT WITH FRONTEND
 
 exports.COMMON = {
-  CURRENT_SOURCE: sources.BULLETIN_BOARD_SYSTEM,
+  CURRENT_SOURCE: sources.SUGARPOST_BACKEND_CORE,
 };
 
 exports.DEFAULT_CONFIG = {};
@@ -61,7 +62,6 @@ exports.ERROR_MSG = {
 };
 
 exports.RESPONSE_NAMES = {
-  SUBSCRIBE: 'SUBSCRIBE',
   SIGN_UP: 'SIGN_UP',
   LOGIN: 'LOGIN',
   LOGOUT: 'LOGOUT',
@@ -71,4 +71,5 @@ exports.RESPONSE_NAMES = {
   EMAIL_REFERRAL: 'EMAIL_REFERRAL',
   AUTH_CHECK: 'AUTH_CHECK',
   PAYMENT: 'PAYMENT',
+  SUBSCRIBE: 'SUBSCRIBE',
 };

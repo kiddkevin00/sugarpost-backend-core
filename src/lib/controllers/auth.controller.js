@@ -56,7 +56,7 @@ class AuthController {
 
     return AuthController._handleRequest(state, res, DatabaseService, signupCheckStrategy)
       .then((result) => {
-        if (Array.isArray(result) && result.length === 1) {
+        if (Array.isArray(result) && result.length >= 1) {
           const err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.BAD_REQUEST,
@@ -112,6 +112,7 @@ class AuthController {
         return AuthController._handleRequest(state, res, DatabaseService, signupStrategy);
       })
       .then((result) => {
+        const user = result;
         const emailSender = new EmailSender('Gmail', 'administrator@mysugarpost.com');
         const from = '"Sugarpost Team" <administrator@mysugarpost.com>';
         const to = state.email;
@@ -138,14 +139,14 @@ class AuthController {
             console.log('ERROR...', err);
           });
 
-        const jwtPayload = {
-          sub: `${result.type}:${result.email}:${result._id}`,
-          _id: result._id,
-          type: result.type,
-          email: result.email,
-          fullName: result.fullName,
-          referralAmount: result.referralAmount,
-        };
+        delete user.passwordHash;
+        delete user.isSuspended;
+        delete user.version;
+        delete user.systemData;
+
+        const jwtPayload = Object.assign({}, user, {
+          sub: `${user.type}:${user.email}:${user._id}`,
+        });
         const jwtToken = jwt.sign(jwtPayload, jwtSecret, {
           expiresIn: jwtExpiresIn,
           notBefore: jwtNotBefore,
@@ -153,23 +154,16 @@ class AuthController {
           audience: jwtAudience,
         });
 
-        res.cookie('jwt', jwtToken, {
-          httpOnly: true,
-          secure: false,
-          path: '/api',
-          signed: false,
-        });
-
-        Object.assign(result, {
-          passwordHash: undefined,
-          isSuspended: undefined,
-          version: undefined,
-          systemData: undefined,
+        res.cookie(constants.CREDENTIAL.JWT.COOKIE_NAME, jwtToken, {
+          httpOnly: constants.CREDENTIAL.JWT.COOKIE_HTTP_ONLY,
+          secure: constants.CREDENTIAL.JWT.COOKIE_SECURE,
+          path: constants.CREDENTIAL.JWT.COOKIE_PATH,
+          signed: constants.CREDENTIAL.JWT.COOKIE_SIGNED,
         });
 
         const response = new StandardResponseWrapper({
           success: true,
-          detail: result,
+          detail: user,
         }, constants.SYSTEM.RESPONSE_NAMES.SIGN_UP);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
@@ -179,7 +173,7 @@ class AuthController {
         const err = new StandardErrorWrapper(_err);
 
         if (
-          (err.getNthError(0).detail && err.getNthError(0).detail.title === 'Member Exists') ||
+          (err.getNthError(0).detail && err.getNthError(0).detail.title) === 'Member Exists' ||
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.EMAIL_ALREADY_SIGNUP
         ) {
           const response = new StandardResponseWrapper([
@@ -271,11 +265,11 @@ class AuthController {
             audience: jwtAudience,
           });
 
-          res.cookie('jwt', jwtToken, {
-            httpOnly: true,
-            secure: false,
-            path: '/api',
-            signed: false,
+          res.cookie(constants.CREDENTIAL.JWT.COOKIE_NAME, jwtToken, {
+            httpOnly: constants.CREDENTIAL.JWT.COOKIE_HTTP_ONLY,
+            secure: constants.CREDENTIAL.JWT.COOKIE_SECURE,
+            path: constants.CREDENTIAL.JWT.COOKIE_PATH,
+            signed: constants.CREDENTIAL.JWT.COOKIE_SIGNED,
           });
         } else {
           response = {
@@ -311,11 +305,11 @@ class AuthController {
   static logout(req, res) {
     requestCount += 1;
 
-    res.cookie('jwt', '', {
-      httpOnly: true,
-      secure: false,
-      path: '/api',
-      signed: false,
+    res.cookie(constants.CREDENTIAL.JWT.COOKIE_NAME, '', {
+      httpOnly: constants.CREDENTIAL.JWT.COOKIE_HTTP_ONLY,
+      secure: constants.CREDENTIAL.JWT.COOKIE_SECURE,
+      path: constants.CREDENTIAL.JWT.COOKIE_PATH,
+      signed: constants.CREDENTIAL.JWT.COOKIE_SIGNED,
     });
 
     const response = new StandardResponseWrapper([{ success: true }],
@@ -386,7 +380,7 @@ class AuthController {
                     Enter the new password that you received in this email above and log in.
                   </li>
                   <li>
-                    Under Account tab in Profile section, change your password to what you would 
+                    Under Account tab in Profile section, change your password to what you would
                     like your new password to be.
                   </li>
               </ol>
@@ -460,8 +454,8 @@ class AuthController {
   static getToken(req, res) {
     requestCount += 1;
 
+    // [TODO] HTTP request's query string should not be case sensitive for both key and value.
     try {
-      // [TODO] Should not being case sensitive for both key and value.
       const jwtPayload = Object.assign({}, req.query, {
         sub: `${req.query.type}:${req.query.email}:${req.query._id}`,
       });
@@ -472,14 +466,15 @@ class AuthController {
         audience: jwtAudience,
       });
 
-      res.cookie('jwt', jwtToken, {
-        httpOnly: true,
-        secure: false,
-        path: '/api',
-        signed: false,
+      res.cookie(constants.CREDENTIAL.JWT.COOKIE_NAME, jwtToken, {
+        httpOnly: constants.CREDENTIAL.JWT.COOKIE_HTTP_ONLY,
+        secure: constants.CREDENTIAL.JWT.COOKIE_SECURE,
+        path: constants.CREDENTIAL.JWT.COOKIE_PATH,
+        signed: constants.CREDENTIAL.JWT.COOKIE_SIGNED,
       });
 
-      return res.redirect(`${req.query.callback_url}`);
+      return res.redirect(constants.SYSTEM.HTTP_STATUS_CODES.PERMANENT_REDIRECT,
+        `${req.query.callback_url}`);
     } catch (_err) {
       const err = new StandardErrorWrapper([
         {
@@ -530,11 +525,11 @@ class AuthController {
     //      audience: jwtAudience,
     //    });
     //
-    //    res.cookie('jwt', jwtToken, {
-    //      httpOnly: true,
-    //      secure: false,
-    //      path: '/api',
-    //      signed: false,
+    //    res.cookie(constants.CREDENTIAL.JWT.COOKIE_NAME, jwtToken, {
+    //      httpOnly: constants.CREDENTIAL.JWT.COOKIE_HTTP_ONLY,
+    //      secure: constants.CREDENTIAL.JWT.COOKIE_SECURE,
+    //      path: constants.CREDENTIAL.JWT.COOKIE_PATH,
+    //      signed: constants.CREDENTIAL.JWT.COOKIE_SIGNED,
     //    });
     //
     //    const response = new StandardResponseWrapper([{

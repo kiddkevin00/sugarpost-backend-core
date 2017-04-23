@@ -8,7 +8,7 @@ const setupRoutes = require('./routes/');
 const express = require('express');
 const http = require('http');
 
-// Set default Node environment to "development".
+// Set Node environment default to "development".
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const app = express();

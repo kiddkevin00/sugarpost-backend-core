@@ -71,13 +71,16 @@ class PaymentController {
           ]);
 
           throw err;
-        } else if (!withoutReferralCode && req.user.usedReferralCode) {
+        } else if (
+          !withoutReferralCode &&
+          req.user.type === constants.SYSTEM.USER_TYPES.CANCELLED
+        ) {
           const err = new StandardErrorWrapper([
             {
               code: constants.SYSTEM.ERROR_CODES.PAYMENT_CHECK_FAILURE,
-              name: constants.AUTH.ERROR_NAMES.ALREADY_USED_REFERRAL_CODE,
+              name: constants.AUTH.ERROR_NAMES.NOT_ELIGIBLE_FOR_REFERRAL_DISCOUNT,
               source: constants.SYSTEM.COMMON.CURRENT_SOURCE,
-              message: constants.AUTH.ERROR_MSG.ALREADY_USED_REFERRAL_CODE,
+              message: constants.AUTH.ERROR_MSG.NOT_ELIGIBLE_FOR_REFERRAL_DISCOUNT,
             },
           ]);
 
@@ -135,11 +138,10 @@ class PaymentController {
         const items = [
           { plan: stripePlan, quantity: stripeQuantity },
         ];
-        const tax_percent = 8.875; // eslint-disable-line camelcase
         const prorate = false;
 
         return stripe.subscriptions
-          .create({ items, tax_percent, prorate, customer: stripeCustomerId });
+          .create({ items, prorate, customer: stripeCustomerId });
       })
       .then((subscription) => {
         stripeSubscriptionId = subscription.id;
@@ -158,6 +160,8 @@ class PaymentController {
           // eslint-disable-next-line camelcase
           trial_end = new Date(year, month + 2, stripeRecurringBillingDate).getTime() / 1000;
         }
+        // [TODO] Removes this line after 4/26.
+        trial_end = new Date(year, 6, stripeRecurringBillingDate).getTime() / 1000;
 
         // eslint-disable-next-line camelcase
         return stripe.subscriptions.update(stripeSubscriptionId, { trial_end, prorate });
@@ -243,7 +247,6 @@ class PaymentController {
 
         return PaymentController._handleRequest(state, res, DatabaseService, linkAccountStrategy);
       })
-
       .then(() => {
         const newJwtPayload = Object.assign({}, req.user, partialNewUserInfo, {
           sub: `${partialNewUserInfo.type}:${req.user.email}:${req.user._id}`,
@@ -255,11 +258,11 @@ class PaymentController {
           audience: jwtAudience,
         });
 
-        res.cookie('jwt', jwtToken, {
-          httpOnly: true,
-          secure: false,
-          path: '/api',
-          signed: false,
+        res.cookie(constants.CREDENTIAL.JWT.COOKIE_NAME, jwtToken, {
+          httpOnly: constants.CREDENTIAL.JWT.COOKIE_HTTP_ONLY,
+          secure: constants.CREDENTIAL.JWT.COOKIE_SECURE,
+          path: constants.CREDENTIAL.JWT.COOKIE_PATH,
+          signed: constants.CREDENTIAL.JWT.COOKIE_SIGNED,
         });
 
         const response = new StandardResponseWrapper([
@@ -277,7 +280,7 @@ class PaymentController {
 
         if (
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.ALREADY_PAID ||
-          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.ALREADY_USED_REFERRAL_CODE ||
+          err.getNthError(0).name === constants.AUTH.ERROR_NAMES.NOT_ELIGIBLE_FOR_REFERRAL_DISCOUNT || // eslint-disable-line max-len
           err.getNthError(0).name === constants.AUTH.ERROR_NAMES.REFERRAL_CODE_NOT_FOUND
         ) {
           const response = new StandardResponseWrapper([

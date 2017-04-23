@@ -41,12 +41,12 @@ class StandardErrorWrapper {
       this[errorContext].errorStack = initialErr[errorContext].errorStack;
     } else if (Array.isArray(initialErr)) {
       /*
-       * If initial error(s) is(are) wrapped into an array, each of them should follow standard
+       * If the initial error(s) are wrapped into an array, each of them should follow standard
        * error format.
        */
       this[errorContext].errorStack = initialErr;
     } else if (initialErr) {
-      // An initial error doesn't follow standard error format, and will try to standardized it.
+      // If the initial error doesn't follow standard error format, will attempt to standardized it.
       const errMsg = initialErr.toString() !== '[object Object]' ?
         initialErr.toString() : JSON.stringify(initialErr, null, 2);
 
@@ -58,7 +58,7 @@ class StandardErrorWrapper {
         detail: initialErr,
       }];
     } else {
-      // Without initial error.
+      // If there is no initial error provided, default to an empty array.
       this[errorContext].errorStack = [];
     }
   }
@@ -73,7 +73,7 @@ class StandardErrorWrapper {
       errElement = newError;
     }
 
-    this[errorContext].errorStack.unshift(errElement);
+    this[errorContext].errorStack.push(errElement);
   }
 
   getNthError(nth) {

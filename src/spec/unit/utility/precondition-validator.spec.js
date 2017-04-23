@@ -3,6 +3,15 @@ const PreconditionValidator = require('../../../lib/utility/precondition-validat
 describe('Precondition validator', function () {
   let value;
 
+  it('should be chainable', () => {
+    expect(
+      PreconditionValidator.shouldNotBeEmpty('abc123')
+        .shouldBeEnumType('option1', ['option1'])
+        .shouldBeValidDateString((new Date()).toISOString())
+        .shouldBeArrayOrArrayText([1, 2, 3])
+    ).to.throw();
+  });
+
   it('can validate whether a value is empty :: shouldNotBeEmpty()', () => {
     value = '';
 
@@ -10,28 +19,27 @@ describe('Precondition validator', function () {
   });
 
   it('can validate if a value belongs to one of the provided options :: shouldBeEnumType()', () => {
-    value = 'option1';
-    const options = [value];
+    value = 'option2';
 
-    expect(() => { PreconditionValidator.shouldBeEnumType(value, options); }).to.not.throw();
+    expect(() => { PreconditionValidator.shouldBeEnumType(value, [value]); }).to.not.throw();
   });
 
   it('can validate if a value is a valid time :: shouldBeValidTime()', () => {
     value = (new Date()).toISOString();
 
-    expect(() => { PreconditionValidator.shouldBeValidTime(value); }).to.not.throw();
+    expect(() => { PreconditionValidator.shouldBeValidDateString(value); }).to.not.throw();
   });
 
   describe('can validate if a value is an array :: shouldBeArrayOrArrayText()', () => {
 
     it('after parsing', () => {
-      value = [1, 2, 3];
+      value = [4, 5, 6];
 
       expect(() => { PreconditionValidator.shouldBeArrayOrArrayText(value); }).to.not.throw();
     });
 
     it('without parsing', () => {
-      value = JSON.stringify([1, 2, 3]);
+      value = JSON.stringify([7, 8, 9]);
 
       expect(() => { PreconditionValidator.shouldBeArrayOrArrayText(value); }).to.not.throw();
     });

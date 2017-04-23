@@ -10,7 +10,7 @@ const childProcess = require('child_process');
 Promise.promisifyAll(fs);
 
 const newVersion = process.argv[process.argv.length - 1];
-const versionRegex = /[0-9]+.[0-9]+.[0-9]+/g;
+const versionRegex = /[0-9]+\.[0-9]+\.[0-9]+/g;
 
 if (!versionRegex.test(newVersion)) {
   console.error(`[Version Bump Error] Provided version - ${newVersion || 'N/A'} is invalid (or missing).`);

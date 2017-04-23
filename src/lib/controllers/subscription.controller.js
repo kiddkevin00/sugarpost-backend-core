@@ -38,7 +38,7 @@ class SubscriptionController {
 
     if (req.user.type !== constants.SYSTEM.USER_TYPES.PAID) {
       const standardResponse = new StandardResponseWrapper([{ success: false }],
-        constants.SYSTEM.RESPONSE_NAMES.LOGIN);
+        constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
       return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
         .json(standardResponse.format);
@@ -96,15 +96,15 @@ class SubscriptionController {
           audience: jwtAudience,
         });
 
-        res.cookie('jwt', jwtToken, {
-          httpOnly: true,
-          secure: false,
-          path: '/api',
-          signed: false,
+        res.cookie(constants.CREDENTIAL.JWT.COOKIE_NAME, jwtToken, {
+          httpOnly: constants.CREDENTIAL.JWT.COOKIE_HTTP_ONLY,
+          secure: constants.CREDENTIAL.JWT.COOKIE_SECURE,
+          path: constants.CREDENTIAL.JWT.COOKIE_PATH,
+          signed: constants.CREDENTIAL.JWT.COOKIE_SIGNED,
         });
 
         const response = new StandardResponseWrapper([{ success: true }],
-          constants.SYSTEM.RESPONSE_NAMES.PAYMENT);
+          constants.SYSTEM.RESPONSE_NAMES.SUBSCRIBE);
 
         return res.status(constants.SYSTEM.HTTP_STATUS_CODES.OK)
           .json(response.format);
