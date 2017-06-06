@@ -20,6 +20,7 @@
     "no-prototype-builtins": 1,
     "new-cap": [2, { "capIsNew": false }],
     "import/no-extraneous-dependencies": [2, {"devDependencies": true, "optionalDependencies": false}],
-    "arrow-parens": [2, "always"]
+    "arrow-parens": [2, "always"],
+    "no-multi-assign": 1
   }
 }
