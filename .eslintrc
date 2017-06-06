@@ -24,7 +24,5 @@
     "arrow-parens": [2, "always"],
     "newline-after-var": [2, "always"],
     "no-multi-assign": 1
-    "arrow-parens": [2, "always"],
-    "no-multi-assign": 1
   }
 }
