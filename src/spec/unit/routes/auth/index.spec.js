@@ -1,5 +1,6 @@
 const authRouter = require('../../../../lib/routes/auth/');
 
+
 describe('Auth router', function () {
 
   it('should have all the endpoints registered', function () {

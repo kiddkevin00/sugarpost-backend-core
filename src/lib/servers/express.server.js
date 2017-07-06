@@ -6,10 +6,9 @@ const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const favicon = require('serve-favicon');
 const morgan = require('morgan');
-const errorHandler = require('errorhandler');
 const fs = require('fs');
 const path = require('path');
-const express = require('express');
+
 
 // Set Node environment default to "development".
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';

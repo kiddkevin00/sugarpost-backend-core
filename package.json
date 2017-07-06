@@ -141,5 +141,6 @@
   "repository": {
     "type": "git",
     "url": "git@github.com:kiddkevin00/bulletin-board-system-backend.git"
-  }
+  },
+  "private": true
 }

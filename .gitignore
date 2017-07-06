@@ -1,5 +1,5 @@
 
-# Created by https://www.gitignore.io/api/node,vagrant,osx,windows,vim,rubymine
+# Created by https://www.gitignore.io/api/node,vagrant,osx,windows,vim,rubymine,webstorm
 
 ### Node ###
 # Logs
@@ -115,10 +115,10 @@ cmake-build-debug/
 # Mongo Explorer plugin:
 .idea/**/mongoSettings.xml
 
-## File-based project format:
+# File-based project format:
 *.iws
 
-## Plugin-specific files:
+# Plugin-specific files:
 
 # IntelliJ
 /out/
@@ -149,6 +149,33 @@ fabric.properties
 
 # Sonarlint plugin
 .idea/sonarlint
+
+
+### WebStorm ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff:
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/vcs.xml
+.idea/jsLibraryMappings.xml
+
+# Sensitive or high-churn files:
+.idea/dataSources.ids
+.idea/dataSources.xml
+.idea/dataSources.local.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+
+# Gradle:
+.idea/gradle.xml
+.idea/libraries
+
+# Mongo Explorer plugin:
+.idea/mongoSettings.xml
 
 
 ### Vagrant ###
@@ -197,14 +224,6 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/node,vagrant,osx,windows,vim,rubymine
 
 
-### JetBrains IDEs ###
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
-# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
-
-# IntelliJ
-/out/
-.idea
-
 
 ### CUSTOM ENTRIES ###
 # local NPM cache
@@ -216,6 +235,8 @@ $RECYCLE.BIN/
 
 # build files
 /dist/
+index-[0-9]*.[0-9]*.[0-9]*.*
+*bundle-[0-9]*.[0-9]*.[0-9]*.*
 package.tgz
 /*-*.tgz
 .babel.json

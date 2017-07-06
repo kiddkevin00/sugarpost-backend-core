@@ -29,7 +29,7 @@ class MongoStore extends BaseStore {
   }
 
   // [TODO]
-  static configIndex(connection) {
+  static configIndex(/*connection*/) {
 
   }
 

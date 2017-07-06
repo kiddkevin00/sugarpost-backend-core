@@ -1,4 +1,5 @@
-const PreconditionValidator = require('../../../lib/utility/precondition-validator');
+const PreconditionValidator = require('../../../lib/utils/precondition-validator');
+
 
 describe('Precondition validator', function () {
   let value;

@@ -1,8 +1,8 @@
 const DatabaseService = require('../services/database.service');
 const ProcessSate = require('../process-state/');
-const Validator = require('../utility/precondition-validator');
-const StandardErrorWrapper = require('../utility/standard-error-wrapper');
-const StandardResponseWrapper = require('../utility/standard-response-wrapper');
+const Validator = require('../utils/precondition-validator');
+const StandardErrorWrapper = require('../utils/standard-error-wrapper');
+const StandardResponseWrapper = require('../utils/standard-response-wrapper');
 const constants = require('../constants/');
 const stripeApi = require('stripe');
 const Mailchimp = require('mailchimp-api-v3');
@@ -160,8 +160,6 @@ class PaymentController {
           // eslint-disable-next-line camelcase
           trial_end = new Date(year, month + 2, stripeRecurringBillingDate).getTime() / 1000;
         }
-        // [TODO] Removes this line after 4/26.
-        trial_end = new Date(year, 6, stripeRecurringBillingDate).getTime() / 1000;
 
         // eslint-disable-next-line camelcase
         return stripe.subscriptions.update(stripeSubscriptionId, { trial_end, prorate });

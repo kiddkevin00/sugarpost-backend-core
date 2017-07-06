@@ -1,6 +1,7 @@
 const AuthController = require('../../../lib/controllers/auth.controller');
 const DatabaseSvc = require('../../../lib/services/database.service');
 
+
 describe('Auth controller', function () {
   let req;
   let res;

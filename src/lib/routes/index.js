@@ -7,11 +7,12 @@ const referralRoutes = require('./referral/');
 const userRoutes = require('./user/');
 const paymentRoutes = require('./payment/');
 const subscriptionRoutes = require('./subscription/');
-const authCheckMiddleware = require('../utility/auth-check-middleware');
+const authCheckMiddleware = require('../utils/auth-check-middleware');
 const constants = require('../constants/');
 const packageJson = require('../../../package.json');
 const errorHandler = require('errorhandler');
 const { Router } = require('express');
+
 
 const serverStartTimestamp = new Date();
 const containerId = process.env.HOSTNAME;

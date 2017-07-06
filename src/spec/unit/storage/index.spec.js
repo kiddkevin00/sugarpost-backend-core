@@ -1,5 +1,6 @@
 const storeModule = require('../../../lib/storage/');
 
+
 describe('Storage root', function () {
 
   describe('should contain all the classes that will be exposed to public within storage component', function () {

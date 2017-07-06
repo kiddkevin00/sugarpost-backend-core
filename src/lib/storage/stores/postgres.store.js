@@ -1,8 +1,8 @@
-const constants = require('../../constants/');
 const BaseStore = require('./base');
-const pgtools = require('pgtools');
-const Sequelize = require('sequelize');
+const constants = require('../../constants/');
 const packageJson = require('../../../../package.json');
+const Sequelize = require('sequelize');
+
 
 const storeType = constants.STORE.TYPES.POSTGRES;
 const packageJsonDbConfig = packageJson.config.databases[storeType];
@@ -29,7 +29,7 @@ class PostgresStore extends BaseStore {
   }
 
   // [TODO]
-  static configIndex(connection) {
+  static configIndex(/*connection*/) {
 
   }
 
@@ -53,7 +53,7 @@ class PostgresStore extends BaseStore {
   }
 
   // [TODO]
-  static on(connection, event) {
+  static on(/*connection, event*/) {
 
   }
 

@@ -7,7 +7,9 @@
     "expect": true,
     "spy": true,
     "stub": true,
-    "match": true
+    "mock": true,
+    "match": true,
+    "pending": true
   },
   "plugins": [
     "chai-expect"

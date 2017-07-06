@@ -1,14 +1,14 @@
 const DatabaseService = require('../services/database.service');
 const ProcessSate = require('../process-state/');
-const EmailSender = require('../utility/email-sender');
-const Validator = require('../utility/precondition-validator');
-const StandardErrorWrapper = require('../utility/standard-error-wrapper');
-const StandardResponseWrapper = require('../utility/standard-response-wrapper');
+const EmailSender = require('../utils/email-sender');
+const Validator = require('../utils/precondition-validator');
+const StandardErrorWrapper = require('../utils/standard-error-wrapper');
+const StandardResponseWrapper = require('../utils/standard-response-wrapper');
 const constants = require('../constants/');
 const jwt = require('jsonwebtoken');
 const couponCode = require('coupon-code');
 const Mailchimp = require('mailchimp-api-v3');
-const mongojs = require('mongojs');
+// const mongojs = require('mongojs');
 const Promise = require('bluebird');
 const fs = require('fs');
 const path = require('path');
@@ -100,7 +100,7 @@ class AuthController {
                 systemData: {
                   dateCreated: new Date(),
                   createdBy: null,
-                  lastModifiedDate: null,
+                  dateLastModified: null,
                   lastModifiedBy: null,
                 },
               },
