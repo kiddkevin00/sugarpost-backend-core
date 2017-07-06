@@ -1,12 +1,13 @@
 const DatabaseService = require('../services/database.service');
 const ProcessSate = require('../process-state/');
-const Validator = require('../utility/precondition-validator');
-const StandardErrorWrapper = require('../utility/standard-error-wrapper');
-const StandardResponseWrapper = require('../utility/standard-response-wrapper');
+const Validator = require('../utils/precondition-validator');
+const StandardErrorWrapper = require('../utils/standard-error-wrapper');
+const StandardResponseWrapper = require('../utils/standard-response-wrapper');
 const constants = require('../constants/');
 const jwt = require('jsonwebtoken');
 const mongojs = require('mongojs');
 const Promise = require('bluebird');
+
 
 const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
 const jwtAudience = constants.CREDENTIAL.JWT.AUDIENCE;

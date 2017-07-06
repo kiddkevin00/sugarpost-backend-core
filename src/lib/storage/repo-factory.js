@@ -1,8 +1,9 @@
 const MongoStore = require('./stores/mongo.store');
 const PostgresStore = require('./stores/postgres.store');
-const Validator = require('../utility/precondition-validator');
-const StandardErrorWrapper = require('../utility/standard-error-wrapper');
+const Validator = require('../utils/precondition-validator');
+const StandardErrorWrapper = require('../utils/standard-error-wrapper');
 const constants = require('../constants/');
+
 
 const stores = {
   [MongoStore.STORE_TYPE]: MongoStore,

@@ -1,4 +1,5 @@
-const DatabaseService = require('../../../lib/services/database.service');
+// const DatabaseService = require('../../../lib/services/database.service');
+
 
 describe('Database service', function () {
 

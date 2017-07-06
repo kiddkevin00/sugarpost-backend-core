@@ -1,14 +1,15 @@
 const DatabaseService = require('../services/database.service');
 const ProcessSate = require('../process-state/');
-const EmailSender = require('../utility/email-sender');
-const Validator = require('../utility/precondition-validator');
-const StandardResponseWrapper = require('../utility/standard-response-wrapper');
-const StandardErrorWrapper = require('../utility/standard-error-wrapper');
+const EmailSender = require('../utils/email-sender');
+const Validator = require('../utils/precondition-validator');
+const StandardResponseWrapper = require('../utils/standard-response-wrapper');
+const StandardErrorWrapper = require('../utils/standard-error-wrapper');
 const constants = require('../constants/');
 const stripeApi = require('stripe');
 const jwt = require('jsonwebtoken');
 const mongojs = require('mongojs');
 const Promise = require('bluebird');
+
 
 const stripe = stripeApi(constants.CREDENTIAL.STRIPE.PRIVATE_KEY);
 const stripeRecurringBillingDate = constants.CREDENTIAL.STRIPE.RECURRING_BILLING_DATE;
@@ -146,9 +147,9 @@ class ReferralController {
       <div>
           <p>Hi,</p>
           <p>
-            Here is a 50% discount off your first month of Sugarpost’s premium dessert 
-            subscription service! To claim your discount, sign up now and enter the 
-            following referral code in the payment page: ${referralCodeStr} or 
+            Here is a 50% discount off your first month of Sugarpost’s premium dessert
+            subscription service! To claim your discount, sign up now and enter the
+            following referral code in the payment page: ${referralCodeStr} or
             click the link below:
           </p>
           <p>https://www.mysugarpost.com/register/signup?refer_code=${referralCodeStr}</p>

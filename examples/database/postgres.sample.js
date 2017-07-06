@@ -8,6 +8,7 @@ const Sequelize = require('sequelize'); // [TODO] Should not have to require `Se
 const Chance = require('chance');
 const Promise = require('bluebird');
 
+
 const ConnectionPool = storage.ConnectionPool;
 const RepoFactory = storage.RepoFactory;
 const repo = RepoFactory.manufacture(constants.STORE.TYPES.POSTGRES);
@@ -55,7 +56,7 @@ repo.createDb()
           lastName: chance.last(),
           age: chance.age(),
           underAge: chance.bool(),
-        })
+        }) // eslint-disable-line comma-dangle
       );
     }
 

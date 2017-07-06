@@ -6,6 +6,7 @@ const sources = {
 };
 const httpStatusCodes = {
   OK: 200,
+  FOUND: 302,
   PERMANENT_REDIRECT: 308,
   BAD_REQUEST: 400,
   UNAUTHENTICATED: 401,

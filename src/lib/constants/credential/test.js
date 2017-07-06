@@ -1,7 +1,7 @@
 exports.JWT = {
   SECRET: 'test-jwt-secret',
-  ISSUER: 'bulletin-board-system.herokuapp.com',
-  AUDIENCE: '.sugarpost.com',
+  ISSUER: 'bulletin-board-system-staging.herokuapp.com',
+  AUDIENCE: '.mysugarpost.com',
   EXPIRES_IN: '365 days',
   NOT_BEFORE: 0,
 

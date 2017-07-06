@@ -1,6 +1,7 @@
-const StandardErrorWrapper = require('../utility/standard-error-wrapper');
+const StandardErrorWrapper = require('../utils/standard-error-wrapper');
 const constants = require('../constants');
 const jwt = require('jsonwebtoken');
+
 
 const jwtSecret = constants.CREDENTIAL.JWT.SECRET;
 const jwtIssuer = constants.CREDENTIAL.JWT.ISSUER;

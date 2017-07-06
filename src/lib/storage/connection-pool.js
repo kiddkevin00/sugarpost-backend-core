@@ -1,4 +1,4 @@
-const StandardErrorWrapper = require('../utility/standard-error-wrapper');
+const StandardErrorWrapper = require('../utils/standard-error-wrapper');
 const constants = require('../constants/');
 const packageJson = require('../../../package.json');
 const Promise = require('bluebird');

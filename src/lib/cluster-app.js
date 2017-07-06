@@ -4,13 +4,14 @@
  * Usage: Run `$ NODE_DEBUG=cluster node src/lib/cluster-app.js`.
  */
 
-const packageJson = require('../../package.json');
 const setupExpressServer = require('./servers/express.server');
 const setupRoutes = require('./routes/');
+const packageJson = require('../../package.json');
+const express = require('express');
 const cluster = require('cluster');
 const http = require('http');
-const express = require('express');
 const os = require('os');
+
 
 const numCPUs = os.cpus().length;
 
@@ -20,7 +21,7 @@ if (cluster.isMaster) {
     cluster.fork();
   }
 
-  cluster.on('exit', (worker, code, signal) => {
+  cluster.on('exit', (worker/*, code, signal*/) => {
     // [TODO] Replace with logger module.
     console.log(`Worker ${worker.process.pid} died`);
   });

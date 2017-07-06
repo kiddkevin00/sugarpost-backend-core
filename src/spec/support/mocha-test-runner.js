@@ -1,9 +1,10 @@
 const chai = require('chai');
-const sinon = require('sinon');
+const sinon = require('sinon'); // eslint-disable-line newline-after-var
 require('sinon-as-promised');
 const sinonChai = require('sinon-chai');
 const chaiAsPromised = require('chai-as-promised');
 const chaiShallowDeepEqual = require('chai-shallow-deep-equal');
+
 
 chai.use(sinonChai);
 chai.use(chaiAsPromised);

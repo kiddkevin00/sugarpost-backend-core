@@ -1,7 +1,7 @@
 const DatabaseService = require('../services/database.service');
 const ProcessSate = require('../process-state/');
-const StandardErrorWrapper = require('../utility/standard-error-wrapper');
-const StandardResponseWrapper = require('../utility/standard-response-wrapper');
+const StandardErrorWrapper = require('../utils/standard-error-wrapper');
+const StandardResponseWrapper = require('../utils/standard-response-wrapper');
 const constants = require('../constants/');
 const stripeApi = require('stripe');
 const Mailchimp = require('mailchimp-api-v3');
@@ -9,6 +9,7 @@ const md5 = require('blueimp-md5');
 const jwt = require('jsonwebtoken');
 const mongojs = require('mongojs');
 const Promise = require('bluebird');
+
 
 const stripe = stripeApi(constants.CREDENTIAL.STRIPE.PRIVATE_KEY);
 const mailchimp = new Mailchimp(constants.CREDENTIAL.MAIL_CHIMP.API_KEY);
