@@ -12,6 +12,7 @@ const jwt = require('jsonwebtoken');
 const mongojs = require('mongojs');
 const Promise = require('bluebird');
 
+
 const stripe = stripeApi(constants.CREDENTIAL.STRIPE.PRIVATE_KEY);
 const stripePlan = constants.CREDENTIAL.STRIPE.PLAN_ID;
 const stripeQuantity = constants.CREDENTIAL.STRIPE.QUANTITY;

@@ -13,6 +13,7 @@ const Promise = require('bluebird');
 const fs = require('fs');
 const path = require('path');
 
+
 const mailchimp = new Mailchimp(constants.CREDENTIAL.MAIL_CHIMP.API_KEY);
 const mailChimpListId = constants.CREDENTIAL.MAIL_CHIMP.SIGNUP_LIST_ID;
 const jwtSecret = constants.CREDENTIAL.JWT.SECRET;

@@ -4,6 +4,7 @@
 
 const cc = require('coupon-code');
 
+
 let codesStr = '';
 
 for (let i = 0; i < 20; i += 1) {
