@@ -2,9 +2,9 @@
  * The process of the web application begins here - non-cluster mode.
  */
 
-const packageJson = require('../../package.json');
 const setupExpressServer = require('./servers/express.server');
 const setupRoutes = require('./routes/');
+const packageJson = require('../../package.json');
 const express = require('express');
 const http = require('http');
 

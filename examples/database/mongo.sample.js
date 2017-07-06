@@ -7,6 +7,7 @@ const constants = require('../../src/lib/constants/index');
 const Chance = require('chance');
 const Promise = require('bluebird');
 
+
 const ConnectionPool = storage.ConnectionPool;
 const RepoFactory = storage.RepoFactory;
 const conn = new ConnectionPool(constants.STORE.TYPES.MONGO_DB);
@@ -33,7 +34,7 @@ Promise.try(
           lastName: chance.last(),
           age: chance.age(),
           underAge: chance.bool(),
-        })
+        }),
       );
     }
 

@@ -65,7 +65,7 @@ class PostgresStore extends BaseStore {
   static createDb(
     host = packageJsonDbConfig.host,
     port = packageJsonDbConfig.port,
-    dbName = packageJsonDbConfig.dbName
+    dbName = packageJsonDbConfig.dbName // eslint-disable-line comma-dangle
   ) {
     const sequelize = new Sequelize(`postgres://${host}:${port}`, packageJsonDbConfig.options);
 

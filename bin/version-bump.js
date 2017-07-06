@@ -7,6 +7,7 @@ const Promise = require('bluebird');
 const fs = require('fs');
 const childProcess = require('child_process');
 
+
 Promise.promisifyAll(fs);
 
 const newVersion = process.argv[process.argv.length - 1];

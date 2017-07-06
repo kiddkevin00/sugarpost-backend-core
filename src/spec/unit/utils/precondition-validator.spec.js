@@ -9,7 +9,7 @@ describe('Precondition validator', function () {
       PreconditionValidator.shouldNotBeEmpty('abc123')
         .shouldBeEnumType('option1', ['option1'])
         .shouldBeValidDateString((new Date()).toISOString())
-        .shouldBeArrayOrArrayText([1, 2, 3])
+        .shouldBeArrayOrArrayText([1, 2, 3]) // eslint-disable-line comma-dangle
     ).to.throw();
   });
 
