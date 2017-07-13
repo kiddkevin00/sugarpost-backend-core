@@ -1,6 +1,6 @@
 {
   "name": "sugarpost-backend-core",
-  "version": "1.14.1",
+  "version": "1.14.2",
   "description": "A generic RESTful API backend with all major database connection/ops interfaces implemented.",
   "main": "./src/lib/app.js",
   "bin": {
@@ -82,7 +82,7 @@
     "debug": "node --debug --debug-brk src/lib/app.js"
   },
   "engines": {
-    "node": "6.1.0",
+    "node": "6.11.1",
     "npm": ">=3.10.9"
   },
   "dependencies": {
