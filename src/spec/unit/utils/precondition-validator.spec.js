@@ -31,7 +31,7 @@ describe('Precondition validator', function () {
     expect(() => { PreconditionValidator.shouldBeValidDateString(value); }).to.not.throw();
   });
 
-  describe('can validate if a value is an array :: shouldBeArrayOrArrayText()', () => {
+  context('can validate if a value is an array :: shouldBeArrayOrArrayText()', () => {
 
     it('after parsing', () => {
       value = [4, 5, 6];

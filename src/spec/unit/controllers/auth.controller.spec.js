@@ -23,16 +23,16 @@ describe('Auth controller', function () {
   });
 
   // [TODO]
-  describe('can handle subscribe request :: subscribe()', function () {
+  context('can handle subscribe request :: subscribe()', function () {
 
   });
 
   // [TODO]
-  describe('can handle signup request :: signup()', function () {
+  context('can handle signup request :: signup()', function () {
 
   });
 
-  describe('can handle login request :: login()', function () {
+  context('can handle login request :: login()', function () {
 
     it('on success', function () {
       stubFuncs.push(stub(AuthController, '_handleRequest', () => Promise.resolve()));
@@ -64,7 +64,7 @@ describe('Auth controller', function () {
 
   });
 
-  describe('can handle general request :: _handleRequest()', function () {
+  context('can handle general request :: _handleRequest()', function () {
 
     beforeEach(function () {
       stubFuncs.push(stub(DatabaseSvc, 'execute'));
@@ -83,6 +83,8 @@ describe('Auth controller', function () {
       expect(DatabaseSvc.execute).to.have.been.calledWith(state, strategy);
       return expect(promise).to.eventually.deep.equal(expectedResult);
     });
+
+    it('on error');
 
   });
 
