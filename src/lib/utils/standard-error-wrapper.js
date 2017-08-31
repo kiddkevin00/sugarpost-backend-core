@@ -9,17 +9,17 @@
  *    },
  *    errors: [
  *      {
- *        code: 500,
- *        name: "SOMETHING_WENT_WRONG",
- *        source: "current-app",
- *        message: "Something went wrong.",
- *        detail: `err` // optional
- *      },
- *      {
  *        code: 404,
  *        name: "SOMETHING_NOT_FOUND",
  *        source: "another-app",
  *        message: "Something is not found.",
+ *        detail: `err` // optional
+ *      },
+ *      {
+ *        code: 500,
+ *        name: "SOMETHING_WENT_WRONG",
+ *        source: "current-app",
+ *        message: "Something went wrong.",
  *        detail: `err` // optional
  *      }
  *    ]
