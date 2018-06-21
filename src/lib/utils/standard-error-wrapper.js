@@ -32,9 +32,11 @@ const constants = require('../constants/');
 // [TODO] When throwing an object with `Symbol('error-context')` property, it will become `{}`.
 const errorContext = 'error-context';
 
-class StandardErrorWrapper {
+class StandardErrorWrapper extends Error {
 
   constructor(initialErr) {
+    super();
+
     this[errorContext] = {};
 
     if (initialErr instanceof StandardErrorWrapper) {

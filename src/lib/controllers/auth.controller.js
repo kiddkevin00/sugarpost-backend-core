@@ -29,33 +29,40 @@ class AuthController {
   static signup(req, res) {
     requestCount += 1;
 
-    const fullName = req.body.fullName;
-    const email = req.body.email;
-    const password = req.body.password;
+    let state;
 
-    Validator.shouldNotBeEmpty(fullName, constants.AUTH.ERROR_NAMES.FULL_NAME_FIELD_IS_EMPTY);
-    Validator.shouldNotBeEmpty(email, constants.AUTH.ERROR_NAMES.EMAIL_FIELD_IS_EMPTY);
-    Validator.shouldNotBeEmpty(password, constants.AUTH.ERROR_NAMES.PASSWORD_FIELD_IS_EMPTY);
+    return Promise
+      .try(() => {
+        const fullName = req.body.fullName;
+        const email = req.body.email;
+        const password = req.body.password;
 
-    const options = {
-      fullName: fullName.trim(),
-      email: email.trim() && email.toLowerCase(),
-      password: password.trim(),
-    };
-    const context = { containerId, requestCount };
-    const state = ProcessSate.create(options, context);
-    const signupCheckStrategy = {
-      storeType: constants.STORE.TYPES.MONGO_DB,
-      operation: {
-        type: constants.STORE.OPERATIONS.SELECT,
-        data: [
-          { email: state.email },
-        ],
-      },
-      tableName: constants.STORE.TABLE_NAMES.USER,
-    };
+        Validator.shouldNotBeEmpty(fullName, constants.AUTH.ERROR_NAMES.FULL_NAME_FIELD_IS_EMPTY);
+        Validator.shouldNotBeEmpty(email, constants.AUTH.ERROR_NAMES.EMAIL_FIELD_IS_EMPTY);
+        Validator.shouldNotBeEmpty(password, constants.AUTH.ERROR_NAMES.PASSWORD_FIELD_IS_EMPTY);
 
-    return AuthController._handleRequest(state, res, DatabaseService, signupCheckStrategy)
+        const options = {
+          fullName: fullName.trim(),
+          email: email.trim() && email.toLowerCase(),
+          password: password.trim(),
+        };
+        const context = { containerId, requestCount };
+
+        state = ProcessSate.create(options, context);
+
+        const signupCheckStrategy = {
+          storeType: constants.STORE.TYPES.MONGO_DB,
+          operation: {
+            type: constants.STORE.OPERATIONS.SELECT,
+            data: [
+              { email: state.email },
+            ],
+          },
+          tableName: constants.STORE.TABLE_NAMES.USER,
+        };
+
+        return AuthController._handleRequest(state, res, DatabaseService, signupCheckStrategy)
+      })
       .then((result) => {
         if (Array.isArray(result) && result.length >= 1) {
           const err = new StandardErrorWrapper([
@@ -85,6 +92,7 @@ class AuthController {
         });
       })
       .then(() => {
+        const majorVersion = packageJson.version.slice(0, packageJson.version.indexOf('.'));
         const signupStrategy = {
           storeType: constants.STORE.TYPES.MONGO_DB,
           operation: {
@@ -97,7 +105,7 @@ class AuthController {
                 fullName: state.fullName,
                 isSuspended: false,
                 referralAmount: 0,
-                version: 0,
+                version: majorVersion,
                 systemData: {
                   dateCreated: new Date(),
                   createdBy: null,

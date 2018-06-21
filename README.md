@@ -4,7 +4,7 @@ A generic RESTful API backend with all major database connection/ops interfaces 
 ## Prerequisite
 - Node.js
 - npm
-- Database of your choice: MongoDB, Firebase Realtime Database, Couchbase Server
+- Database of your choice: MongoDB, Postgres, Firebase Realtime Database, or Couchbase Server
 
 ## Technology
 

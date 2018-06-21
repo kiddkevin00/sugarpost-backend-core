@@ -1,30 +1,24 @@
 /*
- * Standard response format (for 200 status code only):
+ * Standard response format (for 2XX status code only for now):
  *
  * ```
  * {
  *   result: {
- *     meta: { name: "INSERT" },
+ *     meta: { name: "BATCH_OPERATION" },
  *     data: [
  *       {
  *         success: true,
- *         detail: [
- *           {
- *             _id: "001",
- *             email: "test1@test.com"
- *           },
- *           {
- *             _id: "002",
- *             email: "test2@test.com"
- *           }
- *         ]
+ *         detail: { // should be the database result
+ *           _id: "001",
+ *           email: "test1@test.com"
+ *         }
  *       },
  *       {
  *         success: false,
- *         status: "ERROR_NAME_1", // optional
- *         detail: { // should be an object (standard error wrapper) or array (database result)
- *           _id: "003",
- *           email: "test3@test.com"
+ *         status: "ERROR_NAME_1", // required for failed one
+ *         detail: { // should be a standard error wrapper
+ *           context: {...}
+ *           errors: [...]
  *         }
  *       }
  *     ]

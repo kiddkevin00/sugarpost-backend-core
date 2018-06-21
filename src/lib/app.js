@@ -38,9 +38,9 @@ process.on('SIGINT', (err) => {
   process.exit(0);
 });
 
-// [TODO] Cleans up whenever getting a default kill signal.
+// [TODO] Cleans up whenever getting a default terminate signal.
 process.on('SIGTERM', (err) => {
-  console.log('Got a default kill signal...', err);
+  console.log('Got a default terminate signal...', err);
   process.exit(0);
 });
 

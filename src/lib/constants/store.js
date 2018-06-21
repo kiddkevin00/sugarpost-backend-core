@@ -20,6 +20,7 @@ exports.OPERATIONS = {
   SELECT: 'select',
   UPDATE: 'update',
   DELETE: 'delete',
+  UPSERT: 'upsert',
 };
 
 exports.TABLE_NAMES = {

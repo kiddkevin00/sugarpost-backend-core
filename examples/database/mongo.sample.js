@@ -13,7 +13,7 @@ const RepoFactory = storage.RepoFactory;
 const conn = new ConnectionPool(constants.STORE.TYPES.MONGO_DB);
 const repo = RepoFactory.manufacture(constants.STORE.TYPES.MONGO_DB);
 const tableName = 'testPerson';
-const seedDataLength = 3;
+const seedDataLength = 5;
 const chance = new Chance();
 
 repo.on(conn, 'connect')
@@ -34,7 +34,7 @@ Promise.try(
           lastName: chance.last(),
           age: chance.age(),
           underAge: chance.bool(),
-        }),
+        }) // eslint-disable-line comma-dangle
       );
     }
 

@@ -21,12 +21,7 @@ describe('Auth controller', function () {
       stubFunc.restore();
     }
   });
-
-  // [TODO]
-  context('can handle subscribe request :: subscribe()', function () {
-
-  });
-
+  
   // [TODO]
   context('can handle signup request :: signup()', function () {
 
@@ -48,8 +43,8 @@ describe('Auth controller', function () {
       return expect(promise).to.eventually.deep.equal(res);
     });
 
-    it('on error', function () {
-      stubFuncs.push(stub(AuthController, '_handleRequest', () => Promise.reject()));
+    it('on failure', function () {
+      stubFuncs.push(stub(AuthController, '_handleRequest', () => Promise.reject(new Error())));
 
       req.body = {
         email: 'foo@bar.com',
@@ -80,11 +75,9 @@ describe('Auth controller', function () {
 
       const promise = AuthController._handleRequest(state, res, DatabaseSvc, strategy);
 
-      expect(DatabaseSvc.execute).to.have.been.calledWith(state, strategy);
+      expect(DatabaseSvc.execute).to.have.been.calledWith(strategy);
       return expect(promise).to.eventually.deep.equal(expectedResult);
     });
-
-    it('on error');
 
   });
 

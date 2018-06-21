@@ -50,12 +50,13 @@ exports.ERROR_CODES = Object.assign({}, httpStatusCodes, {
 exports.ERROR_NAMES = {
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
   RESPONSE_OBJ_PARSE_ERROR: 'RESPONSE_OBJ_PARSE_ERROR',
-  ERROR_OBJ_PARSE_ERROR: 'RESPONSE_OBJ_PARSE_ERROR',
+  ERROR_OBJ_PARSE_ERROR: 'ERROR_OBJ_PARSE_ERROR',
   CAUGHT_ERROR_IN_AUTH_CONTROLLER: 'CAUGHT_ERROR_IN_AUTH_CONTROLLER',
   CAUGHT_ERROR_IN_PAYMENT_CONTROLLER: 'CAUGHT_ERROR_IN_PAYMENT_CONTROLLER',
 };
 
 exports.ERROR_MSG = {
+  UNKNOWN_ERROR: 'Something went wrong',
   RESPONSE_OBJ_PARSE_ERROR: 'The response object is not able to deserialize back to an instance of Standard Response Wrapper.',
   ERROR_OBJ_PARSE_ERROR: 'The error object is not able to deserialize back to an instance of Standard Error Wrapper.',
   CAUGHT_ERROR_IN_AUTH_CONTROLLER: 'There is an error being caught in Auth Controller.',

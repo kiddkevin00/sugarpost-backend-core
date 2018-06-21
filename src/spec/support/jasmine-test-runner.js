@@ -86,16 +86,16 @@ function getTestConfiguration(type) {
   var configs = {
     'integration': function () {
       if (process.env.NODE_ENV === 'development') {
-        return path.resolve(__dirname, '../support/jasmine_integration_dev.json');
+        return path.resolve(__dirname, 'jasmine_integration_dev.json');
       }
-      return path.resolve(__dirname, '../support/jasmine_integration.json');
+      return path.resolve(__dirname, 'jasmine_integration.json');
     },
 
     'unit': function () {
       if (process.env.NODE_ENV === 'development') {
-        return path.resolve(__dirname, '../support/jasmine_dev.json');
+        return path.resolve(__dirname, 'jasmine_dev.json');
       }
-      return path.resolve(__dirname, '../support/jasmine.json');
+      return path.resolve(__dirname, 'jasmine.json');
     }
   };
 
